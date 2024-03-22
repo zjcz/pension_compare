@@ -25,11 +25,16 @@ void main() {
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
 
-      final entry = await database.createStatement(pension!.id, statementDate,
-          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+      final entry = await database.createStatement(
+          pension!.pensionId,
+          statementDate,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue);
 
       expect(entry, match.isNotNull);
-      expect(entry!.pension, pension.id);
+      expect(entry!.pension, pension.pensionId);
       expect(entry.statementDate, statementDate);
       expect(entry.planValue, planValue);
       expect(entry.projectedAnnualAmount, projectedAnnualAmount);
@@ -62,21 +67,26 @@ void main() {
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
 
-      final entry = await database.createStatement(pension!.id, statementDate,
-          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+      final entry = await database.createStatement(
+          pension!.pensionId,
+          statementDate,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue);
 
       expect(entry, match.isNotNull);
-      expect(entry!.pension, pension.id);
+      expect(entry!.pension, pension.pensionId);
       expect(entry.statementDate, statementDate);
       expect(entry.planValue, planValue);
       expect(entry.projectedAnnualAmount, projectedAnnualAmount);
       expect(entry.yearlyCharges, yearlyCharges);
       expect(entry.transferValue, transferValue);
 
-      final result = await database.getStatement(entry.id);
+      final result = await database.getStatement(entry.statementId);
       expect(result, match.isNotNull);
-      expect(result!.id, entry.id);
-      expect(result.pension, pension.id);
+      expect(result!.statementId, entry.statementId);
+      expect(result.pension, pension.pensionId);
       expect(result.statementDate, statementDate);
       expect(result.planValue, planValue);
       expect(result.projectedAnnualAmount, projectedAnnualAmount);
@@ -104,32 +114,48 @@ void main() {
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
 
-      final entry1 = await database.createStatement(pension!.id, statementDate1,
-          planValue1, projectedAnnualAmount1, yearlyCharges1, transferValue1);
-      final entry2 = await database.createStatement(pension.id, statementDate2,
-          planValue2, projectedAnnualAmount2, yearlyCharges2, transferValue2);
-      final entry3 = await database.createStatement(pension.id, statementDate3,
-          planValue3, projectedAnnualAmount3, yearlyCharges3, transferValue3);
+      final entry1 = await database.createStatement(
+          pension!.pensionId,
+          statementDate1,
+          planValue1,
+          projectedAnnualAmount1,
+          yearlyCharges1,
+          transferValue1);
+      final entry2 = await database.createStatement(
+          pension.pensionId,
+          statementDate2,
+          planValue2,
+          projectedAnnualAmount2,
+          yearlyCharges2,
+          transferValue2);
+      final entry3 = await database.createStatement(
+          pension.pensionId,
+          statementDate3,
+          planValue3,
+          projectedAnnualAmount3,
+          yearlyCharges3,
+          transferValue3);
 
-      final results = await database.getAllStatementsForPension(pension.id);
+      final results =
+          await database.getAllStatementsForPension(pension.pensionId);
       expect(results, match.isNotNull);
       expect(results.length, 3);
-      expect(results[0].id, entry1!.id);
-      expect(results[0].pension, pension.id);
+      expect(results[0].statementId, entry1!.statementId);
+      expect(results[0].pension, pension.pensionId);
       expect(results[0].statementDate, statementDate1);
       expect(results[0].planValue, planValue1);
       expect(results[0].projectedAnnualAmount, projectedAnnualAmount1);
       expect(results[0].yearlyCharges, yearlyCharges1);
       expect(results[0].transferValue, transferValue1);
-      expect(results[1].id, entry2!.id);
-      expect(results[1].pension, pension.id);
+      expect(results[1].statementId, entry2!.statementId);
+      expect(results[1].pension, pension.pensionId);
       expect(results[1].statementDate, statementDate2);
       expect(results[1].planValue, planValue2);
       expect(results[1].projectedAnnualAmount, projectedAnnualAmount2);
       expect(results[1].yearlyCharges, yearlyCharges2);
       expect(results[1].transferValue, transferValue2);
-      expect(results[2].id, entry3!.id);
-      expect(results[2].pension, pension.id);
+      expect(results[2].statementId, entry3!.statementId);
+      expect(results[2].pension, pension.pensionId);
       expect(results[2].statementDate, statementDate3);
       expect(results[2].planValue, planValue3);
       expect(results[2].projectedAnnualAmount, projectedAnnualAmount3);
@@ -152,7 +178,7 @@ void main() {
           await database.createPension('pension', DateTime(2050, 1, 1));
 
       final newEntry = await database.createStatement(
-          pension!.id,
+          pension!.pensionId,
           statementDate,
           planValue,
           projectedAnnualAmount,
@@ -160,8 +186,8 @@ void main() {
           transferValue);
 
       bool updated = await database.updateStatement(
-          newEntry!.id,
-          pension.id,
+          newEntry!.statementId,
+          pension.pensionId,
           updatedStatementDate,
           updatedPlanValue,
           updatedProjectedAnnualAmount,
@@ -169,10 +195,10 @@ void main() {
           updatedTransferValue);
       expect(updated, isTrue);
 
-      final updatedEntry = await database.getStatement(newEntry.id);
+      final updatedEntry = await database.getStatement(newEntry.statementId);
       expect(updatedEntry, match.isNotNull);
-      expect(updatedEntry!.id, newEntry.id);
-      expect(updatedEntry.pension, pension.id);
+      expect(updatedEntry!.statementId, newEntry.statementId);
+      expect(updatedEntry.pension, pension.pensionId);
       expect(updatedEntry.statementDate, updatedStatementDate);
       expect(updatedEntry.planValue, updatedPlanValue);
       expect(updatedEntry.projectedAnnualAmount, updatedProjectedAnnualAmount);
@@ -190,18 +216,24 @@ void main() {
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
 
-      final entry = await database.createStatement(pension!.id, statementDate,
-          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+      final entry = await database.createStatement(
+          pension!.pensionId,
+          statementDate,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue);
 
-      final results = await database.getAllStatementsForPension(pension.id);
+      final results =
+          await database.getAllStatementsForPension(pension.pensionId);
       expect(results, match.isNotNull);
       expect(results.length, 1);
 
-      final deleted = await database.deleteStatement(entry!.id);
+      final deleted = await database.deleteStatement(entry!.statementId);
       expect(deleted, 1);
 
       final resultsAfterDelete =
-          await database.getAllStatementsForPension(pension.id);
+          await database.getAllStatementsForPension(pension.pensionId);
       expect(resultsAfterDelete, match.isNotNull);
       expect(resultsAfterDelete.length, 0);
     });
@@ -216,20 +248,21 @@ void main() {
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
 
-      await database.createStatement(pension!.id, statementDate, planValue,
-          projectedAnnualAmount, yearlyCharges, transferValue);
-      await database.createStatement(pension.id, statementDate, planValue,
-          projectedAnnualAmount, yearlyCharges, transferValue);
+      await database.createStatement(pension!.pensionId, statementDate,
+          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+      await database.createStatement(pension.pensionId, statementDate,
+          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
 
-      final results = await database.getAllStatementsForPension(pension.id);
+      final results =
+          await database.getAllStatementsForPension(pension.pensionId);
       expect(results, match.isNotNull);
       expect(results.length, 2);
 
-      final deleted = await database.deletePension(pension.id);
+      final deleted = await database.deletePension(pension.pensionId);
       expect(deleted, 1);
 
       final resultsAfterDelete =
-          await database.getAllStatementsForPension(pension.id);
+          await database.getAllStatementsForPension(pension.pensionId);
       expect(resultsAfterDelete, match.isNotNull);
       expect(resultsAfterDelete.length, 0);
     });
