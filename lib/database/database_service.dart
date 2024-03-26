@@ -1,5 +1,4 @@
 import 'package:drift/drift.dart';
-import 'package:flutter/foundation.dart';
 import 'connection/connection.dart' as dbconn;
 
 import 'package:pension_compare/database/tables/pension.dart';

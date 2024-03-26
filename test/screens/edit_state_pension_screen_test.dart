@@ -19,7 +19,15 @@ Widget createEditScreen(DatabaseService? db) {
 void main() {
   group('Test editing of state pension record', () {
     testWidgets('show the screen', (tester) async {
-      await tester.pumpWidget(createEditScreen(null));
+      double value = 12345.67;
+      final databaseService = MockDatabaseService();
+      when(databaseService.getStatePension()).thenAnswer((_) async =>
+          StatePension(
+              statePensionId: defaults.defaultStatePensionId,
+              projectedAnnualAmount: value));
+
+      await tester.pumpWidget(createEditScreen(databaseService));
+      await tester.pumpAndSettle();
 
       expect(find.text("State Pension"), findsOneWidget);
 
@@ -48,6 +56,7 @@ void main() {
               projectedAnnualAmount: value));
 
       await tester.pumpWidget(createEditScreen(databaseService));
+      await tester.pumpAndSettle();
 
       expect(find.text("12,345.67"), findsOneWidget);
 
@@ -65,6 +74,7 @@ void main() {
               projectedAnnualAmount: value));
 
       await tester.pumpWidget(createEditScreen(databaseService));
+      await tester.pumpAndSettle();
 
       expect(find.text("12,345.60"), findsOneWidget);
     });
@@ -82,7 +92,7 @@ void main() {
               statePensionId: 1, projectedAnnualAmount: updatedValue));
 
       await tester.pumpWidget(createEditScreen(databaseService));
-
+      await tester.pumpAndSettle();
       await tester.enterText(find.byKey(EditStatePensionScreen.yearlyValueKey),
           updatedValue.toString());
 
@@ -90,6 +100,35 @@ void main() {
       await tester.tap(find.byType(TextButton));
 
       verify(databaseService.saveStatePension(updatedValue)).called(1);
+    });
+
+    testWidgets('do not save state pension record with invalid values',
+        (tester) async {
+      double initialValue = 123.45;
+      String invalidValue = 'invalid';
+      final databaseService = MockDatabaseService();
+      when(databaseService.getStatePension()).thenAnswer((_) async =>
+          StatePension(
+              statePensionId: defaults.defaultStatePensionId,
+              projectedAnnualAmount: initialValue));
+      when(databaseService.saveStatePension(0)).thenAnswer((_) async =>
+          const StatePension(statePensionId: 1, projectedAnnualAmount: 0));
+
+      await tester.pumpWidget(createEditScreen(databaseService));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(EditStatePensionScreen.yearlyValueKey), invalidValue);
+
+      // Tap the save button
+      await tester.tap(find.byType(TextButton));
+      await tester.pumpAndSettle();
+
+      expect(find.text(invalidValue), findsOneWidget);
+      expect(
+          find.text("Please enter a value, or 0 if unknown"), findsOneWidget);
+
+      verifyNever(databaseService.saveStatePension(0));
     });
   });
 }

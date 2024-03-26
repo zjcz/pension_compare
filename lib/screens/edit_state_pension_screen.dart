@@ -25,7 +25,7 @@ class _EditStatePensionScreenState extends State<EditStatePensionScreen> {
   void initState() {
     super.initState();
 
-    _loadData();
+    //_loadData();
   }
 
   @override
@@ -73,21 +73,65 @@ class _EditStatePensionScreenState extends State<EditStatePensionScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  TextFormField(
-                    key: EditStatePensionScreen.yearlyValueKey,
-                    controller: yearlyValueController,
-                    decoration:
-                        const InputDecoration(labelText: "Yearly Value"),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please enter a value, or 0 if unknown";
-                      }
-                      return null;
-                    },
-                    onChanged: (val) {
-                      _unsavedChanges = true;
-                    },
-                  ),
+                  FutureBuilder<StatePension?>(
+                      future: _getDatabaseService().getStatePension(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(
+                              child: Text(
+                                  'Error loading data: ${snapshot.error}'));
+                        } else if (!snapshot.hasData || snapshot.data == null) {
+                          return const Center(child: Text('Not found'));
+                        } else {
+                          final StatePension statePension = snapshot.data!;
+                          yearlyValueController.text =
+                              CurrencyHelper.formatCurrency(
+                                  statePension.projectedAnnualAmount);
+                          return TextFormField(
+                            key: EditStatePensionScreen.yearlyValueKey,
+                            controller: yearlyValueController,
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            decoration: const InputDecoration(
+                                labelText: "Yearly Value"),
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  CurrencyHelper.parseCurrency(value) == null) {
+                                return "Please enter a value, or 0 if unknown";
+                              }
+                              return null;
+                            },
+                            onChanged: (val) {
+                              _unsavedChanges = true;
+                            },
+                          );
+                        }
+                      }),
+
+                  // TextFormField(
+                  //   key: EditStatePensionScreen.yearlyValueKey,
+                  //   controller: yearlyValueController,
+                  //   keyboardType:
+                  //       const TextInputType.numberWithOptions(decimal: true),
+                  //   decoration:
+                  //       const InputDecoration(labelText: "Yearly Value"),
+                  //   validator: (value) {
+                  //     if (value == null ||
+                  //         value.isEmpty ||
+                  //         CurrencyHelper.parseCurrency(value) == null) {
+                  //       return "Please enter a value, or 0 if unknown";
+                  //     }
+                  //     return null;
+                  //   },
+                  //   onChanged: (val) {
+                  //     _unsavedChanges = true;
+                  //   },
+                  // ),
                   CustomStyles.spacerBox,
                   const Text(
                       "This is the yearly value you will receive from your state pension.  If you don't know this you can find the amount here:",
@@ -106,18 +150,19 @@ class _EditStatePensionScreenState extends State<EditStatePensionScreen> {
         : widget.databaseService!;
   }
 
-  Future<void> _loadData() async {
-    DatabaseService db = _getDatabaseService();
-    StatePension? pension = await db.getStatePension();
-    if (pension != null) {
-      yearlyValueController.text =
-          CurrencyHelper.formatCurrency(pension.projectedAnnualAmount);
-    }
-  }
+  // Future<void> _loadData() async {
+  //   DatabaseService db = _getDatabaseService();
+  //   StatePension? pension = await db.getStatePension();
+  //   if (pension != null) {
+  //     yearlyValueController.text =
+  //         CurrencyHelper.formatCurrency(pension.projectedAnnualAmount);
+  //   }
+  // }
 
   Future<bool> _saveData() async {
     DatabaseService db = _getDatabaseService();
-    await db.saveStatePension(double.tryParse(yearlyValueController.text) ?? 0);
+    await db.saveStatePension(
+        CurrencyHelper.parseCurrency(yearlyValueController.text) ?? 0);
 
     return true;
   }
