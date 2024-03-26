@@ -95,9 +95,7 @@ void main() {
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      // Check that the TextFormField's value is updated
-      final TextFormField field = tester.widget(fieldFinder);
-      expect(field.controller?.text, equals(DateHelper.formatDate(newDate)));
+      expect(find.text(DateHelper.formatDate(newDate)), findsOneWidget);
     });
   });
 
@@ -246,23 +244,71 @@ void main() {
     });
   });
 
-  // group('Test validation of add/edit pension screen', () {
-  //   testWidgets('validation should prevent empty name and date',
-  //       (tester) async {
-  //     final databaseService = MockDatabaseService();
+  group('Test validation of add/edit statement screen', () {
+    testWidgets('validation should prevent invalid plan value', (tester) async {
+      String name = "Test Pension";
+      DateTime maturityDate = DateHelper.getToday();
+      int pensionId = 1;
+      DateTime statementDate = DateHelper.getToday();
+      double planValue = 12345.0;
+      double projectedAnnualAmount = 1234;
+      double yearlyCharges = 100;
+      double transferValue = 12345;
 
-  //     await tester.pumpWidget(createEditScreen(null, databaseService));
+      final databaseService = MockDatabaseService();
+      when(databaseService.getAllPensions()).thenAnswer((_) async => [
+            Pension(
+                pensionId: pensionId, name: name, maturityDate: maturityDate)
+          ]);
+      when(databaseService.createStatement(pensionId, statementDate, planValue,
+              projectedAnnualAmount, yearlyCharges, transferValue))
+          .thenAnswer((_) async => Statement(
+              statementId: 1,
+              pension: pensionId,
+              statementDate: statementDate,
+              planValue: planValue,
+              projectedAnnualAmount: projectedAnnualAmount,
+              yearlyCharges: yearlyCharges,
+              transferValue: transferValue));
 
-  //     // Tap the save button
-  //     await tester.tap(find.byType(TextButton));
-  //     await tester.pumpAndSettle();
+      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpAndSettle();
 
-  //     expect(find.text("Please enter some text"), findsOneWidget);
-  //     expect(find.text("Please select a date"), findsOneWidget);
+      // select the pension from the DropDownButtonFormField
+      await tester.tap(find.byKey(EditStatementScreen.pensionKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(DropdownMenuItem<int>, name).last);
+      await tester.pumpAndSettle();
 
-  //     verifyZeroInteractions(databaseService);
-  //   });
-  //   // test delete
-  //   // test cancel
-  // });
+      // Set the date of the date picker
+      await tester.tap(find.byKey(EditStatementScreen.statementDateKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(statementDate.day.toString()));
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(EditStatementScreen.planValueKey), "invalid number");
+      await tester.enterText(
+          find.byKey(EditStatementScreen.projectedAnnualAmountKey),
+          "invalid number");
+      await tester.enterText(
+          find.byKey(EditStatementScreen.yearlyChargesKey), "invalid number");
+      await tester.enterText(
+          find.byKey(EditStatementScreen.transferValueKey), "invalid number");
+
+      // Tap the save button
+      await tester.tap(find.byType(TextButton));
+
+      expect(
+          find.text("Please enter a value, or 0 if unknown"), findsNWidgets(2));
+
+      verify(databaseService.getAllPensions()).called(1);
+      verifyNever(databaseService.createStatement(pensionId, statementDate,
+          planValue, projectedAnnualAmount, yearlyCharges, transferValue));
+    });
+
+    // test delete
+    // test cancel
+  });
 }

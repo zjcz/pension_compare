@@ -50,6 +50,51 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   .then((_) => {setState(() {})});
             },
           ),
+          PopupMenuButton(
+            icon: const Icon(Icons.more_vert),
+            itemBuilder: (BuildContext bc) {
+              return const [
+                PopupMenuItem(
+                  value: 'pension',
+                  child: Text("Add Pension"),
+                ),
+                PopupMenuItem(
+                  value: 'statement',
+                  child: Text("Add Statement"),
+                ),
+                PopupMenuItem(
+                  value: 'state_pension',
+                  child: Text("Edit State Pension"),
+                ),
+                PopupMenuItem(
+                  value: 'settings',
+                  child: Text("Settings"),
+                )
+              ];
+            },
+            onSelected: (value) {
+              if (value == 'pension') {
+                Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const EditPensionScreen()))
+                    .then((_) => {setState(() {})});
+              } else if (value == 'statement') {
+                Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const EditStatementScreen()))
+                    .then((_) => {setState(() {})});
+              } else if (value == 'state_pension') {
+                Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const EditStatePensionScreen()))
+                    .then((_) => {setState(() {})});
+              }
+            },
+          ),
         ]),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

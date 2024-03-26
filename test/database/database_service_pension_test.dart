@@ -114,7 +114,7 @@ void main() {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
 
-      final entry = await database.createPension(name, maturityDate);
+      await database.createPension(name, maturityDate);
 
       final results = await database.getAllPensionsWithLatestStatement();
       expect(results, match.isNotNull);
@@ -143,27 +143,12 @@ void main() {
       double? transferValue3 = 12.34;
 
       final pension = await database.createPension(name, maturityDate);
-      final entry1 = await database.createStatement(
-          pension!.pensionId,
-          statementDate1,
-          planValue1,
-          projectedAnnualAmount1,
-          yearlyCharges1,
-          transferValue1);
-      final entry2 = await database.createStatement(
-          pension.pensionId,
-          statementDate2,
-          planValue2,
-          projectedAnnualAmount2,
-          yearlyCharges2,
-          transferValue2);
-      final entry3 = await database.createStatement(
-          pension.pensionId,
-          statementDate3,
-          planValue3,
-          projectedAnnualAmount3,
-          yearlyCharges3,
-          transferValue3);
+      await database.createStatement(pension!.pensionId, statementDate1,
+          planValue1, projectedAnnualAmount1, yearlyCharges1, transferValue1);
+      await database.createStatement(pension.pensionId, statementDate2,
+          planValue2, projectedAnnualAmount2, yearlyCharges2, transferValue2);
+      await database.createStatement(pension.pensionId, statementDate3,
+          planValue3, projectedAnnualAmount3, yearlyCharges3, transferValue3);
 
       final results = await database.getAllPensionsWithLatestStatement();
       expect(results, match.isNotNull);

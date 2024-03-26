@@ -12,15 +12,6 @@ part 'database_service.g.dart';
 
 @DriftDatabase(
   tables: [Pensions, Statements, StatePensions],
-  // queries: {
-  //   'pensionWithLatestStatement':
-  //       'SELECT pensions.id as pensionId, pensions.name, pensions.maturity_date,'
-  //           ' statements.* '
-  //           'FROM pensions LEFT JOIN statements ON pensions.id = statements.pension '
-  //           '               LEFT JOIN (SELECT pension, MAX(statement_date) as latest_statement_date '
-  //           '                           FROM statements GROUP BY pension) AS latest_statements '
-  //           '                 ON statements.pension = latest_statements.pension AND statements.statement_date = latest_statements.latest_statement_date;'
-  // },
 )
 class DatabaseService extends _$DatabaseService {
   DatabaseService(super.connection);

@@ -30,4 +30,22 @@ void main() {
       expect(dateToTest.microsecond, 0);
     });
   });
+
+  group('Test parsing of formatted dates', () {
+    test('Test the date parser', () {
+      DateTime dateToFormat = DateTime(2024, 1, 1);
+
+      String formattedDate = DateHelper.formatDate(dateToFormat);
+      DateTime? parsedDate = DateHelper.parseDate(formattedDate);
+
+      expect(parsedDate, dateToFormat);
+    });
+
+    test('Test the date format for invalid string', () {
+      String formattedDate = "invalid date format";
+      DateTime? parsedDate = DateHelper.parseDate(formattedDate);
+
+      expect(parsedDate, isNull);
+    });
+  });
 }

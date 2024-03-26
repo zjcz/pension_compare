@@ -16,6 +16,8 @@ abstract class Connection {
   LazyDatabase openConnection() {
     // the LazyDatabase util lets us find the right location for the file async.
     return LazyDatabase(() async {
+      setupSqlCipher();
+
       // put the database file, called db.sqlite here, into the documents folder
       // for your app.
       final dbFolder = await getApplicationDocumentsDirectory();
@@ -48,11 +50,12 @@ abstract class Connection {
           final escapedKey = _encryptionPassword.replaceAll("'", "''");
           db.execute("pragma key = '$escapedKey'");
 
-          // Enable foreign keys
-          db.execute('PRAGMA foreign_keys = ON');
-
           // Test that the key is correct by selecting from a table
-          db.execute('select count(*) from sqlite_master');
+          try {
+            db.execute('select count(*) from sqlite_master');
+          } catch (e) {
+            throw Exception('Unable to open secure database');
+          }
         },
       );
     });

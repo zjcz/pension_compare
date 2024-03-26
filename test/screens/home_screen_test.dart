@@ -3,9 +3,7 @@ import 'package:mockito/annotations.dart';
 import 'package:pension_compare/database/tables/pensions_with_latest_statement.dart';
 import 'package:pension_compare/screens/home_screen.dart';
 import 'package:pension_compare/database/database_service.dart';
-import 'package:pension_compare/helpers/date_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:matcher/matcher.dart' as match;
 import 'package:mockito/mockito.dart';
 
 import 'home_screen_test.mocks.dart';

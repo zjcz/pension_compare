@@ -2,7 +2,7 @@ import 'package:pension_compare/extensions/material_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/database/database_service.dart';
-import 'package:pension_compare/helpers/date_helper.dart';
+import 'package:pension_compare/widgets/date_field.dart';
 
 // TODO - Add delete button
 class EditPensionScreen extends StatefulWidget {
@@ -22,7 +22,6 @@ class EditPensionScreen extends StatefulWidget {
 
 class _EditPensionScreenState extends State<EditPensionScreen> {
   TextEditingController nameController = TextEditingController();
-  TextEditingController maturityDateController = TextEditingController();
   DateTime? _maturityDate;
 
   bool _unsavedChanges = false;
@@ -34,8 +33,6 @@ class _EditPensionScreenState extends State<EditPensionScreen> {
 
     if (widget.pension != null) {
       nameController.text = widget.pension!.name;
-      maturityDateController.text =
-          DateHelper.formatDate(widget.pension!.maturityDate);
       _maturityDate = widget.pension!.maturityDate;
     }
   }
@@ -107,32 +104,17 @@ class _EditPensionScreenState extends State<EditPensionScreen> {
                       'This is a unique name you use to identify a pension policy.  It could be the name of the pension provider or the name of the workplace associated with the pension.  The choice is yours.',
                       style: CustomStyles.infoTextStyle),
                   CustomStyles.spacerBox,
-                  TextFormField(
+                  DateField(
                     key: EditPensionScreen.pensionMaturityDateKey,
-                    controller: maturityDateController,
-                    decoration: const InputDecoration(
-                        icon: Icon(Icons.calendar_today), //icon of text field
-                        labelText: "Planned Retirement Date"),
-                    readOnly: true, // when true user cannot edit text
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: _maturityDate,
-                          firstDate: DateTime(2000, 1, 1),
-                          lastDate: DateTime(2101));
-
-                      if (pickedDate != null) {
-                        _maturityDate = pickedDate;
-                        setState(() {
-                          _unsavedChanges = true;
-                          maturityDateController.text =
-                              DateHelper.formatDate(pickedDate);
-                        });
-                      }
+                    initialDate: _maturityDate,
+                    labelText: 'Planned Retirement Date',
+                    onDateSelected: (DateTime? value) {
+                      _maturityDate = value;
+                      _unsavedChanges = true;
                     },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please select a date";
+                    onValidate: (DateTime? value) {
+                      if (value == null) {
+                        return 'Please select a date';
                       }
                       return null;
                     },

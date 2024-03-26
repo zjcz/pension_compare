@@ -77,19 +77,13 @@ void main() {
       String pensionName = 'Test';
       int? onSelectionChangedValue;
       bool onSelectionChangedCalled = false;
-      int? onValidateValue;
-      bool onValidateCalled = false;
 
       onSelectionChanged(int? value) {
         onSelectionChangedValue = value;
         onSelectionChangedCalled = true;
       }
 
-      String? onValidate(int? value) {
-        onValidateValue = value;
-        onValidateCalled = true;
-        return null;
-      }
+      String? onValidate(int? value) => null;
 
       final databaseService = MockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) async => [
@@ -117,16 +111,10 @@ void main() {
       int pensionId = 5;
       String pensionName = 'Test';
       String validationMessage = "failed validation";
-      int? onSelectionChangedValue;
-      bool onSelectionChangedCalled = false;
       int? onValidateValue;
       bool onValidateCalled = false;
 
-      onSelectionChanged(int? value) {
-        onSelectionChangedValue = value;
-        onSelectionChangedCalled = true;
-      }
-
+      onSelectionChanged(int? value) => {};
       String? onValidate(int? value) {
         onValidateValue = value;
         onValidateCalled = true;
@@ -206,22 +194,9 @@ void main() {
       int pensionId3 = 3;
       String pensionName3 = 'Test 3';
       int selectedPensionId = 2;
-      String validationMessage = "failed validation";
-      int? onSelectionChangedValue;
-      bool onSelectionChangedCalled = false;
-      int? onValidateValue;
-      bool onValidateCalled = false;
 
-      onSelectionChanged(int? value) {
-        onSelectionChangedValue = value;
-        onSelectionChangedCalled = true;
-      }
-
-      String? onValidate(int? value) {
-        onValidateValue = value;
-        onValidateCalled = true;
-        return value == null ? validationMessage : null;
-      }
+      onSelectionChanged(int? value) {}
+      String? onValidate(int? value) => null;
 
       final databaseService = MockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) async => [

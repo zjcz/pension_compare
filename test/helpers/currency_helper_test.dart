@@ -42,5 +42,61 @@ void main() {
 
       expect(formattedValue, '£1,234.56');
     });
+
+    test('Test the currency format for null value', () {
+      String formattedValue = CurrencyHelper.formatCurrency(null);
+
+      expect(formattedValue, '');
+    });
+  });
+
+  group('Test parsing of currency', () {
+    test('Test the currency parser', () {
+      String value = "1234.56";
+
+      double? parsedValue = CurrencyHelper.parseCurrency(value);
+
+      expect(parsedValue, 1234.56);
+    });
+
+    test('Test to 1 decimal place', () {
+      String value = "1234.50";
+
+      double? parsedValue = CurrencyHelper.parseCurrency(value);
+
+      expect(parsedValue, 1234.5);
+    });
+
+    test('Test with currency symbol', () {
+      String value = "£1234.50";
+
+      double? parsedValue = CurrencyHelper.parseCurrency(value, '£');
+
+      expect(parsedValue, 1234.5);
+    });
+
+    test('Test with null', () {
+      String? value = null;
+
+      double? parsedValue = CurrencyHelper.parseCurrency(value);
+
+      expect(parsedValue, null);
+    });
+
+    test('Test with empty string', () {
+      String value = '';
+
+      double? parsedValue = CurrencyHelper.parseCurrency(value);
+
+      expect(parsedValue, null);
+    });
+
+    test('Test with invalid string', () {
+      String? value = 'invalid';
+
+      double? parsedValue = CurrencyHelper.parseCurrency(value);
+
+      expect(parsedValue, null);
+    });
   });
 }

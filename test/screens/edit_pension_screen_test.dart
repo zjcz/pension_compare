@@ -83,9 +83,7 @@ void main() {
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      // Check that the TextFormField's value is updated
-      final TextFormField field = tester.widget(fieldFinder);
-      expect(field.controller?.text, equals(DateHelper.formatDate(newDate)));
+      expect(find.text(DateHelper.formatDate(newDate)), findsOneWidget);
     });
   });
 

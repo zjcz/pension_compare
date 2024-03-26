@@ -2,8 +2,10 @@ import 'package:pension_compare/extensions/material_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/database/database_service.dart';
-import 'package:pension_compare/helpers/date_helper.dart';
+import 'package:pension_compare/helpers/currency_helper.dart';
+import 'package:pension_compare/widgets/date_field.dart';
 import 'package:pension_compare/widgets/pension_dropdown.dart';
+import 'package:flutter/services.dart';
 
 // TODO - Add delete button
 class EditStatementScreen extends StatefulWidget {
@@ -26,7 +28,6 @@ class EditStatementScreen extends StatefulWidget {
 }
 
 class _EditStatmentScreenState extends State<EditStatementScreen> {
-  TextEditingController statementDateController = TextEditingController();
   TextEditingController planValueController = TextEditingController();
   TextEditingController projectedAnnualAmountController =
       TextEditingController();
@@ -46,15 +47,16 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
 
     if (widget.statement != null) {
       _pensionId = widget.statement!.pension;
-      statementDateController.text =
-          DateHelper.formatDate(widget.statement!.statementDate);
       _statementDate = widget.statement!.statementDate;
 
-      planValueController.text = widget.statement!.planValue.toString();
-      projectedAnnualAmountController.text =
-          widget.statement!.projectedAnnualAmount.toString();
-      yearlyChargesController.text = widget.statement!.yearlyCharges.toString();
-      transferValueController.text = widget.statement!.transferValue.toString();
+      planValueController.text =
+          CurrencyHelper.formatCurrency(widget.statement!.planValue);
+      projectedAnnualAmountController.text = CurrencyHelper.formatCurrency(
+          widget.statement!.projectedAnnualAmount);
+      yearlyChargesController.text =
+          CurrencyHelper.formatCurrency(widget.statement!.yearlyCharges);
+      transferValueController.text =
+          CurrencyHelper.formatCurrency(widget.statement!.transferValue);
     }
   }
 
@@ -127,32 +129,17 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
                       'Enter the following values found on your annual statement:',
                       style: CustomStyles.infoTextStyle),
                   CustomStyles.spacerBox,
-                  TextFormField(
+                  DateField(
                     key: EditStatementScreen.statementDateKey,
-                    controller: statementDateController,
-                    decoration: const InputDecoration(
-                        icon: Icon(Icons.calendar_today), //icon of text field
-                        labelText: "Statement Date"),
-                    readOnly: true, // when true user cannot edit text
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: _statementDate,
-                          firstDate: DateTime(2000, 1, 1),
-                          lastDate: DateTime(2101));
-
-                      if (pickedDate != null) {
-                        _statementDate = pickedDate;
-                        setState(() {
-                          _unsavedChanges = true;
-                          statementDateController.text =
-                              DateHelper.formatDate(pickedDate);
-                        });
-                      }
+                    initialDate: _statementDate,
+                    labelText: 'Statement Date',
+                    onDateSelected: (DateTime? value) {
+                      _statementDate = value;
+                      _unsavedChanges = true;
                     },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please select a date";
+                    onValidate: (DateTime? value) {
+                      if (value == null) {
+                        return 'Please select a date';
                       }
                       return null;
                     },
@@ -161,9 +148,13 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
                   TextFormField(
                     key: EditStatementScreen.planValueKey,
                     controller: planValueController,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     decoration: const InputDecoration(labelText: "Plan Value"),
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          CurrencyHelper.parseCurrency(value) == null) {
                         return "Please enter a value, or 0 if unknown";
                       }
                       return null;
@@ -176,10 +167,14 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
                   TextFormField(
                     key: EditStatementScreen.projectedAnnualAmountKey,
                     controller: projectedAnnualAmountController,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     decoration: const InputDecoration(
                         labelText: "Projected Yearly Amount"),
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          CurrencyHelper.parseCurrency(value) == null) {
                         return "Please enter a value, or 0 if unknown";
                       }
                       return null;
@@ -192,8 +187,18 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
                   TextFormField(
                     key: EditStatementScreen.yearlyChargesKey,
                     controller: yearlyChargesController,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     decoration:
                         const InputDecoration(labelText: "Yearly Charges"),
+                    validator: (value) {
+                      if (value != null && value.isNotEmpty) {
+                        if (CurrencyHelper.parseCurrency(value) == null) {
+                          return "Please enter a valid number";
+                        }
+                      }
+                      return null;
+                    },
                     onChanged: (val) {
                       _unsavedChanges = true;
                     },
@@ -202,8 +207,18 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
                   TextFormField(
                     key: EditStatementScreen.transferValueKey,
                     controller: transferValueController,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     decoration:
                         const InputDecoration(labelText: "Transfer Value"),
+                    validator: (value) {
+                      if (value != null && value.isNotEmpty) {
+                        if (CurrencyHelper.parseCurrency(value) == null) {
+                          return "Please enter a valid number";
+                        }
+                      }
+                      return null;
+                    },
                     onChanged: (val) {
                       _unsavedChanges = true;
                     },
@@ -233,10 +248,10 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
       await db.createStatement(
           _pensionId!,
           _statementDate!,
-          double.parse(planValueController.text),
-          double.parse(projectedAnnualAmountController.text),
-          double.tryParse(yearlyChargesController.text),
-          double.tryParse(transferValueController.text));
+          CurrencyHelper.parseCurrency(planValueController.text)!,
+          CurrencyHelper.parseCurrency(projectedAnnualAmountController.text)!,
+          CurrencyHelper.parseCurrency(yearlyChargesController.text),
+          CurrencyHelper.parseCurrency(transferValueController.text));
     } else {
       await db.updateStatement(
           widget.statement!.statementId,
