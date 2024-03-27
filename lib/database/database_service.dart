@@ -167,4 +167,45 @@ class DatabaseService extends _$DatabaseService {
             ))
         .get();
   }
+
+  // Populate the database with some test data
+  Future<void> populateTestData() async {
+    await (delete(statements)).go();
+    await (delete(pensions)).go();
+
+    // create some test pensions
+    Pension? p1 = await createPension("Pension 1", DateTime(2030, 1, 1));
+    Pension? p2 = await createPension("Pension 2", DateTime(2030, 1, 1));
+    Pension? p3 = await createPension("Pension 3", DateTime(2030, 1, 1));
+    Pension? p4 = await createPension("Pension 4", DateTime(2030, 1, 1));
+
+    // create some test statements
+    await createStatement(
+        p1!.pensionId, DateTime(2020, 1, 1), 1000, 100, 10, 1000);
+    await createStatement(
+        p1.pensionId, DateTime(2021, 1, 1), 2000, 200, 20, 2000);
+    await createStatement(
+        p1.pensionId, DateTime(2022, 1, 1), 3000, 300, 30, 3000);
+    await createStatement(
+        p1.pensionId, DateTime(2023, 1, 1), 4000, 500, 60, 7000);
+    await createStatement(
+        p2!.pensionId, DateTime(2020, 1, 1), 2000, 200, 20, 2000);
+    await createStatement(
+        p2.pensionId, DateTime(2021, 1, 1), 3000, 300, 30, 3000);
+    await createStatement(
+        p2.pensionId, DateTime(2022, 1, 1), 4000, 400, 40, 4000);
+    await createStatement(
+        p2.pensionId, DateTime(2023, 1, 1), 5000, 400, 30, 2000);
+    await createStatement(
+        p4!.pensionId, DateTime(2020, 1, 1), 1500, 150, 15, 1500);
+    await createStatement(
+        p4.pensionId, DateTime(2021, 1, 1), 2500, 250, 25, 2500);
+    await createStatement(
+        p4.pensionId, DateTime(2022, 1, 1), 3500, 350, 35, 3500);
+    await createStatement(
+        p4.pensionId, DateTime(2023, 1, 1), 4500, 450, 45, 4500);
+
+    // create a state pension record
+    await saveStatePension(1000);
+  }
 }

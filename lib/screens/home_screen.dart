@@ -6,10 +6,8 @@ import 'package:pension_compare/screens/edit_pension_screen.dart';
 import 'package:pension_compare/screens/edit_statement_screen.dart';
 import 'package:pension_compare/screens/edit_state_pension_screen.dart';
 import 'package:pension_compare/widgets/pension_data_table.dart';
+import 'package:pension_compare/widgets/pension_summary_chart.dart';
 
-// TODO - add list of pensions + summary data
-// TODO - Allow add pension and statement functionality
-// TODO - Add Chart
 // TODO - Add Settings button
 class HomeScreen extends StatefulWidget {
   final DatabaseService databaseService;
@@ -37,6 +35,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     DatabaseService db = _getDatabaseService();
+    Future<List<PensionWithLatestStatement>> pensionsSummaryData =
+        db.getAllPensionsWithLatestStatement();
 
     return Scaffold(
         appBar: AppBar(title: const Text('Overview'), actions: [
@@ -69,10 +69,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 PopupMenuItem(
                   value: 'settings',
                   child: Text("Settings"),
+                ),
+                PopupMenuItem(
+                  value: 'reset_test_data',
+                  child: Text("Reset Test Data"),
                 )
               ];
             },
-            onSelected: (value) {
+            onSelected: (value) async {
               if (value == 'pension') {
                 Navigator.push(
                         context,
@@ -92,6 +96,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             builder: (context) =>
                                 const EditStatePensionScreen()))
                     .then((_) => {setState(() {})});
+              } else if (value == 'reset_test_data') {
+                await db.populateTestData();
               }
             },
           ),
@@ -103,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: FutureBuilder<List<PensionWithLatestStatement>>(
-                    future: db.getAllPensionsWithLatestStatement(),
+                    future: pensionsSummaryData,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
@@ -118,35 +124,25 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       } else {
                         final List<PensionWithLatestStatement> pensions =
                             snapshot.data!;
-                        return PensionDataTable(
-                          pensionDataList: pensions,
-                          onTap: (Pension pension) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => EditPensionScreen(
-                                          pension: pension,
-                                          databaseService: db,
-                                        ))).then((_) => {setState(() {})});
-                          },
-                        );
-
-                        // return ListView.separated(
-                        //   separatorBuilder: (BuildContext context, int index) {
-                        //     return const SizedBox(height: 5);
-                        //   },
-                        //   itemBuilder: (context, index) {
-                        //     Pension pension = pensions[index];
-                        //     return ListTile(
-                        //       //tileColor: context.surfaceContainerHighest,
-                        //       shape: RoundedRectangleBorder(
-                        //           borderRadius:
-                        //               BorderRadiusDirectional.circular(5)),
-                        //       title: Text(pension.name),
-                        //     );
-                        //   },
-                        //   itemCount: pensions.length,
-                        // );
+                        return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              PensionSummaryChart(pensionData: pensions),
+                              PensionDataTable(
+                                pensionDataList: pensions,
+                                onTap: (Pension pension) {
+                                  Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditPensionScreen(
+                                                    pension: pension,
+                                                    databaseService: db,
+                                                  )))
+                                      .then((_) => {setState(() {})});
+                                },
+                              )
+                            ]);
                       }
                     },
                   )),

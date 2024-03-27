@@ -18,5 +18,14 @@ class CustomStyles {
     fontWeight: FontWeight.normal,
   );
 
+  static const chartBottomTitlesTextStyle = TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 14,
+  );
+
+  static const chartLeftTitlesTextStyle = TextStyle(
+    fontSize: 10,
+  );
+
   static const spacerBox = SizedBox(height: 20);
 }
