@@ -6,9 +6,9 @@ import 'package:pension_compare/database/tables/pension.dart';
 @DataClassName('Statement')
 @TableIndex(name: 'parent_pension', columns: {#pension})
 class Statements extends Table {
-  IntColumn get id => integer().autoIncrement()();
+  IntColumn get statementId => integer().autoIncrement()();
   IntColumn get pension =>
-      integer().references(Pensions, #id, onDelete: KeyAction.cascade)();
+      integer().references(Pensions, #pensionId, onDelete: KeyAction.cascade)();
   DateTimeColumn get statementDate => dateTime()();
   RealColumn get planValue => real()();
   RealColumn get projectedAnnualAmount => real()();

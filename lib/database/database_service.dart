@@ -4,10 +4,14 @@ import 'connection/connection.dart' as dbconn;
 import 'package:pension_compare/database/tables/pension.dart';
 import 'package:pension_compare/database/tables/statement.dart';
 import 'package:pension_compare/database/tables/state_pension.dart';
+import 'package:pension_compare/database/tables/pensions_with_latest_statement.dart';
+import 'package:pension_compare/constants/defaults.dart' as defaults;
 
 part 'database_service.g.dart';
 
-@DriftDatabase(tables: [Pensions, Statements, StatePensions])
+@DriftDatabase(
+  tables: [Pensions, Statements, StatePensions],
+)
 class DatabaseService extends _$DatabaseService {
   DatabaseService(super.connection);
 
@@ -42,7 +46,8 @@ class DatabaseService extends _$DatabaseService {
 
   // Get a single pension by its id
   Future<Pension?> getPension(int id) {
-    return (select(pensions)..where((p) => p.id.equals(id))).getSingleOrNull();
+    return (select(pensions)..where((p) => p.pensionId.equals(id)))
+        .getSingleOrNull();
   }
 
   // Create a new pension record
@@ -53,13 +58,13 @@ class DatabaseService extends _$DatabaseService {
 
   // Update an existing pension record, return true if successful
   Future<bool> updatePension(int id, String name, DateTime maturityDate) {
-    return update(pensions)
-        .replace(Pension(id: id, name: name, maturityDate: maturityDate));
+    return update(pensions).replace(
+        Pension(pensionId: id, name: name, maturityDate: maturityDate));
   }
 
   // Delete a pension record by its id and return the number of records deleted
   Future<int> deletePension(int id) {
-    return (delete(pensions)..where((p) => p.id.equals(id))).go();
+    return (delete(pensions)..where((p) => p.pensionId.equals(id))).go();
   }
 
   // List all the statements in the database for a given pension
@@ -70,7 +75,7 @@ class DatabaseService extends _$DatabaseService {
 
   // Get a single statement by its id
   Future<Statement?> getStatement(int id) {
-    return (select(statements)..where((s) => s.id.equals(id)))
+    return (select(statements)..where((s) => s.statementId.equals(id)))
         .getSingleOrNull();
   }
 
@@ -101,7 +106,7 @@ class DatabaseService extends _$DatabaseService {
       double? yearlyCharges,
       double? transferValue) {
     return update(statements).replace(Statement(
-        id: id,
+        statementId: id,
         pension: pensionId,
         statementDate: statementDate,
         planValue: planValue,
@@ -112,7 +117,7 @@ class DatabaseService extends _$DatabaseService {
 
   // Delete a statement record by its id and return the number of records deleted
   Future<int> deleteStatement(int id) {
-    return (delete(statements)..where((s) => s.id.equals(id))).go();
+    return (delete(statements)..where((s) => s.statementId.equals(id))).go();
   }
 
   // Get the state pension record.  There should only be one record in the table
@@ -125,7 +130,7 @@ class DatabaseService extends _$DatabaseService {
   // there should only be one record in the table
   Future<StatePension?> saveStatePension(double projectedAnnualAmount) async {
     StatePension statePension = StatePension(
-      id: 1,
+      statePensionId: defaults.defaultStatePensionId,
       projectedAnnualAmount: projectedAnnualAmount,
     );
 
@@ -136,5 +141,71 @@ class DatabaseService extends _$DatabaseService {
     }
 
     return statePension;
+  }
+
+  // List all the pensions in the database
+  Future<List<PensionWithLatestStatement>> getAllPensionsWithLatestStatement() {
+    // list all the pensions, joined with the latest statement for each pension.
+    // we get this by finding the latest statement date for each pension, and then
+    // joining this with the statements table to get the latest statement data
+    final query = customSelect(
+        'SELECT pensions.*, statements.* '
+        'FROM pensions LEFT JOIN '
+        '   (statements INNER JOIN (SELECT pension, MAX(statement_date) as latest_statement_date '
+        '                           FROM statements GROUP BY pension) AS latest_statements ON statements.pension = latest_statements.pension '
+        '                                                                AND statements.statement_date = latest_statements.latest_statement_date)'
+        '           ON pensions.pension_id = statements.pension '
+        'ORDER BY pensions.name',
+        readsFrom: {pensions, statements});
+
+    return query
+        .map((row) => PensionWithLatestStatement(
+              pensions.map(row.data),
+              row.data["statement_id"] == null
+                  ? null
+                  : statements.map(row.data),
+            ))
+        .get();
+  }
+
+  // Populate the database with some test data
+  Future<void> populateTestData() async {
+    await (delete(statements)).go();
+    await (delete(pensions)).go();
+
+    // create some test pensions
+    Pension? p1 = await createPension("Pension 1", DateTime(2030, 1, 1));
+    Pension? p2 = await createPension("Pension 2", DateTime(2030, 1, 1));
+    Pension? p3 = await createPension("Pension 3", DateTime(2030, 1, 1));
+    Pension? p4 = await createPension("Pension 4", DateTime(2030, 1, 1));
+
+    // create some test statements
+    await createStatement(
+        p1!.pensionId, DateTime(2020, 1, 1), 1000, 100, 10, 1000);
+    await createStatement(
+        p1.pensionId, DateTime(2021, 1, 1), 2000, 200, 20, 2000);
+    await createStatement(
+        p1.pensionId, DateTime(2022, 1, 1), 3000, 300, 30, 3000);
+    await createStatement(
+        p1.pensionId, DateTime(2023, 1, 1), 4000, 500, 60, 7000);
+    await createStatement(
+        p2!.pensionId, DateTime(2020, 1, 1), 2000, 200, 20, 2000);
+    await createStatement(
+        p2.pensionId, DateTime(2021, 1, 1), 3000, 300, 30, 3000);
+    await createStatement(
+        p2.pensionId, DateTime(2022, 1, 1), 4000, 400, 40, 4000);
+    await createStatement(
+        p2.pensionId, DateTime(2023, 1, 1), 5000, 400, 30, 2000);
+    await createStatement(
+        p4!.pensionId, DateTime(2020, 1, 1), 1500, 150, 15, 1500);
+    await createStatement(
+        p4.pensionId, DateTime(2021, 1, 1), 2500, 250, 25, 2500);
+    await createStatement(
+        p4.pensionId, DateTime(2022, 1, 1), 3500, 350, 35, 3500);
+    await createStatement(
+        p4.pensionId, DateTime(2023, 1, 1), 4500, 450, 45, 4500);
+
+    // create a state pension record
+    await saveStatePension(1000);
   }
 }

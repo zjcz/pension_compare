@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:pension_compare/database/database_service.dart';
+import 'package:pension_compare/constants/defaults.dart' as defaults;
 import 'package:test/test.dart';
 import 'package:matcher/matcher.dart' as match;
 
@@ -19,7 +20,7 @@ void main() {
       final entry = await database.getStatePension();
 
       expect(entry, match.isNotNull);
-      expect(entry!.id, 1);
+      expect(entry!.statePensionId, defaults.defaultStatePensionId);
       expect(entry.projectedAnnualAmount, isZero);
     });
 
@@ -30,7 +31,7 @@ void main() {
       final entry = await database.getStatePension();
 
       expect(entry, match.isNotNull);
-      expect(entry!.id, 1);
+      expect(entry!.statePensionId, defaults.defaultStatePensionId);
       expect(entry.projectedAnnualAmount, statePensionValue);
     });
 
@@ -40,17 +41,17 @@ void main() {
 
       final saved1 = await database.saveStatePension(statePensionValue1);
       expect(saved1, match.isNotNull);
-      expect(saved1!.id, 1);
+      expect(saved1!.statePensionId, defaults.defaultStatePensionId);
       expect(saved1.projectedAnnualAmount, statePensionValue1);
 
       final saved2 = await database.saveStatePension(statePensionValue2);
       expect(saved2, match.isNotNull);
-      expect(saved2!.id, 1);
+      expect(saved2!.statePensionId, defaults.defaultStatePensionId);
       expect(saved2.projectedAnnualAmount, statePensionValue2);
 
       final entry = await database.getStatePension();
       expect(entry, match.isNotNull);
-      expect(entry!.id, 1);
+      expect(entry!.statePensionId, defaults.defaultStatePensionId);
       expect(entry.projectedAnnualAmount, statePensionValue2);
     });
   });
