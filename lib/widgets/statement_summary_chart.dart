@@ -1,25 +1,26 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
-import 'package:pension_compare/database/tables/pensions_with_latest_statement.dart';
+import 'package:pension_compare/database/database_service.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
+import 'package:pension_compare/helpers/date_helper.dart';
 
-class PensionSummaryChart extends StatefulWidget {
-  final List<PensionWithLatestStatement>? pensionData;
-  const PensionSummaryChart({super.key, this.pensionData});
+class StatementSummaryChart extends StatefulWidget {
+  final List<Statement>? statementData;
+  const StatementSummaryChart({super.key, this.statementData});
 
   @override
-  State<PensionSummaryChart> createState() => _PensionSummaryChartState();
+  State<StatementSummaryChart> createState() => _StatementSummaryChartState();
 }
 
-class _PensionSummaryChartState extends State<PensionSummaryChart> {
+class _StatementSummaryChartState extends State<StatementSummaryChart> {
   PensionSummaryChartStyles _selectedStyle =
       PensionSummaryChartStyles.planValue;
   static const double barWidth = 30;
 
   @override
   Widget build(BuildContext context) {
-    if (widget.pensionData == null) {
+    if (widget.statementData == null) {
       return const Center(child: Text('No data'));
     }
 
@@ -81,7 +82,7 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
             int rodIndex,
           ) {
             return BarTooltipItem(
-              '${widget.pensionData![groupIndex].pension.name}\n'
+              '${DateHelper.formatDate(widget.statementData![groupIndex].statementDate)}\n'
               '${CurrencyHelper.formatCurrency(rod.toY)}',
               const TextStyle(
                 color: Colors.white,
@@ -93,7 +94,8 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
       );
 
   Widget getBottomTitles(double value, TitleMeta meta) {
-    String text = widget.pensionData![value.toInt()].pension.name;
+    String text =
+        widget.statementData![value.toInt()].statementDate.year.toString();
 
     return SideTitleWidget(
       axisSide: meta.axisSide,
@@ -158,47 +160,40 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
         end: Alignment.topCenter,
       );
 
-  List<BarChartGroupData> get planValueBarGroups => widget.pensionData!
+  List<BarChartGroupData> get planValueBarGroups => widget.statementData!
       .asMap()
       .entries
       .map((entry) => BarChartGroupData(
             x: entry.key,
-            barRods: [buildBarRodData(entry.value.latestStatement?.planValue)],
+            barRods: [buildBarRodData(entry.value.planValue)],
           ))
       .toList();
 
   List<BarChartGroupData> get projectedAnnualAmountBarGroups =>
-      widget.pensionData!
+      widget.statementData!
           .asMap()
           .entries
           .map((entry) => BarChartGroupData(
                 x: entry.key,
-                barRods: [
-                  buildBarRodData(
-                      entry.value.latestStatement?.projectedAnnualAmount)
-                ],
+                barRods: [buildBarRodData(entry.value.projectedAnnualAmount)],
               ))
           .toList();
 
-  List<BarChartGroupData> get yearlyChargesBarGroups => widget.pensionData!
+  List<BarChartGroupData> get yearlyChargesBarGroups => widget.statementData!
       .asMap()
       .entries
       .map((entry) => BarChartGroupData(
             x: entry.key,
-            barRods: [
-              buildBarRodData(entry.value.latestStatement?.yearlyCharges)
-            ],
+            barRods: [buildBarRodData(entry.value.yearlyCharges)],
           ))
       .toList();
 
-  List<BarChartGroupData> get transferValueBarGroups => widget.pensionData!
+  List<BarChartGroupData> get transferValueBarGroups => widget.statementData!
       .asMap()
       .entries
       .map((entry) => BarChartGroupData(
             x: entry.key,
-            barRods: [
-              buildBarRodData(entry.value.latestStatement?.transferValue)
-            ],
+            barRods: [buildBarRodData(entry.value.transferValue)],
           ))
       .toList();
 
@@ -241,11 +236,11 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
 
   String getChartTitle(PensionSummaryChartStyles selectedStyle) {
     return switch (selectedStyle) {
-      PensionSummaryChartStyles.planValue => 'Pensions Plan Value',
+      PensionSummaryChartStyles.planValue => 'Pension Plan Value',
       PensionSummaryChartStyles.projectedYearlyAmount =>
-        'Pensions Projected Yearly Amount',
-      PensionSummaryChartStyles.yearlyCharges => 'Pensions Yearly Charges',
-      PensionSummaryChartStyles.transferValue => 'Pensions Transfer Value',
+        'Pension Projected Yearly Amount',
+      PensionSummaryChartStyles.yearlyCharges => 'Pension Yearly Charges',
+      PensionSummaryChartStyles.transferValue => 'Pension Transfer Value',
     };
   }
 }
