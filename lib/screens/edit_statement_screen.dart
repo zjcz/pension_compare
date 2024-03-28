@@ -19,9 +19,11 @@ class EditStatementScreen extends StatefulWidget {
   // If editing, this is the statement record we are editing.
   // If adding new this will be null
   final Statement? statement;
+  final Pension? parentPension;
   final DatabaseService? databaseService;
 
-  const EditStatementScreen({super.key, this.statement, this.databaseService});
+  const EditStatementScreen(
+      {super.key, this.parentPension, this.statement, this.databaseService});
 
   @override
   State<EditStatementScreen> createState() => _EditStatmentScreenState();
@@ -57,6 +59,8 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
           CurrencyHelper.formatCurrency(widget.statement!.yearlyCharges);
       transferValueController.text =
           CurrencyHelper.formatCurrency(widget.statement!.transferValue);
+    } else if (widget.parentPension != null) {
+      _pensionId = widget.parentPension!.pensionId;
     }
   }
 
@@ -257,10 +261,10 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
           widget.statement!.statementId,
           _pensionId!,
           _statementDate!,
-          double.parse(planValueController.text),
-          double.parse(projectedAnnualAmountController.text),
-          double.tryParse(yearlyChargesController.text),
-          double.tryParse(transferValueController.text));
+          CurrencyHelper.parseCurrency(planValueController.text)!,
+          CurrencyHelper.parseCurrency(projectedAnnualAmountController.text)!,
+          CurrencyHelper.parseCurrency(yearlyChargesController.text),
+          CurrencyHelper.parseCurrency(transferValueController.text));
     }
 
     return true;

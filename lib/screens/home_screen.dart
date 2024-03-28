@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pension_compare/database/database_service.dart';
 import 'package:pension_compare/database/tables/pensions_with_latest_statement.dart';
-// import 'package:bin_reminder/widgets/delete_confirmation_dialog.dart';
 import 'package:pension_compare/screens/edit_pension_screen.dart';
 import 'package:pension_compare/screens/edit_statement_screen.dart';
 import 'package:pension_compare/screens/edit_state_pension_screen.dart';
 import 'package:pension_compare/widgets/pension_data_table.dart';
 import 'package:pension_compare/widgets/pension_summary_chart.dart';
+import 'package:pension_compare/screens/pension_overview_screen.dart';
 
 // TODO - Add Settings button
 class HomeScreen extends StatefulWidget {
@@ -81,20 +81,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const EditPensionScreen()))
+                            builder: (context) => EditPensionScreen(
+                                databaseService: widget.databaseService)))
                     .then((_) => {setState(() {})});
               } else if (value == 'statement') {
                 Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const EditStatementScreen()))
+                            builder: (context) => EditStatementScreen(
+                                databaseService: widget.databaseService)))
                     .then((_) => {setState(() {})});
               } else if (value == 'state_pension') {
                 Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                const EditStatePensionScreen()))
+                            builder: (context) => EditStatePensionScreen(
+                                databaseService: widget.databaseService)))
                     .then((_) => {setState(() {})});
               } else if (value == 'reset_test_data') {
                 await db.populateTestData();
@@ -102,52 +104,57 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             },
           ),
         ]),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: FutureBuilder<List<PensionWithLatestStatement>>(
-                    future: pensionsSummaryData,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(
-                            child:
-                                Text('Error loading data: ${snapshot.error}'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(
-                            child:
-                                Text('No pensions found.  Click + to add one'));
-                      } else {
-                        final List<PensionWithLatestStatement> pensions =
-                            snapshot.data!;
-                        return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              PensionSummaryChart(pensionData: pensions),
-                              PensionDataTable(
-                                pensionDataList: pensions,
-                                onTap: (Pension pension) {
-                                  Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EditPensionScreen(
-                                                    pension: pension,
-                                                    databaseService: db,
-                                                  )))
-                                      .then((_) => {setState(() {})});
-                                },
-                              )
-                            ]);
-                      }
-                    },
-                  )),
-            ),
-          ],
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: FutureBuilder<List<PensionWithLatestStatement>>(
+                      future: pensionsSummaryData,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(
+                              child: Text(
+                                  'Error loading data: ${snapshot.error}'));
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
+                          return const Center(
+                              child: Text(
+                                  'No pensions found.  Click + to add one'));
+                        } else {
+                          final List<PensionWithLatestStatement> pensions =
+                              snapshot.data!;
+                          return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                PensionSummaryChart(pensionData: pensions),
+                                PensionDataTable(
+                                  pensionDataList: pensions,
+                                  onTap: (Pension pension) {
+                                    Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    PensionOverviewScreen(
+                                                      pension: pension,
+                                                      databaseService: db,
+                                                    )))
+                                        .then((_) => {setState(() {})});
+                                  },
+                                )
+                              ]);
+                        }
+                      },
+                    )),
+              ),
+            ],
+          ),
         ));
   }
 
