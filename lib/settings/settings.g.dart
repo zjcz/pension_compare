@@ -8,16 +8,14 @@ part of 'settings.dart';
 
 _$SettingsImpl _$$SettingsImplFromJson(Map<String, dynamic> json) =>
     _$SettingsImpl(
-      dateOfBirth: json['dateOfBirth'] == null
+      retirementDate: json['retirementDate'] == null
           ? null
-          : DateTime.parse(json['dateOfBirth'] as String),
-      plannedRetirementAge: json['plannedRetirementAge'] as int?,
+          : DateTime.parse(json['retirementDate'] as String),
       targetIncome: (json['targetIncome'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$$SettingsImplToJson(_$SettingsImpl instance) =>
     <String, dynamic>{
-      'dateOfBirth': instance.dateOfBirth?.toIso8601String(),
-      'plannedRetirementAge': instance.plannedRetirementAge,
+      'retirementDate': instance.retirementDate?.toIso8601String(),
       'targetIncome': instance.targetIncome,
     };

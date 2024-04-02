@@ -6,8 +6,8 @@ class SettingsService {
     final prefs = await SharedPreferences.getInstance();
 
     return Settings(
-      dateOfBirth: DateTime.tryParse(prefs.getString('dateOfBirth') ?? ''),
-      plannedRetirementAge: prefs.getInt('plannedRetirementAge'),
+      retirementDate:
+          DateTime.tryParse(prefs.getString('retirementDate') ?? ''),
       targetIncome: prefs.getDouble('targetIncome'),
     );
   }
@@ -16,9 +16,11 @@ class SettingsService {
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.setString(
-        'dateOfBirth', settings.dateOfBirth?.toIso8601String() ?? '');
-    await prefs.setInt(
-        'plannedRetirementAge', settings.plannedRetirementAge ?? 0);
-    await prefs.setDouble('targetIncome', settings.targetIncome ?? 0);
+        'retirementDate', settings.retirementDate?.toIso8601String() ?? '');
+    if (settings.targetIncome != null) {
+      await prefs.setDouble('targetIncome', settings.targetIncome ?? 0);
+    } else {
+      await prefs.remove('targetIncome');
+    }
   }
 }
