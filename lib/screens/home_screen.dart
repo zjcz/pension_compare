@@ -4,6 +4,8 @@ import 'package:pension_compare/database/tables/pensions_with_latest_statement.d
 import 'package:pension_compare/screens/edit_pension_screen.dart';
 import 'package:pension_compare/screens/edit_statement_screen.dart';
 import 'package:pension_compare/screens/edit_state_pension_screen.dart';
+import 'package:pension_compare/screens/settings_screen.dart';
+import 'package:pension_compare/settings/settings_service.dart';
 import 'package:pension_compare/widgets/pension_data_table.dart';
 import 'package:pension_compare/widgets/pension_summary_chart.dart';
 import 'package:pension_compare/screens/pension_overview_screen.dart';
@@ -96,6 +98,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         context,
                         MaterialPageRoute(
                             builder: (context) => EditStatePensionScreen(
+                                databaseService: widget.databaseService)))
+                    .then((_) => {setState(() {})});
+              } else if (value == 'settings') {
+                Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SettingsScreen(
+                                settingsService: SettingsService(),
                                 databaseService: widget.databaseService)))
                     .then((_) => {setState(() {})});
               } else if (value == 'reset_test_data') {

@@ -10,8 +10,7 @@ part 'settings.g.dart';
 @freezed
 class Settings with _$Settings {
   const factory Settings({
-    required DateTime? dateOfBirth,
-    required int? plannedRetirementAge,
+    required DateTime? retirementDate,
     required double? targetIncome,
   }) = _Settings;
 

@@ -170,8 +170,7 @@ class DatabaseService extends _$DatabaseService {
 
   // Populate the database with some test data
   Future<void> populateTestData() async {
-    await (delete(statements)).go();
-    await (delete(pensions)).go();
+    await clearAllData();
 
     // create some test pensions
     Pension? p1 = await createPension("Pension 1", DateTime(2030, 1, 1));
@@ -207,5 +206,14 @@ class DatabaseService extends _$DatabaseService {
 
     // create a state pension record
     await saveStatePension(1000);
+  }
+
+  // Clear all the data from the database
+  Future<void> clearAllData() async {
+    await (delete(statements)).go();
+    await (delete(pensions)).go();
+
+    // do not delete the state pension record, just reset it to 0
+    await saveStatePension(0);
   }
 }

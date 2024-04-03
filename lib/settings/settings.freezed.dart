@@ -20,8 +20,7 @@ Settings _$SettingsFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Settings {
-  DateTime? get dateOfBirth => throw _privateConstructorUsedError;
-  int? get plannedRetirementAge => throw _privateConstructorUsedError;
+  DateTime? get retirementDate => throw _privateConstructorUsedError;
   double? get targetIncome => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -35,8 +34,7 @@ abstract class $SettingsCopyWith<$Res> {
   factory $SettingsCopyWith(Settings value, $Res Function(Settings) then) =
       _$SettingsCopyWithImpl<$Res, Settings>;
   @useResult
-  $Res call(
-      {DateTime? dateOfBirth, int? plannedRetirementAge, double? targetIncome});
+  $Res call({DateTime? retirementDate, double? targetIncome});
 }
 
 /// @nodoc
@@ -52,19 +50,14 @@ class _$SettingsCopyWithImpl<$Res, $Val extends Settings>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? dateOfBirth = freezed,
-    Object? plannedRetirementAge = freezed,
+    Object? retirementDate = freezed,
     Object? targetIncome = freezed,
   }) {
     return _then(_value.copyWith(
-      dateOfBirth: freezed == dateOfBirth
-          ? _value.dateOfBirth
-          : dateOfBirth // ignore: cast_nullable_to_non_nullable
+      retirementDate: freezed == retirementDate
+          ? _value.retirementDate
+          : retirementDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      plannedRetirementAge: freezed == plannedRetirementAge
-          ? _value.plannedRetirementAge
-          : plannedRetirementAge // ignore: cast_nullable_to_non_nullable
-              as int?,
       targetIncome: freezed == targetIncome
           ? _value.targetIncome
           : targetIncome // ignore: cast_nullable_to_non_nullable
@@ -81,8 +74,7 @@ abstract class _$$SettingsImplCopyWith<$Res>
       __$$SettingsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {DateTime? dateOfBirth, int? plannedRetirementAge, double? targetIncome});
+  $Res call({DateTime? retirementDate, double? targetIncome});
 }
 
 /// @nodoc
@@ -96,19 +88,14 @@ class __$$SettingsImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? dateOfBirth = freezed,
-    Object? plannedRetirementAge = freezed,
+    Object? retirementDate = freezed,
     Object? targetIncome = freezed,
   }) {
     return _then(_$SettingsImpl(
-      dateOfBirth: freezed == dateOfBirth
-          ? _value.dateOfBirth
-          : dateOfBirth // ignore: cast_nullable_to_non_nullable
+      retirementDate: freezed == retirementDate
+          ? _value.retirementDate
+          : retirementDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      plannedRetirementAge: freezed == plannedRetirementAge
-          ? _value.plannedRetirementAge
-          : plannedRetirementAge // ignore: cast_nullable_to_non_nullable
-              as int?,
       targetIncome: freezed == targetIncome
           ? _value.targetIncome
           : targetIncome // ignore: cast_nullable_to_non_nullable
@@ -121,23 +108,19 @@ class __$$SettingsImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
   const _$SettingsImpl(
-      {required this.dateOfBirth,
-      required this.plannedRetirementAge,
-      required this.targetIncome});
+      {required this.retirementDate, required this.targetIncome});
 
   factory _$SettingsImpl.fromJson(Map<String, dynamic> json) =>
       _$$SettingsImplFromJson(json);
 
   @override
-  final DateTime? dateOfBirth;
-  @override
-  final int? plannedRetirementAge;
+  final DateTime? retirementDate;
   @override
   final double? targetIncome;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Settings(dateOfBirth: $dateOfBirth, plannedRetirementAge: $plannedRetirementAge, targetIncome: $targetIncome)';
+    return 'Settings(retirementDate: $retirementDate, targetIncome: $targetIncome)';
   }
 
   @override
@@ -145,8 +128,7 @@ class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty('type', 'Settings'))
-      ..add(DiagnosticsProperty('dateOfBirth', dateOfBirth))
-      ..add(DiagnosticsProperty('plannedRetirementAge', plannedRetirementAge))
+      ..add(DiagnosticsProperty('retirementDate', retirementDate))
       ..add(DiagnosticsProperty('targetIncome', targetIncome));
   }
 
@@ -155,18 +137,15 @@ class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SettingsImpl &&
-            (identical(other.dateOfBirth, dateOfBirth) ||
-                other.dateOfBirth == dateOfBirth) &&
-            (identical(other.plannedRetirementAge, plannedRetirementAge) ||
-                other.plannedRetirementAge == plannedRetirementAge) &&
+            (identical(other.retirementDate, retirementDate) ||
+                other.retirementDate == retirementDate) &&
             (identical(other.targetIncome, targetIncome) ||
                 other.targetIncome == targetIncome));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, dateOfBirth, plannedRetirementAge, targetIncome);
+  int get hashCode => Object.hash(runtimeType, retirementDate, targetIncome);
 
   @JsonKey(ignore: true)
   @override
@@ -184,17 +163,14 @@ class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
 
 abstract class _Settings implements Settings {
   const factory _Settings(
-      {required final DateTime? dateOfBirth,
-      required final int? plannedRetirementAge,
+      {required final DateTime? retirementDate,
       required final double? targetIncome}) = _$SettingsImpl;
 
   factory _Settings.fromJson(Map<String, dynamic> json) =
       _$SettingsImpl.fromJson;
 
   @override
-  DateTime? get dateOfBirth;
-  @override
-  int? get plannedRetirementAge;
+  DateTime? get retirementDate;
   @override
   double? get targetIncome;
   @override
