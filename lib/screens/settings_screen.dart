@@ -3,15 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/settings/settings.dart';
 import 'package:pension_compare/settings/settings_service.dart';
+import 'package:pension_compare/database/database_service.dart';
 import 'package:pension_compare/widgets/date_field.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
 
 class SettingsScreen extends StatefulWidget {
   final SettingsService settingsService;
+  final DatabaseService databaseService;
+
   static const settingRetirementDateKey = Key('retirementDate');
   static const settingTargetIncomeKey = Key('targetIncome');
+  static const settingDeleteAllKey = Key('deleteAllButton');
 
-  const SettingsScreen({super.key, required this.settingsService});
+  const SettingsScreen(
+      {super.key,
+      required this.settingsService,
+      required this.databaseService});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -71,7 +78,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               autovalidateMode: AutovalidateMode.onUserInteraction,
               key: _formKey,
               child: SingleChildScrollView(
-                  child: FutureBuilder<Settings>(
+                  child: Column(
+                children: [
+                  FutureBuilder<Settings>(
                       future: widget.settingsService.getSettings(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
@@ -134,7 +143,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     style: CustomStyles.infoTextStyle),
                               ]);
                         }
-                      })),
+                      }),
+                  CustomStyles.spacerBox,
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton(
+                        key: SettingsScreen.settingDeleteAllKey,
+                        onPressed: () async {
+                          await _showDeleteAllDialog();
+                        },
+                        style: TextButton.styleFrom(
+                            side: const BorderSide(color: Colors.red),
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero)),
+                        child: const Text(
+                          'Delete All',
+                          style: TextStyle(color: Colors.red),
+                        )),
+                  ),
+                ],
+              )),
             ),
           ),
         ));
@@ -165,6 +193,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             TextButton(
               child: const Text('No, continue editing'),
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldDiscard ?? false) {
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _showDeleteAllDialog() async {
+    final bool? shouldDiscard = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete All Data?'),
+          content: const Text(
+              'Are you sure you want to delete all data in the app?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () async {
+                await widget.databaseService.clearAllData();
+
+                if (!context.mounted) return;
+                Navigator.pop(context, false);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('All data removed successfully!'),
+                  ),
+                );
+              },
+            ),
+            TextButton(
+              child: const Text('No'),
               onPressed: () {
                 Navigator.pop(context, false);
               },

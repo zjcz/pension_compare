@@ -105,7 +105,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         context,
                         MaterialPageRoute(
                             builder: (context) => SettingsScreen(
-                                settingsService: SettingsService())))
+                                settingsService: SettingsService(),
+                                databaseService: widget.databaseService)))
                     .then((_) => {setState(() {})});
               } else if (value == 'reset_test_data') {
                 await db.populateTestData();
