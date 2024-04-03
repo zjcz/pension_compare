@@ -567,6 +567,26 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
           ) as _i5.Future<List<_i7.PensionWithLatestStatement>>);
 
   @override
+  _i5.Future<void> populateTestData() => (super.noSuchMethod(
+        Invocation.method(
+          #populateTestData,
+          [],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> clearAllData() => (super.noSuchMethod(
+        Invocation.method(
+          #clearAllData,
+          [],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
   _i2.Migrator createMigrator() => (super.noSuchMethod(
         Invocation.method(
           #createMigrator,
