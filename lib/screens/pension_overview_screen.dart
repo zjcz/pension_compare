@@ -68,8 +68,8 @@ class _PensionOverviewScreenState extends State<PensionOverviewScreen>
                 Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                EditPensionScreen(pension: widget.pension)))
+                            builder: (context) => EditPensionScreen(
+                                pension: widget.pension, databaseService: db)))
                     .then((_) async => {setState(() {})});
               }
             },

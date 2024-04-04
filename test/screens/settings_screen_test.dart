@@ -312,8 +312,8 @@ void main() {
       final databaseService = MockDatabaseService();
       when(databaseService.clearAllData()).thenAnswer((_) async => true);
 
-      await tester.pumpWidget(
-          createSettingsScreen(settingsService, MockDatabaseService()));
+      await tester
+          .pumpWidget(createSettingsScreen(settingsService, databaseService));
       await tester.pumpAndSettle();
 
       // Tap the delete button

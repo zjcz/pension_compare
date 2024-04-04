@@ -8,13 +8,15 @@ import 'package:pension_compare/widgets/date_field.dart';
 class EditPensionScreen extends StatefulWidget {
   static const pensionNameKey = Key('name');
   static const pensionMaturityDateKey = Key('maturityDate');
+  static const pensionDeleteKey = Key('deleteButton');
 
   // If editing, this is the pension record we are editing.
   // If adding new this will be null
   final Pension? pension;
-  final DatabaseService? databaseService;
+  final DatabaseService databaseService;
 
-  const EditPensionScreen({super.key, this.pension, this.databaseService});
+  const EditPensionScreen(
+      {super.key, this.pension, required this.databaseService});
 
   @override
   State<EditPensionScreen> createState() => _EditPensionScreenState();
@@ -123,6 +125,26 @@ class _EditPensionScreenState extends State<EditPensionScreen> {
                   const Text(
                       'This is the date you have set on this pension to retire.  You can have different dates for different pensions',
                       style: CustomStyles.infoTextStyle),
+                  // only show the delete button and spacer if the pension has been saved
+                  if (widget.pension != null) ...[
+                    CustomStyles.spacerBox,
+                    SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                          key: EditPensionScreen.pensionDeleteKey,
+                          onPressed: () async {
+                            await _showDeleteDialog();
+                          },
+                          style: TextButton.styleFrom(
+                              side: const BorderSide(color: Colors.red),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.zero)),
+                          child: const Text(
+                            'Delete',
+                            style: TextStyle(color: Colors.red),
+                          )),
+                    )
+                  ],
                 ],
               ),
             ),
@@ -131,9 +153,7 @@ class _EditPensionScreenState extends State<EditPensionScreen> {
   }
 
   Future<bool> _saveData() async {
-    DatabaseService db = (widget.databaseService == null)
-        ? DatabaseService.withDefaultConnection()
-        : widget.databaseService!;
+    final db = widget.databaseService;
 
     if (widget.pension == null) {
       await db.createPension(nameController.text, _maturityDate!);
@@ -173,6 +193,45 @@ class _EditPensionScreenState extends State<EditPensionScreen> {
     if (shouldDiscard ?? false) {
       if (!mounted) return;
       Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _showDeleteDialog() async {
+    if (widget.pension != null) {
+      final bool? shouldDiscard = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Delete This Pension?'),
+            content: const Text(
+                'Are you sure you want to delete this pension and any statements assigned to it?'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Yes'),
+                onPressed: () async {
+                  await widget.databaseService
+                      .deletePension(widget.pension!.pensionId);
+
+                  if (!context.mounted) return;
+                  Navigator.pop(context, false);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Pension removed successfully!'),
+                    ),
+                  );
+                },
+              ),
+              TextButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 }

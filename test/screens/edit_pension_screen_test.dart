@@ -8,7 +8,7 @@ import 'package:mockito/mockito.dart';
 
 import 'edit_pension_screen_test.mocks.dart';
 
-Widget createEditScreen(Pension? pensionRecord, DatabaseService? db) {
+Widget createEditScreen(Pension? pensionRecord, DatabaseService db) {
   EditPensionScreen editPensionScreen =
       EditPensionScreen(pension: pensionRecord, databaseService: db);
 
@@ -19,7 +19,7 @@ Widget createEditScreen(Pension? pensionRecord, DatabaseService? db) {
 void main() {
   group('Test adding / editing of pension record', () {
     testWidgets('show the add screen with no pension record', (tester) async {
-      await tester.pumpWidget(createEditScreen(null, null));
+      await tester.pumpWidget(createEditScreen(null, MockDatabaseService()));
 
       expect(find.text("Add Pension"), findsOneWidget);
 
@@ -44,13 +44,13 @@ void main() {
       expect(
           find.byKey(EditPensionScreen.pensionMaturityDateKey), findsOneWidget);
 
-      expect(find.byType(TextButton), findsOneWidget);
+      expect(find.widgetWithText(TextButton, "Save"), findsOneWidget);
     });
 
     testWidgets('show the edit screen with a pension record', (tester) async {
       Pension p = Pension(
           pensionId: 1, name: "Test Pension", maturityDate: DateTime.now());
-      await tester.pumpWidget(createEditScreen(p, null));
+      await tester.pumpWidget(createEditScreen(p, MockDatabaseService()));
 
       expect(find.text("Edit Pension"), findsOneWidget);
       expect(find.text(p.name), findsOneWidget);
@@ -59,7 +59,7 @@ void main() {
 
     testWidgets('Set date of date picker', (WidgetTester tester) async {
       // Build your app and trigger a frame
-      await tester.pumpWidget(createEditScreen(null, null));
+      await tester.pumpWidget(createEditScreen(null, MockDatabaseService()));
 
       // Find the TextFormField by key
       final fieldFinder = find.byKey(EditPensionScreen.pensionMaturityDateKey);
@@ -110,7 +110,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap the save button
-      await tester.tap(find.byType(TextButton));
+      await tester.tap(find.widgetWithText(TextButton, "Save"));
 
       verify(databaseService.createPension(name, maturityDate)).called(1);
       verifyNever(databaseService.updatePension(1, name, maturityDate));
@@ -145,7 +145,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap the save button
-      await tester.tap(find.byType(TextButton));
+      await tester.tap(find.widgetWithText(TextButton, "Save"));
 
       verifyNever(databaseService.createPension(newName, newMaturityDate));
       verify(databaseService.updatePension(id, newName, newMaturityDate))
@@ -161,7 +161,7 @@ void main() {
       await tester.pumpWidget(createEditScreen(null, databaseService));
 
       // Tap the save button
-      await tester.tap(find.byType(TextButton));
+      await tester.tap(find.widgetWithText(TextButton, "Save"));
       await tester.pumpAndSettle();
 
       expect(find.text("Please enter some text"), findsOneWidget);
@@ -169,7 +169,119 @@ void main() {
 
       verifyZeroInteractions(databaseService);
     });
-    // test delete
+  });
+
+  group('Test delete button on add/edit pension screen', () {
+    testWidgets('delete button not visible for add new record', (tester) async {
+      final databaseService = MockDatabaseService();
+
+      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpAndSettle();
+
+      expect(find.widgetWithText(TextButton, "Delete"), findsNothing);
+
+      verifyZeroInteractions(databaseService);
+    });
+
+    testWidgets('delete button is visible for edit record', (tester) async {
+      final databaseService = MockDatabaseService();
+      final pension = Pension(
+          pensionId: 1, name: 'originalName', maturityDate: DateTime.now());
+
+      await tester.pumpWidget(createEditScreen(pension, databaseService));
+      await tester.pumpAndSettle();
+
+      expect(find.widgetWithText(TextButton, "Delete"), findsOneWidget);
+
+      verifyZeroInteractions(databaseService);
+    });
+
+    testWidgets('tapping the delete button displays warning prompt',
+        (tester) async {
+      final pension = Pension(
+          pensionId: 1, name: 'originalName', maturityDate: DateTime.now());
+
+      await tester.pumpWidget(createEditScreen(pension, MockDatabaseService()));
+      await tester.pumpAndSettle();
+
+      // check the elements are not yet visible
+      expect(find.text("Delete This Pension?"), findsNothing);
+      expect(
+          find.text(
+              "Are you sure you want to delete this pension and any statements assigned to it?"),
+          findsNothing);
+
+      // Tap the delete button
+      await tester.tap(find.widgetWithText(TextButton, "Delete"));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Delete This Pension?"), findsOneWidget);
+      expect(
+          find.text(
+              "Are you sure you want to delete this pension and any statements assigned to it?"),
+          findsOneWidget);
+    });
+
+    testWidgets('tapping no dismissess the warning prompt', (tester) async {
+      int pensionId = 1;
+      final pension = Pension(
+          pensionId: pensionId,
+          name: 'originalName',
+          maturityDate: DateTime.now());
+      final databaseService = MockDatabaseService();
+      when(databaseService.deletePension(pensionId))
+          .thenAnswer((_) async => pensionId);
+
+      await tester.pumpWidget(createEditScreen(pension, databaseService));
+      await tester.pumpAndSettle();
+
+      // Tap the delete button
+      await tester.tap(find.widgetWithText(TextButton, "Delete"));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(TextButton, "No"));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Delete This Pension?"), findsNothing);
+      expect(
+          find.text(
+              "Are you sure you want to delete this pension and any statements assigned to it?"),
+          findsNothing);
+
+      verifyNever(databaseService.deletePension(pensionId));
+    });
+
+    testWidgets(
+        'tapping yes deletes the pension and dismissess the warning prompt',
+        (tester) async {
+      int pensionId = 1;
+      final pension = Pension(
+          pensionId: pensionId,
+          name: 'originalName',
+          maturityDate: DateTime.now());
+      final databaseService = MockDatabaseService();
+      when(databaseService.deletePension(pensionId))
+          .thenAnswer((_) async => pensionId);
+
+      await tester.pumpWidget(createEditScreen(pension, databaseService));
+      await tester.pumpAndSettle();
+
+      // Tap the delete button
+      await tester.tap(find.widgetWithText(TextButton, "Delete"));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(TextButton, "Yes"));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Delete This Pension?"), findsNothing);
+      expect(
+          find.text(
+              "Are you sure you want to delete this pension and any statements assigned to it?"),
+          findsNothing);
+      expect(find.widgetWithText(SnackBar, "Pension removed successfully!"),
+          findsOneWidget); //look for snackbar notification
+
+      verify(databaseService.deletePension(pensionId)).called(1);
+    });
+
     // test cancel
   });
 }
