@@ -1,3 +1,6 @@
+
+![test status](https://github.com/zjcz/pension_compare/actions/workflows/tests.yml/badge.svg)
+
 # Pension Compare App
 
 A Flutter application to allow users to compare the performance of their pension funds.  The app works be allowing the user to input the details of their pensions from their annual statements, then view the performance of each pension as well as how well they are performing in total.
