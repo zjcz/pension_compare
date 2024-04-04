@@ -15,15 +15,19 @@ class EditStatementScreen extends StatefulWidget {
   static const projectedAnnualAmountKey = Key('projectedAnnualAmount');
   static const yearlyChargesKey = Key('yearlyCharges');
   static const transferValueKey = Key('transferValue');
+  static const statementDeleteKey = Key('deleteButton');
 
   // If editing, this is the statement record we are editing.
   // If adding new this will be null
   final Statement? statement;
   final Pension? parentPension;
-  final DatabaseService? databaseService;
+  final DatabaseService databaseService;
 
   const EditStatementScreen(
-      {super.key, this.parentPension, this.statement, this.databaseService});
+      {super.key,
+      this.parentPension,
+      this.statement,
+      required this.databaseService});
 
   @override
   State<EditStatementScreen> createState() => _EditStatmentScreenState();
@@ -227,6 +231,26 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
                       _unsavedChanges = true;
                     },
                   ),
+                  // only show the delete button and spacer if the statement has been saved
+                  if (widget.statement != null) ...[
+                    CustomStyles.spacerBox,
+                    SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                          key: EditStatementScreen.statementDeleteKey,
+                          onPressed: () async {
+                            await _showDeleteDialog();
+                          },
+                          style: TextButton.styleFrom(
+                              side: const BorderSide(color: Colors.red),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.zero)),
+                          child: const Text(
+                            'Delete',
+                            style: TextStyle(color: Colors.red),
+                          )),
+                    )
+                  ],
                 ],
               ),
             ),
@@ -234,19 +258,13 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
         ));
   }
 
-  DatabaseService _getDatabaseService() {
-    return (widget.databaseService == null)
-        ? DatabaseService.withDefaultConnection()
-        : widget.databaseService!;
-  }
-
   void _loadData() {
-    DatabaseService db = _getDatabaseService();
+    DatabaseService db = widget.databaseService;
     _pensions = db.getAllPensions();
   }
 
   Future<bool> _saveData() async {
-    DatabaseService db = _getDatabaseService();
+    DatabaseService db = widget.databaseService;
 
     if (widget.statement == null) {
       await db.createStatement(
@@ -298,6 +316,45 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
     if (shouldDiscard ?? false) {
       if (!mounted) return;
       Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _showDeleteDialog() async {
+    if (widget.statement != null) {
+      final bool? shouldDiscard = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Delete This Statement?'),
+            content:
+                const Text('Are you sure you want to delete this statement?'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Yes'),
+                onPressed: () async {
+                  await widget.databaseService
+                      .deleteStatement(widget.statement!.statementId);
+
+                  if (!context.mounted) return;
+                  Navigator.pop(context, false);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Statement removed successfully!'),
+                    ),
+                  );
+                },
+              ),
+              TextButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 }

@@ -222,7 +222,7 @@ void main() {
           newTransferValue.toString());
 
       // Tap the save button
-      await tester.tap(find.byType(TextButton));
+      await tester.tap(find.widgetWithText(TextButton, 'Save'));
 
       verify(databaseService.getAllPensions()).called(1);
       verifyNever(databaseService.createStatement(
@@ -298,7 +298,7 @@ void main() {
           find.byKey(EditStatementScreen.transferValueKey), "invalid number");
 
       // Tap the save button
-      await tester.tap(find.byType(TextButton));
+      await tester.tap(find.widgetWithText(TextButton, 'Save'));
 
       expect(
           find.text("Please enter a value, or 0 if unknown"), findsNWidgets(2));
@@ -307,8 +307,200 @@ void main() {
       verifyNever(databaseService.createStatement(pensionId, statementDate,
           planValue, projectedAnnualAmount, yearlyCharges, transferValue));
     });
+  });
 
-    // test delete
+  group('Test delete button on add/edit statement screen', () {
+    testWidgets('delete button not visible for add new record', (tester) async {
+      int pensionId = 1;
+      String name = "Test Pension";
+      DateTime maturityDate = DateHelper.getToday();
+
+      final databaseService = MockDatabaseService();
+      when(databaseService.getAllPensions()).thenAnswer((_) async => [
+            Pension(
+                pensionId: pensionId, name: name, maturityDate: maturityDate)
+          ]);
+
+      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpAndSettle();
+
+      expect(find.widgetWithText(TextButton, "Delete"), findsNothing);
+    });
+
+    testWidgets('delete button is visible for edit record', (tester) async {
+      int pensionId = 1;
+      String name = "Test Pension";
+      DateTime maturityDate = DateHelper.getToday();
+      int statementId = 1;
+      DateTime statementDate = DateHelper.getToday();
+      double planValue = 12345.0;
+      double projectedAnnualAmount = 1234;
+      double yearlyCharges = 100;
+      double transferValue = 12345;
+
+      final databaseService = MockDatabaseService();
+      when(databaseService.getAllPensions()).thenAnswer((_) async => [
+            Pension(
+                pensionId: pensionId, name: name, maturityDate: maturityDate)
+          ]);
+      final statement = Statement(
+          statementId: statementId,
+          pension: pensionId,
+          statementDate: statementDate,
+          planValue: planValue,
+          projectedAnnualAmount: projectedAnnualAmount,
+          yearlyCharges: yearlyCharges,
+          transferValue: transferValue);
+      await tester.pumpWidget(createEditScreen(statement, databaseService));
+      await tester.pumpAndSettle();
+
+      expect(find.widgetWithText(TextButton, "Delete"), findsOneWidget);
+    });
+
+    testWidgets('tapping the delete button displays warning prompt',
+        (tester) async {
+      int pensionId = 1;
+      String name = "Test Pension";
+      DateTime maturityDate = DateHelper.getToday();
+      int statementId = 1;
+      DateTime statementDate = DateHelper.getToday();
+      double planValue = 12345.0;
+      double projectedAnnualAmount = 1234;
+      double yearlyCharges = 100;
+      double transferValue = 12345;
+
+      final databaseService = MockDatabaseService();
+      when(databaseService.getAllPensions()).thenAnswer((_) async => [
+            Pension(
+                pensionId: pensionId, name: name, maturityDate: maturityDate)
+          ]);
+      final statement = Statement(
+          statementId: statementId,
+          pension: pensionId,
+          statementDate: statementDate,
+          planValue: planValue,
+          projectedAnnualAmount: projectedAnnualAmount,
+          yearlyCharges: yearlyCharges,
+          transferValue: transferValue);
+      await tester.pumpWidget(createEditScreen(statement, databaseService));
+      await tester.pumpAndSettle();
+
+      // check the elements are not yet visible
+      expect(find.text("Delete This Statement?"), findsNothing);
+      expect(find.text("Are you sure you want to delete this statement?"),
+          findsNothing);
+
+      // Tap the delete button (scroll to it first as it may be off screen)
+      final buttonFinder = find.widgetWithText(TextButton, "Delete");
+      final scrollableFinder = find.byType(Scrollable).last;
+      await tester.scrollUntilVisible(buttonFinder, 10,
+          scrollable: scrollableFinder);
+      await tester.tap(buttonFinder);
+      await tester.pumpAndSettle();
+
+      expect(find.text("Delete This Statement?"), findsOneWidget);
+      expect(find.text("Are you sure you want to delete this statement?"),
+          findsOneWidget);
+    });
+
+    testWidgets('tapping no dismissess the warning prompt', (tester) async {
+      int pensionId = 1;
+      String name = "Test Pension";
+      DateTime maturityDate = DateHelper.getToday();
+      int statementId = 1;
+      DateTime statementDate = DateHelper.getToday();
+      double planValue = 12345.0;
+      double projectedAnnualAmount = 1234;
+      double yearlyCharges = 100;
+      double transferValue = 12345;
+
+      final databaseService = MockDatabaseService();
+      when(databaseService.getAllPensions()).thenAnswer((_) async => [
+            Pension(
+                pensionId: pensionId, name: name, maturityDate: maturityDate)
+          ]);
+      when(databaseService.deleteStatement(statementId))
+          .thenAnswer((_) async => statementId);
+
+      final statement = Statement(
+          statementId: statementId,
+          pension: pensionId,
+          statementDate: statementDate,
+          planValue: planValue,
+          projectedAnnualAmount: projectedAnnualAmount,
+          yearlyCharges: yearlyCharges,
+          transferValue: transferValue);
+      await tester.pumpWidget(createEditScreen(statement, databaseService));
+      await tester.pumpAndSettle();
+
+      // Tap the delete button (scroll to it first as it may be off screen)
+      final buttonFinder = find.widgetWithText(TextButton, "Delete");
+      final scrollableFinder = find.byType(Scrollable).last;
+      await tester.scrollUntilVisible(buttonFinder, 10,
+          scrollable: scrollableFinder);
+      await tester.tap(buttonFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(TextButton, "No"));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Delete This Statement?"), findsNothing);
+      expect(find.text("Are you sure you want to delete this statement?"),
+          findsNothing);
+
+      verifyNever(databaseService.deleteStatement(statementId));
+    });
+
+    testWidgets(
+        'tapping yes deletes the statement and dismissess the warning prompt',
+        (tester) async {
+      int pensionId = 1;
+      String name = "Test Pension";
+      DateTime maturityDate = DateHelper.getToday();
+      int statementId = 5;
+      DateTime statementDate = DateHelper.getToday();
+      double planValue = 12345.0;
+      double projectedAnnualAmount = 1234;
+      double yearlyCharges = 100;
+      double transferValue = 12345;
+
+      final databaseService = MockDatabaseService();
+      when(databaseService.getAllPensions()).thenAnswer((_) async => [
+            Pension(
+                pensionId: pensionId, name: name, maturityDate: maturityDate)
+          ]);
+      when(databaseService.deleteStatement(statementId))
+          .thenAnswer((_) async => statementId);
+
+      final statement = Statement(
+          statementId: statementId,
+          pension: pensionId,
+          statementDate: statementDate,
+          planValue: planValue,
+          projectedAnnualAmount: projectedAnnualAmount,
+          yearlyCharges: yearlyCharges,
+          transferValue: transferValue);
+      await tester.pumpWidget(createEditScreen(statement, databaseService));
+      await tester.pumpAndSettle();
+
+      // Tap the delete button (scroll to it first as it may be off screen)
+      final buttonFinder = find.widgetWithText(TextButton, "Delete");
+      final scrollableFinder = find.byType(Scrollable).last;
+      await tester.scrollUntilVisible(buttonFinder, 10,
+          scrollable: scrollableFinder);
+      await tester.tap(buttonFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(TextButton, "Yes"));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Delete This Statement?"), findsNothing);
+      expect(find.text("Are you sure you want to delete this statement?"),
+          findsNothing);
+      expect(find.widgetWithText(SnackBar, "Statement removed successfully!"),
+          findsOneWidget); //look for snackbar notification
+
+      verify(databaseService.deleteStatement(statementId)).called(1);
+    });
+
     // test cancel
   });
 }

@@ -46,10 +46,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             icon: const Icon(Icons.add),
             onPressed: () async {
               Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const EditPensionScreen()))
-                  .then((_) => {setState(() {})});
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EditPensionScreen(
+                            databaseService: db,
+                          ))).then((_) => {setState(() {})});
             },
           ),
           PopupMenuButton(
