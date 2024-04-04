@@ -141,25 +141,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         } else {
                           final List<PensionWithLatestStatement> pensions =
                               snapshot.data!;
-                          return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                PensionSummaryChart(pensionData: pensions),
-                                PensionDataTable(
-                                  pensionDataList: pensions,
-                                  onTap: (Pension pension) {
-                                    Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    PensionOverviewScreen(
-                                                      pension: pension,
-                                                      databaseService: db,
-                                                    )))
-                                        .then((_) => {setState(() {})});
-                                  },
-                                )
-                              ]);
+                          return SingleChildScrollView(
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  PensionSummaryChart(pensionData: pensions),
+                                  PensionDataTable(
+                                    pensionDataList: pensions,
+                                    onTap: (Pension pension) {
+                                      Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      PensionOverviewScreen(
+                                                        pension: pension,
+                                                        databaseService: db,
+                                                      )))
+                                          .then((_) => {setState(() {})});
+                                    },
+                                  )
+                                ]),
+                          );
                         }
                       },
                     )),

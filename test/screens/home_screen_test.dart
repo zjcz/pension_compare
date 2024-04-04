@@ -51,7 +51,7 @@ void main() {
 
       expect(find.text("Overview"), findsOneWidget);
 
-      expect(find.text(pensionName), findsOneWidget);
+      expect(find.widgetWithText(DataTable, pensionName), findsOneWidget);
     });
   });
 }
