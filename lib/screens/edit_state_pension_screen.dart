@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/database/database_service.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EditStatePensionScreen extends StatefulWidget {
   static const yearlyValueKey = Key('yearlyValue');
@@ -17,6 +18,8 @@ class EditStatePensionScreen extends StatefulWidget {
 
 class _EditStatePensionScreenState extends State<EditStatePensionScreen> {
   TextEditingController yearlyValueController = TextEditingController();
+  final govUkStatePensionWebSiteUrl =
+      Uri(scheme: 'https', host: 'gov.uk', path: 'check-state-pension');
 
   bool _unsavedChanges = false;
   final _formKey = GlobalKey<FormState>();
@@ -136,7 +139,12 @@ class _EditStatePensionScreenState extends State<EditStatePensionScreen> {
                   const Text(
                       "This is the yearly value you will receive from your state pension.  If you don't know this you can find the amount here:",
                       style: CustomStyles.infoTextStyle),
-                  const Text('gov.uk/check-state-pension'),
+                  CustomStyles.spacerBox,
+                  ElevatedButton(
+                    onPressed: () =>
+                        _launchInBrowser(govUkStatePensionWebSiteUrl),
+                    child: const Text('gov.uk/check-state-pension'),
+                  ),
                 ],
               ),
             ),
@@ -195,6 +203,18 @@ class _EditStatePensionScreenState extends State<EditStatePensionScreen> {
     if (shouldDiscard ?? false) {
       if (!mounted) return;
       Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _launchInBrowser(Uri url) async {
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Unable to launch website'),
+      ));
     }
   }
 }
