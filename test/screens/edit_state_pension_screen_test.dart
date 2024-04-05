@@ -5,7 +5,8 @@ import 'package:pension_compare/database/database_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pension_compare/constants/defaults.dart' as defaults;
-
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
+import '../mocks/mock_url_launcher.dart';
 import 'edit_state_pension_screen_test.mocks.dart';
 
 Widget createEditScreen(DatabaseService? db) {
@@ -129,6 +130,52 @@ void main() {
           find.text("Please enter a value, or 0 if unknown"), findsOneWidget);
 
       verifyNever(databaseService.saveStatePension(0));
+    });
+  });
+
+  group('Test url launcher to state pension site', () {
+    testWidgets('test url launcher is successful', (tester) async {
+      final MockUrlLauncher mock = MockUrlLauncher();
+      mock.setLaunchUrlExpectation(true);
+      UrlLauncherPlatform.instance = mock;
+
+      final databaseService = MockDatabaseService();
+      when(databaseService.getStatePension()).thenAnswer((_) async =>
+          const StatePension(
+              statePensionId: defaults.defaultStatePensionId,
+              projectedAnnualAmount: 1));
+
+      await tester.pumpWidget(createEditScreen(databaseService));
+      await tester.pumpAndSettle();
+
+      expect(find.text("gov.uk/check-state-pension"), findsOneWidget);
+      await tester.tap(
+          find.widgetWithText(ElevatedButton, "gov.uk/check-state-pension"));
+
+      expect(mock.launchUrlCalledCount(), 1);
+    });
+
+    testWidgets('test url launcher fails', (tester) async {
+      final MockUrlLauncher mock = MockUrlLauncher();
+      mock.setLaunchUrlExpectation(false);
+      UrlLauncherPlatform.instance = mock;
+
+      final databaseService = MockDatabaseService();
+      when(databaseService.getStatePension()).thenAnswer((_) async =>
+          const StatePension(
+              statePensionId: defaults.defaultStatePensionId,
+              projectedAnnualAmount: 1));
+
+      await tester.pumpWidget(createEditScreen(databaseService));
+      await tester.pumpAndSettle();
+
+      expect(find.text("gov.uk/check-state-pension"), findsOneWidget);
+      await tester.tap(
+          find.widgetWithText(ElevatedButton, "gov.uk/check-state-pension"));
+      await tester.pumpAndSettle();
+
+      expect(mock.launchUrlCalledCount(), 1);
+      expect(find.text("Unable to launch website"), findsOneWidget);
     });
   });
 }
