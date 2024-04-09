@@ -458,6 +458,22 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
       ) as _i5.Future<int>);
 
   @override
+  _i5.Future<bool> doesPensionNameExist(
+    int? id,
+    String? name,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #doesPensionNameExist,
+          [
+            id,
+            name,
+          ],
+        ),
+        returnValue: _i5.Future<bool>.value(false),
+      ) as _i5.Future<bool>);
+
+  @override
   _i5.Future<List<_i3.Statement>> getAllStatementsForPension(int? pensionId) =>
       (super.noSuchMethod(
         Invocation.method(

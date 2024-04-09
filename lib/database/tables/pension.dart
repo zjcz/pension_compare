@@ -5,6 +5,6 @@ import 'package:drift/drift.dart';
 @DataClassName('Pension')
 class Pensions extends Table {
   IntColumn get pensionId => integer().autoIncrement()();
-  TextColumn get name => text().withLength(max: 100)();
+  TextColumn get name => text().unique().withLength(max: 100)();
   DateTimeColumn get maturityDate => dateTime()();
 }

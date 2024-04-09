@@ -92,6 +92,8 @@ void main() {
       String name = "Test Pension";
       DateTime maturityDate = DateHelper.getToday();
       final databaseService = MockDatabaseService();
+      when(databaseService.doesPensionNameExist(null, name))
+          .thenAnswer((_) async => false);
       when(databaseService.createPension(name, maturityDate)).thenAnswer(
           (_) async =>
               Pension(pensionId: 1, name: name, maturityDate: maturityDate));
@@ -101,6 +103,7 @@ void main() {
       // Enter name into the TextFormField
       await tester.enterText(
           find.byKey(EditPensionScreen.pensionNameKey), name);
+      await tester.pumpAndSettle();
 
       // Set the date of the date picker
       await tester.tap(find.byKey(EditPensionScreen.pensionMaturityDateKey));
@@ -111,6 +114,7 @@ void main() {
 
       // Tap the save button
       await tester.tap(find.widgetWithText(TextButton, "Save"));
+      await tester.pumpAndSettle();
 
       verify(databaseService.createPension(name, maturityDate)).called(1);
       verifyNever(databaseService.updatePension(1, name, maturityDate));
@@ -123,6 +127,8 @@ void main() {
       String newName = "New Pension";
       DateTime newMaturityDate = DateTime(2024, 1, 20);
       final databaseService = MockDatabaseService();
+      when(databaseService.doesPensionNameExist(id, newName))
+          .thenAnswer((_) async => false);
       when(databaseService.updatePension(id, newName, newMaturityDate))
           .thenAnswer((_) async => true);
 
@@ -154,20 +160,120 @@ void main() {
   });
 
   group('Test validation of add/edit pension screen', () {
-    testWidgets('validation should prevent empty name and date',
-        (tester) async {
+    testWidgets('validation should prevent empty date', (tester) async {
+      String name = "Test Pension";
+      final databaseService = MockDatabaseService();
+      when(databaseService.doesPensionNameExist(null, name))
+          .thenAnswer((_) async => false);
+
+      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(EditPensionScreen.pensionNameKey), name);
+      await tester.pumpAndSettle();
+
+      // Tap the save button
+      await tester.tap(find.widgetWithText(TextButton, "Save"));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Please select a date"), findsOneWidget);
+    });
+
+    testWidgets('validation should prevent empty name', (tester) async {
+      DateTime maturityDate = DateHelper.getToday();
+
       final databaseService = MockDatabaseService();
 
       await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(EditPensionScreen.pensionMaturityDateKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(maturityDate.day.toString()));
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
 
       // Tap the save button
       await tester.tap(find.widgetWithText(TextButton, "Save"));
       await tester.pumpAndSettle();
 
       expect(find.text("Please enter some text"), findsOneWidget);
-      expect(find.text("Please select a date"), findsOneWidget);
 
       verifyZeroInteractions(databaseService);
+    });
+
+    testWidgets('validation should warn of duplicate pension name',
+        (tester) async {
+      String name = "Test Pension";
+      DateTime maturityDate = DateHelper.getToday();
+
+      final databaseService = MockDatabaseService();
+      when(databaseService.doesPensionNameExist(null, name))
+          .thenAnswer((_) async => true);
+
+      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(EditPensionScreen.pensionNameKey), name);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(EditPensionScreen.pensionMaturityDateKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(maturityDate.day.toString()));
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      // Tap the save button
+      await tester.tap(find.widgetWithText(TextButton, "Save"));
+      await tester.pumpAndSettle();
+
+      expect(find.text("This name is already in use"), findsOneWidget);
+    });
+
+    testWidgets('validation should clear after duplicate pension name',
+        (tester) async {
+      String name = "Test Pension";
+      String newName = "Different Pension";
+      DateTime maturityDate = DateHelper.getToday();
+
+      final databaseService = MockDatabaseService();
+      when(databaseService.doesPensionNameExist(null, name))
+          .thenAnswer((_) async => true);
+      when(databaseService.doesPensionNameExist(null, newName))
+          .thenAnswer((_) async => false);
+      when(databaseService.createPension(newName, maturityDate)).thenAnswer(
+          (_) async =>
+              Pension(pensionId: 1, name: newName, maturityDate: maturityDate));
+
+      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(EditPensionScreen.pensionNameKey), name);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(EditPensionScreen.pensionMaturityDateKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(maturityDate.day.toString()));
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      // Tap the save button
+      await tester.tap(find.widgetWithText(TextButton, "Save"));
+      await tester.pumpAndSettle();
+
+      expect(find.text("This name is already in use"), findsOneWidget);
+
+      await tester.enterText(
+          find.byKey(EditPensionScreen.pensionNameKey), newName);
+      await tester.pumpAndSettle();
+
+      // Tap the save button again
+      await tester.tap(find.widgetWithText(TextButton, "Save"));
+      await tester.pumpAndSettle();
+
+      expect(find.text("This name is already in use"), findsNothing);
+      verify(databaseService.createPension(newName, maturityDate)).called(1);
     });
   });
 

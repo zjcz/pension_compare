@@ -169,4 +169,98 @@ void main() {
       expect(results[0].latestStatement!.transferValue, transferValue3);
     });
   });
+
+  group('Test pension name is unique', () {
+    test('Create fails if name already in use', () async {
+      String name = 'new pension';
+      DateTime maturityDate = DateTime(2050, 1, 1);
+
+      await database.createPension(name, maturityDate);
+      await expectLater(
+          database.createPension(name, maturityDate), throwsA(isException));
+    });
+
+    test('Create succeeds if name already in use but record deleted', () async {
+      String name = 'new pension';
+      DateTime maturityDate = DateTime(2050, 1, 1);
+
+      Pension? p1 = await database.createPension(name, maturityDate);
+      await database.deletePension(p1!.pensionId);
+      expectLater(database.createPension(name, maturityDate), completes);
+    });
+
+    // Sqlite UNIQUE(<column> COLLATE NOCASE) is not supported by Drift
+    // test('Create fails if name already in use in different case', () async {
+    //   String name = 'new pension';
+    //   DateTime maturityDate = DateTime(2050, 1, 1);
+
+    //   await database.createPension(name.toUpperCase(), maturityDate);
+    //   await expectLater(
+    //       database.createPension(name.toLowerCase(), maturityDate),
+    //       throwsA(isException));
+    // });
+
+    test('Test if name already used in an empty table', () async {
+      String name = 'new pension';
+      bool response = await database.doesPensionNameExist(null, name);
+
+      expect(response, isFalse);
+    });
+
+    test('Test if name already used in populated table', () async {
+      String name = 'new pension';
+      DateTime maturityDate = DateTime(2050, 1, 1);
+
+      await database.createPension(name, maturityDate);
+      bool response = await database.doesPensionNameExist(null, name);
+
+      expect(response, isTrue);
+    });
+
+    test('Test if name already used for this record', () async {
+      String name = 'new pension';
+      DateTime maturityDate = DateTime(2050, 1, 1);
+
+      Pension? p1 = await database.createPension(name, maturityDate);
+      bool response = await database.doesPensionNameExist(p1!.pensionId, name);
+
+      expect(response, isFalse);
+    });
+
+    test('Test if name already used for another record', () async {
+      String name1 = 'new pension 1';
+      String name2 = 'new pension 2';
+      String name2updated = 'new pension 1';
+      DateTime maturityDate = DateTime(2050, 1, 1);
+
+      await database.createPension(name1, maturityDate);
+      Pension? p2 = await database.createPension(name2, maturityDate);
+      bool response =
+          await database.doesPensionNameExist(p2!.pensionId, name2updated);
+
+      expect(response, isTrue);
+    });
+
+    test('Test if name already used with deleted record', () async {
+      String name = 'new pension';
+      DateTime maturityDate = DateTime(2050, 1, 1);
+
+      Pension? p1 = await database.createPension(name, maturityDate);
+      await database.deletePension(p1!.pensionId);
+      bool response = await database.doesPensionNameExist(null, name);
+
+      expect(response, isFalse);
+    });
+
+    test('Test if name in different case already used ', () async {
+      String name = 'new pension';
+      DateTime maturityDate = DateTime(2050, 1, 1);
+
+      await database.createPension(name.toUpperCase(), maturityDate);
+      bool response =
+          await database.doesPensionNameExist(null, name.toLowerCase());
+
+      expect(response, isTrue);
+    });
+  });
 }

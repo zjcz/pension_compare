@@ -24,7 +24,8 @@ class $PensionsTable extends Pensions with TableInfo<$PensionsTable, Pension> {
       'name', aliasedName, false,
       additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
       type: DriftSqlType.string,
-      requiredDuringInsert: true);
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
   static const VerificationMeta _maturityDateMeta =
       const VerificationMeta('maturityDate');
   @override

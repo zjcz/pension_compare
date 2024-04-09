@@ -25,7 +25,7 @@ class EditPensionScreen extends StatefulWidget {
 class _EditPensionScreenState extends State<EditPensionScreen> {
   TextEditingController nameController = TextEditingController();
   DateTime? _maturityDate;
-
+  String? _pensionNameValidationError;
   bool _unsavedChanges = false;
   final _formKey = GlobalKey<FormState>();
 
@@ -57,15 +57,17 @@ class _EditPensionScreenState extends State<EditPensionScreen> {
                       color: context.onPrimary,
                     )),
                 onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    if (!await _saveData()) {
-                      // an error occurred and we cannot save?
-                      // TODO Log and report error
-                      return;
-                    }
+                  if (await _validatePensionName(nameController.text)) {
+                    if (_formKey.currentState!.validate()) {
+                      if (!await _saveData()) {
+                        // an error occurred and we cannot save?
+                        // TODO Log and report error
+                        return;
+                      }
 
-                    if (!context.mounted) return;
-                    Navigator.of(context).pop();
+                      if (!context.mounted) return;
+                      Navigator.of(context).pop();
+                    }
                   }
                 },
               ),
@@ -90,7 +92,9 @@ class _EditPensionScreenState extends State<EditPensionScreen> {
                   TextFormField(
                     key: EditPensionScreen.pensionNameKey,
                     controller: nameController,
-                    decoration: const InputDecoration(labelText: "Name"),
+                    decoration: InputDecoration(
+                        labelText: "Name",
+                        errorText: _pensionNameValidationError),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Please enter some text";
@@ -98,6 +102,9 @@ class _EditPensionScreenState extends State<EditPensionScreen> {
                       return null;
                     },
                     onChanged: (val) {
+                      setState(() {
+                        _pensionNameValidationError = null;
+                      });
                       _unsavedChanges = true;
                     },
                   ),
@@ -150,6 +157,25 @@ class _EditPensionScreenState extends State<EditPensionScreen> {
             ),
           ),
         ));
+  }
+
+  Future<bool> _validatePensionName(String? pensionName) async {
+    String? validationMsg;
+
+    if (pensionName != null && pensionName.isNotEmpty) {
+      bool response = await widget.databaseService
+          .doesPensionNameExist(widget.pension?.pensionId, pensionName);
+
+      if (response) {
+        validationMsg = "This name is already in use";
+      }
+    }
+
+    setState(() {
+      _pensionNameValidationError = validationMsg;
+    });
+
+    return (validationMsg == null);
   }
 
   Future<bool> _saveData() async {

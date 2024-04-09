@@ -67,6 +67,19 @@ class DatabaseService extends _$DatabaseService {
     return (delete(pensions)..where((p) => p.pensionId.equals(id))).go();
   }
 
+  // Checks to see if a pension with this name already exists in the database,
+  // but with a different id
+  Future<bool> doesPensionNameExist(int? id, String name) async {
+    final pension = await (select(pensions)
+          ..where((p) =>
+              p.pensionId.equals(id ?? 0).not() &
+              p.name.collate(Collate.noCase).equals(name))
+          ..limit(1))
+        .getSingleOrNull();
+
+    return (pension != null);
+  }
+
   // List all the statements in the database for a given pension
   Future<List<Statement>> getAllStatementsForPension(int pensionId) {
     return (select(statements)..where((s) => s.pension.equals(pensionId)))
