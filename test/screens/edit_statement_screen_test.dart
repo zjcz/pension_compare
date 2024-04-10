@@ -125,6 +125,9 @@ void main() {
               projectedAnnualAmount: projectedAnnualAmount,
               yearlyCharges: yearlyCharges,
               transferValue: transferValue));
+      when(databaseService.doesStatementDateExist(
+              null, pensionId, statementDate))
+          .thenAnswer((_) async => false);
 
       await tester.pumpWidget(createEditScreen(null, databaseService));
       await tester.pumpAndSettle();
@@ -191,6 +194,9 @@ void main() {
               newYearlyCharges,
               newTransferValue))
           .thenAnswer((_) async => true);
+      when(databaseService.doesStatementDateExist(
+              statementId, pensionId, newStatementDate))
+          .thenAnswer((_) async => false);
 
       await tester.pumpWidget(createEditScreen(
           Statement(
@@ -270,6 +276,9 @@ void main() {
               projectedAnnualAmount: projectedAnnualAmount,
               yearlyCharges: yearlyCharges,
               transferValue: transferValue));
+      when(databaseService.doesStatementDateExist(
+              null, pensionId, statementDate))
+          .thenAnswer((_) async => false);
 
       await tester.pumpWidget(createEditScreen(null, databaseService));
       await tester.pumpAndSettle();
@@ -306,6 +315,161 @@ void main() {
       verify(databaseService.getAllPensions()).called(1);
       verifyNever(databaseService.createStatement(pensionId, statementDate,
           planValue, projectedAnnualAmount, yearlyCharges, transferValue));
+    });
+
+    testWidgets('validation should warn of duplicate statement date',
+        (tester) async {
+      String name = "Test Pension";
+      DateTime maturityDate = DateHelper.getToday();
+      int pensionId = 1;
+      DateTime statementDate = DateHelper.getToday();
+      double planValue = 12345.0;
+      double projectedAnnualAmount = 1234;
+      double yearlyCharges = 100;
+      double transferValue = 12345;
+
+      final databaseService = MockDatabaseService();
+      when(databaseService.getAllPensions()).thenAnswer((_) async => [
+            Pension(
+                pensionId: pensionId, name: name, maturityDate: maturityDate)
+          ]);
+      when(databaseService.createStatement(pensionId, statementDate, planValue,
+              projectedAnnualAmount, yearlyCharges, transferValue))
+          .thenAnswer((_) async => Statement(
+              statementId: 1,
+              pension: pensionId,
+              statementDate: statementDate,
+              planValue: planValue,
+              projectedAnnualAmount: projectedAnnualAmount,
+              yearlyCharges: yearlyCharges,
+              transferValue: transferValue));
+      when(databaseService.doesStatementDateExist(
+              null, pensionId, statementDate))
+          .thenAnswer((_) async => true);
+
+      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpAndSettle();
+
+      // select the pension from the DropDownButtonFormField
+      await tester.tap(find.byKey(EditStatementScreen.pensionKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(DropdownMenuItem<int>, name).last);
+      await tester.pumpAndSettle();
+
+      // Set the date of the date picker
+      await tester.tap(find.byKey(EditStatementScreen.statementDateKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(statementDate.day.toString()));
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(EditStatementScreen.planValueKey), planValue.toString());
+      await tester.enterText(
+          find.byKey(EditStatementScreen.projectedAnnualAmountKey),
+          projectedAnnualAmount.toString());
+      await tester.enterText(find.byKey(EditStatementScreen.yearlyChargesKey),
+          yearlyCharges.toString());
+      await tester.enterText(find.byKey(EditStatementScreen.transferValueKey),
+          transferValue.toString());
+
+      // Tap the save button
+      await tester.tap(find.widgetWithText(TextButton, 'Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text("A statement for this date already exists"),
+          findsOneWidget);
+
+      verify(databaseService.getAllPensions()).called(1);
+      verify(databaseService.doesStatementDateExist(
+              null, pensionId, statementDate))
+          .called(1);
+      verifyNever(databaseService.createStatement(pensionId, statementDate,
+          planValue, projectedAnnualAmount, yearlyCharges, transferValue));
+    });
+
+    testWidgets('validation should clear after duplicate pension name',
+        (tester) async {
+      String name = "Test Pension";
+      DateTime maturityDate = DateHelper.getToday();
+      int pensionId = 1;
+      DateTime statementDate = DateHelper.getToday();
+      DateTime newStatementDate = DateTime(
+          statementDate.year,
+          statementDate.month,
+          (statementDate.day == 1 ? 2 : 1)); // different date
+      double planValue = 12345.0;
+      double projectedAnnualAmount = 1234;
+      double yearlyCharges = 100;
+      double transferValue = 12345;
+
+      final databaseService = MockDatabaseService();
+      when(databaseService.getAllPensions()).thenAnswer((_) async => [
+            Pension(
+                pensionId: pensionId, name: name, maturityDate: maturityDate)
+          ]);
+      when(databaseService.createStatement(pensionId, newStatementDate,
+              planValue, projectedAnnualAmount, yearlyCharges, transferValue))
+          .thenAnswer((_) async => Statement(
+              statementId: 1,
+              pension: pensionId,
+              statementDate: statementDate,
+              planValue: planValue,
+              projectedAnnualAmount: projectedAnnualAmount,
+              yearlyCharges: yearlyCharges,
+              transferValue: transferValue));
+      when(databaseService.doesStatementDateExist(
+              null, pensionId, statementDate))
+          .thenAnswer((_) async => true);
+      when(databaseService.doesStatementDateExist(
+              null, pensionId, newStatementDate))
+          .thenAnswer((_) async => false);
+
+      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpAndSettle();
+
+      // select the pension from the DropDownButtonFormField
+      await tester.tap(find.byKey(EditStatementScreen.pensionKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(DropdownMenuItem<int>, name).last);
+      await tester.pumpAndSettle();
+
+      // Set the date of the date picker
+      await tester.tap(find.byKey(EditStatementScreen.statementDateKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(statementDate.day.toString()));
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(EditStatementScreen.planValueKey), planValue.toString());
+      await tester.enterText(
+          find.byKey(EditStatementScreen.projectedAnnualAmountKey),
+          projectedAnnualAmount.toString());
+      await tester.enterText(find.byKey(EditStatementScreen.yearlyChargesKey),
+          yearlyCharges.toString());
+      await tester.enterText(find.byKey(EditStatementScreen.transferValueKey),
+          transferValue.toString());
+
+      // Tap the save button
+      await tester.tap(find.widgetWithText(TextButton, 'Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text("A statement for this date already exists"),
+          findsOneWidget);
+
+      // change the date
+      await tester.tap(find.byKey(EditStatementScreen.statementDateKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(newStatementDate.day.toString()));
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.widgetWithText(TextButton, 'Save'));
+      await tester.pumpAndSettle();
+
+      expect(
+          find.text("A statement for this date already exists"), findsNothing);
     });
   });
 

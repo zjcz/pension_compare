@@ -14,4 +14,9 @@ class Statements extends Table {
   RealColumn get projectedAnnualAmount => real()();
   RealColumn get yearlyCharges => real().nullable()();
   RealColumn get transferValue => real().nullable()();
+
+  @override
+  List<Set<Column>> get uniqueKeys => [
+        {pension, statementDate}
+      ];
 }

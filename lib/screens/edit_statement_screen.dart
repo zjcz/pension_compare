@@ -41,6 +41,7 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
   TextEditingController transferValueController = TextEditingController();
   DateTime? _statementDate;
   int? _pensionId;
+  String? _statementDateValidationError;
   Future<List<Pension>>? _pensions;
 
   bool _unsavedChanges = false;
@@ -86,15 +87,17 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
                       color: context.onPrimary,
                     )),
                 onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    if (!await _saveData()) {
-                      // an error occurred and we cannot save?
-                      // TODO Log and report error
-                      return;
-                    }
+                  if (await _validateStatementDate(_statementDate)) {
+                    if (_formKey.currentState!.validate()) {
+                      if (!await _saveData()) {
+                        // an error occurred and we cannot save?
+                        // TODO Log and report error
+                        return;
+                      }
 
-                    if (!context.mounted) return;
-                    Navigator.of(context).pop();
+                      if (!context.mounted) return;
+                      Navigator.of(context).pop();
+                    }
                   }
                 },
               ),
@@ -141,7 +144,9 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
                     key: EditStatementScreen.statementDateKey,
                     initialDate: _statementDate,
                     labelText: 'Statement Date',
+                    errorText: _statementDateValidationError,
                     onDateSelected: (DateTime? value) {
+                      _statementDateValidationError = null;
                       _statementDate = value;
                       _unsavedChanges = true;
                     },
@@ -256,6 +261,25 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
             ),
           ),
         ));
+  }
+
+  Future<bool> _validateStatementDate(DateTime? statementDate) async {
+    String? validationMsg;
+
+    if (statementDate != null && _pensionId != null) {
+      bool response = await widget.databaseService.doesStatementDateExist(
+          widget.statement?.statementId, _pensionId!, statementDate);
+
+      if (response) {
+        validationMsg = "A statement for this date already exists";
+      }
+    }
+
+    setState(() {
+      _statementDateValidationError = validationMsg;
+    });
+
+    return (validationMsg == null);
   }
 
   void _loadData() {

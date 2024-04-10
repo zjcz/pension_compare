@@ -16,4 +16,9 @@ class DateHelper {
     DateTime now = DateTime.now();
     return DateTime(now.year, now.month, now.day);
   }
+
+  // Remove the time component from the dateTime object
+  static DateTime removeTime(DateTime dateTime) {
+    return DateTime(dateTime.year, dateTime.month, dateTime.day);
+  }
 }
