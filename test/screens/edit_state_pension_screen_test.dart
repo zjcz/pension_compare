@@ -23,9 +23,9 @@ void main() {
       double value = 12345.67;
       final databaseService = MockDatabaseService();
       when(databaseService.getStatePension()).thenAnswer((_) async =>
-          StatePension(
-              statePensionId: defaults.defaultStatePensionId,
-              projectedAnnualAmount: value));
+          OtherIncome(
+              otherIncomeId: defaults.defaultStatePensionId,
+              annualAmount: value));
 
       await tester.pumpWidget(createEditScreen(databaseService));
       await tester.pumpAndSettle();
@@ -52,9 +52,9 @@ void main() {
       double value = 12345.67;
       final databaseService = MockDatabaseService();
       when(databaseService.getStatePension()).thenAnswer((_) async =>
-          StatePension(
-              statePensionId: defaults.defaultStatePensionId,
-              projectedAnnualAmount: value));
+          OtherIncome(
+              otherIncomeId: defaults.defaultStatePensionId,
+              annualAmount: value));
 
       await tester.pumpWidget(createEditScreen(databaseService));
       await tester.pumpAndSettle();
@@ -70,9 +70,9 @@ void main() {
       double value = 12345.6;
       final databaseService = MockDatabaseService();
       when(databaseService.getStatePension()).thenAnswer((_) async =>
-          StatePension(
-              statePensionId: defaults.defaultStatePensionId,
-              projectedAnnualAmount: value));
+          OtherIncome(
+              otherIncomeId: defaults.defaultStatePensionId,
+              annualAmount: value));
 
       await tester.pumpWidget(createEditScreen(databaseService));
       await tester.pumpAndSettle();
@@ -85,12 +85,13 @@ void main() {
       double updatedValue = 12345.67;
       final databaseService = MockDatabaseService();
       when(databaseService.getStatePension()).thenAnswer((_) async =>
-          StatePension(
-              statePensionId: defaults.defaultStatePensionId,
-              projectedAnnualAmount: initialValue));
+          OtherIncome(
+              otherIncomeId: defaults.defaultStatePensionId,
+              annualAmount: initialValue));
       when(databaseService.saveStatePension(updatedValue)).thenAnswer(
-          (_) async => StatePension(
-              statePensionId: 1, projectedAnnualAmount: updatedValue));
+          (_) async => OtherIncome(
+              otherIncomeId: defaults.defaultStatePensionId,
+              annualAmount: updatedValue));
 
       await tester.pumpWidget(createEditScreen(databaseService));
       await tester.pumpAndSettle();
@@ -109,11 +110,12 @@ void main() {
       String invalidValue = 'invalid';
       final databaseService = MockDatabaseService();
       when(databaseService.getStatePension()).thenAnswer((_) async =>
-          StatePension(
-              statePensionId: defaults.defaultStatePensionId,
-              projectedAnnualAmount: initialValue));
+          OtherIncome(
+              otherIncomeId: defaults.defaultStatePensionId,
+              annualAmount: initialValue));
       when(databaseService.saveStatePension(0)).thenAnswer((_) async =>
-          const StatePension(statePensionId: 1, projectedAnnualAmount: 0));
+          const OtherIncome(
+              otherIncomeId: defaults.defaultStatePensionId, annualAmount: 0));
 
       await tester.pumpWidget(createEditScreen(databaseService));
       await tester.pumpAndSettle();
@@ -141,9 +143,8 @@ void main() {
 
       final databaseService = MockDatabaseService();
       when(databaseService.getStatePension()).thenAnswer((_) async =>
-          const StatePension(
-              statePensionId: defaults.defaultStatePensionId,
-              projectedAnnualAmount: 1));
+          const OtherIncome(
+              otherIncomeId: defaults.defaultStatePensionId, annualAmount: 1));
 
       await tester.pumpWidget(createEditScreen(databaseService));
       await tester.pumpAndSettle();
@@ -162,9 +163,8 @@ void main() {
 
       final databaseService = MockDatabaseService();
       when(databaseService.getStatePension()).thenAnswer((_) async =>
-          const StatePension(
-              statePensionId: defaults.defaultStatePensionId,
-              projectedAnnualAmount: 1));
+          const OtherIncome(
+              otherIncomeId: defaults.defaultStatePensionId, annualAmount: 1));
 
       await tester.pumpWidget(createEditScreen(databaseService));
       await tester.pumpAndSettle();

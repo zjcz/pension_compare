@@ -37,7 +37,7 @@ void main() {
       expect(pensions, match.isEmpty);
       expect(statements, match.isEmpty);
       expect(statePension, match.isNotNull);
-      expect(statePension!.projectedAnnualAmount, 0.0);
+      expect(statePension!.annualAmount, 0.0);
     });
   });
 }

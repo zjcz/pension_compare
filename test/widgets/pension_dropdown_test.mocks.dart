@@ -59,9 +59,9 @@ class _Fake$StatementsTable_2 extends _i1.SmartFake
         );
 }
 
-class _Fake$StatePensionsTable_3 extends _i1.SmartFake
-    implements _i3.$StatePensionsTable {
-  _Fake$StatePensionsTable_3(
+class _Fake$OtherIncomesTable_3 extends _i1.SmartFake
+    implements _i3.$OtherIncomesTable {
+  _Fake$OtherIncomesTable_3(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -294,13 +294,13 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
       ) as _i3.$StatementsTable);
 
   @override
-  _i3.$StatePensionsTable get statePensions => (super.noSuchMethod(
-        Invocation.getter(#statePensions),
-        returnValue: _Fake$StatePensionsTable_3(
+  _i3.$OtherIncomesTable get otherIncomes => (super.noSuchMethod(
+        Invocation.getter(#otherIncomes),
+        returnValue: _Fake$OtherIncomesTable_3(
           this,
-          Invocation.getter(#statePensions),
+          Invocation.getter(#otherIncomes),
         ),
-      ) as _i3.$StatePensionsTable);
+      ) as _i3.$OtherIncomesTable);
 
   @override
   _i2.Index get parentPension => (super.noSuchMethod(
@@ -570,24 +570,23 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
       ) as _i5.Future<bool>);
 
   @override
-  _i5.Future<_i3.StatePension?> getStatePension() => (super.noSuchMethod(
+  _i5.Future<_i3.OtherIncome?> getStatePension() => (super.noSuchMethod(
         Invocation.method(
           #getStatePension,
           [],
         ),
-        returnValue: _i5.Future<_i3.StatePension?>.value(),
-      ) as _i5.Future<_i3.StatePension?>);
+        returnValue: _i5.Future<_i3.OtherIncome?>.value(),
+      ) as _i5.Future<_i3.OtherIncome?>);
 
   @override
-  _i5.Future<_i3.StatePension?> saveStatePension(
-          double? projectedAnnualAmount) =>
+  _i5.Future<_i3.OtherIncome?> saveStatePension(double? annualAmount) =>
       (super.noSuchMethod(
         Invocation.method(
           #saveStatePension,
-          [projectedAnnualAmount],
+          [annualAmount],
         ),
-        returnValue: _i5.Future<_i3.StatePension?>.value(),
-      ) as _i5.Future<_i3.StatePension?>);
+        returnValue: _i5.Future<_i3.OtherIncome?>.value(),
+      ) as _i5.Future<_i3.OtherIncome?>);
 
   @override
   _i5.Future<List<_i7.PensionWithLatestStatement>>

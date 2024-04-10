@@ -619,188 +619,178 @@ class StatementsCompanion extends UpdateCompanion<Statement> {
   }
 }
 
-class $StatePensionsTable extends StatePensions
-    with TableInfo<$StatePensionsTable, StatePension> {
+class $OtherIncomesTable extends OtherIncomes
+    with TableInfo<$OtherIncomesTable, OtherIncome> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $StatePensionsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _statePensionIdMeta =
-      const VerificationMeta('statePensionId');
+  $OtherIncomesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _otherIncomeIdMeta =
+      const VerificationMeta('otherIncomeId');
   @override
-  late final GeneratedColumn<int> statePensionId = GeneratedColumn<int>(
-      'state_pension_id', aliasedName, false,
-      check: () => statePensionId.equals(defaults.defaultStatePensionId),
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(defaults.defaultStatePensionId));
-  static const VerificationMeta _projectedAnnualAmountMeta =
-      const VerificationMeta('projectedAnnualAmount');
+  late final GeneratedColumn<int> otherIncomeId = GeneratedColumn<int>(
+      'other_income_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _annualAmountMeta =
+      const VerificationMeta('annualAmount');
   @override
-  late final GeneratedColumn<double> projectedAnnualAmount =
-      GeneratedColumn<double>('projected_annual_amount', aliasedName, false,
-          type: DriftSqlType.double, requiredDuringInsert: true);
+  late final GeneratedColumn<double> annualAmount = GeneratedColumn<double>(
+      'annual_amount', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [statePensionId, projectedAnnualAmount];
+  List<GeneratedColumn> get $columns => [otherIncomeId, annualAmount];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'state_pensions';
+  static const String $name = 'other_incomes';
   @override
-  VerificationContext validateIntegrity(Insertable<StatePension> instance,
+  VerificationContext validateIntegrity(Insertable<OtherIncome> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('state_pension_id')) {
+    if (data.containsKey('other_income_id')) {
       context.handle(
-          _statePensionIdMeta,
-          statePensionId.isAcceptableOrUnknown(
-              data['state_pension_id']!, _statePensionIdMeta));
+          _otherIncomeIdMeta,
+          otherIncomeId.isAcceptableOrUnknown(
+              data['other_income_id']!, _otherIncomeIdMeta));
     }
-    if (data.containsKey('projected_annual_amount')) {
+    if (data.containsKey('annual_amount')) {
       context.handle(
-          _projectedAnnualAmountMeta,
-          projectedAnnualAmount.isAcceptableOrUnknown(
-              data['projected_annual_amount']!, _projectedAnnualAmountMeta));
+          _annualAmountMeta,
+          annualAmount.isAcceptableOrUnknown(
+              data['annual_amount']!, _annualAmountMeta));
     } else if (isInserting) {
-      context.missing(_projectedAnnualAmountMeta);
+      context.missing(_annualAmountMeta);
     }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {statePensionId};
+  Set<GeneratedColumn> get $primaryKey => {otherIncomeId};
   @override
-  StatePension map(Map<String, dynamic> data, {String? tablePrefix}) {
+  OtherIncome map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return StatePension(
-      statePensionId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}state_pension_id'])!,
-      projectedAnnualAmount: attachedDatabase.typeMapping.read(
-          DriftSqlType.double,
-          data['${effectivePrefix}projected_annual_amount'])!,
+    return OtherIncome(
+      otherIncomeId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}other_income_id'])!,
+      annualAmount: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}annual_amount'])!,
     );
   }
 
   @override
-  $StatePensionsTable createAlias(String alias) {
-    return $StatePensionsTable(attachedDatabase, alias);
+  $OtherIncomesTable createAlias(String alias) {
+    return $OtherIncomesTable(attachedDatabase, alias);
   }
 }
 
-class StatePension extends DataClass implements Insertable<StatePension> {
-  final int statePensionId;
-  final double projectedAnnualAmount;
-  const StatePension(
-      {required this.statePensionId, required this.projectedAnnualAmount});
+class OtherIncome extends DataClass implements Insertable<OtherIncome> {
+  final int otherIncomeId;
+  final double annualAmount;
+  const OtherIncome({required this.otherIncomeId, required this.annualAmount});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['state_pension_id'] = Variable<int>(statePensionId);
-    map['projected_annual_amount'] = Variable<double>(projectedAnnualAmount);
+    map['other_income_id'] = Variable<int>(otherIncomeId);
+    map['annual_amount'] = Variable<double>(annualAmount);
     return map;
   }
 
-  StatePensionsCompanion toCompanion(bool nullToAbsent) {
-    return StatePensionsCompanion(
-      statePensionId: Value(statePensionId),
-      projectedAnnualAmount: Value(projectedAnnualAmount),
+  OtherIncomesCompanion toCompanion(bool nullToAbsent) {
+    return OtherIncomesCompanion(
+      otherIncomeId: Value(otherIncomeId),
+      annualAmount: Value(annualAmount),
     );
   }
 
-  factory StatePension.fromJson(Map<String, dynamic> json,
+  factory OtherIncome.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return StatePension(
-      statePensionId: serializer.fromJson<int>(json['statePensionId']),
-      projectedAnnualAmount:
-          serializer.fromJson<double>(json['projectedAnnualAmount']),
+    return OtherIncome(
+      otherIncomeId: serializer.fromJson<int>(json['otherIncomeId']),
+      annualAmount: serializer.fromJson<double>(json['annualAmount']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'statePensionId': serializer.toJson<int>(statePensionId),
-      'projectedAnnualAmount': serializer.toJson<double>(projectedAnnualAmount),
+      'otherIncomeId': serializer.toJson<int>(otherIncomeId),
+      'annualAmount': serializer.toJson<double>(annualAmount),
     };
   }
 
-  StatePension copyWith({int? statePensionId, double? projectedAnnualAmount}) =>
-      StatePension(
-        statePensionId: statePensionId ?? this.statePensionId,
-        projectedAnnualAmount:
-            projectedAnnualAmount ?? this.projectedAnnualAmount,
+  OtherIncome copyWith({int? otherIncomeId, double? annualAmount}) =>
+      OtherIncome(
+        otherIncomeId: otherIncomeId ?? this.otherIncomeId,
+        annualAmount: annualAmount ?? this.annualAmount,
       );
   @override
   String toString() {
-    return (StringBuffer('StatePension(')
-          ..write('statePensionId: $statePensionId, ')
-          ..write('projectedAnnualAmount: $projectedAnnualAmount')
+    return (StringBuffer('OtherIncome(')
+          ..write('otherIncomeId: $otherIncomeId, ')
+          ..write('annualAmount: $annualAmount')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(statePensionId, projectedAnnualAmount);
+  int get hashCode => Object.hash(otherIncomeId, annualAmount);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is StatePension &&
-          other.statePensionId == this.statePensionId &&
-          other.projectedAnnualAmount == this.projectedAnnualAmount);
+      (other is OtherIncome &&
+          other.otherIncomeId == this.otherIncomeId &&
+          other.annualAmount == this.annualAmount);
 }
 
-class StatePensionsCompanion extends UpdateCompanion<StatePension> {
-  final Value<int> statePensionId;
-  final Value<double> projectedAnnualAmount;
-  const StatePensionsCompanion({
-    this.statePensionId = const Value.absent(),
-    this.projectedAnnualAmount = const Value.absent(),
+class OtherIncomesCompanion extends UpdateCompanion<OtherIncome> {
+  final Value<int> otherIncomeId;
+  final Value<double> annualAmount;
+  const OtherIncomesCompanion({
+    this.otherIncomeId = const Value.absent(),
+    this.annualAmount = const Value.absent(),
   });
-  StatePensionsCompanion.insert({
-    this.statePensionId = const Value.absent(),
-    required double projectedAnnualAmount,
-  }) : projectedAnnualAmount = Value(projectedAnnualAmount);
-  static Insertable<StatePension> custom({
-    Expression<int>? statePensionId,
-    Expression<double>? projectedAnnualAmount,
+  OtherIncomesCompanion.insert({
+    this.otherIncomeId = const Value.absent(),
+    required double annualAmount,
+  }) : annualAmount = Value(annualAmount);
+  static Insertable<OtherIncome> custom({
+    Expression<int>? otherIncomeId,
+    Expression<double>? annualAmount,
   }) {
     return RawValuesInsertable({
-      if (statePensionId != null) 'state_pension_id': statePensionId,
-      if (projectedAnnualAmount != null)
-        'projected_annual_amount': projectedAnnualAmount,
+      if (otherIncomeId != null) 'other_income_id': otherIncomeId,
+      if (annualAmount != null) 'annual_amount': annualAmount,
     });
   }
 
-  StatePensionsCompanion copyWith(
-      {Value<int>? statePensionId, Value<double>? projectedAnnualAmount}) {
-    return StatePensionsCompanion(
-      statePensionId: statePensionId ?? this.statePensionId,
-      projectedAnnualAmount:
-          projectedAnnualAmount ?? this.projectedAnnualAmount,
+  OtherIncomesCompanion copyWith(
+      {Value<int>? otherIncomeId, Value<double>? annualAmount}) {
+    return OtherIncomesCompanion(
+      otherIncomeId: otherIncomeId ?? this.otherIncomeId,
+      annualAmount: annualAmount ?? this.annualAmount,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (statePensionId.present) {
-      map['state_pension_id'] = Variable<int>(statePensionId.value);
+    if (otherIncomeId.present) {
+      map['other_income_id'] = Variable<int>(otherIncomeId.value);
     }
-    if (projectedAnnualAmount.present) {
-      map['projected_annual_amount'] =
-          Variable<double>(projectedAnnualAmount.value);
+    if (annualAmount.present) {
+      map['annual_amount'] = Variable<double>(annualAmount.value);
     }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('StatePensionsCompanion(')
-          ..write('statePensionId: $statePensionId, ')
-          ..write('projectedAnnualAmount: $projectedAnnualAmount')
+    return (StringBuffer('OtherIncomesCompanion(')
+          ..write('otherIncomeId: $otherIncomeId, ')
+          ..write('annualAmount: $annualAmount')
           ..write(')'))
         .toString();
   }
@@ -810,7 +800,7 @@ abstract class _$DatabaseService extends GeneratedDatabase {
   _$DatabaseService(QueryExecutor e) : super(e);
   late final $PensionsTable pensions = $PensionsTable(this);
   late final $StatementsTable statements = $StatementsTable(this);
-  late final $StatePensionsTable statePensions = $StatePensionsTable(this);
+  late final $OtherIncomesTable otherIncomes = $OtherIncomesTable(this);
   late final Index parentPension = Index(
       'parent_pension', 'CREATE INDEX parent_pension ON statements (pension)');
   @override
@@ -818,7 +808,7 @@ abstract class _$DatabaseService extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [pensions, statements, statePensions, parentPension];
+      [pensions, statements, otherIncomes, parentPension];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
         [
