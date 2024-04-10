@@ -3,7 +3,7 @@ import 'connection/connection.dart' as dbconn;
 
 import 'package:pension_compare/database/tables/pension.dart';
 import 'package:pension_compare/database/tables/statement.dart';
-import 'package:pension_compare/database/tables/state_pension.dart';
+import 'package:pension_compare/database/tables/other_income.dart';
 import 'package:pension_compare/database/tables/pensions_with_latest_statement.dart';
 import 'package:pension_compare/constants/defaults.dart' as defaults;
 import 'package:pension_compare/helpers/date_helper.dart';
@@ -11,7 +11,7 @@ import 'package:pension_compare/helpers/date_helper.dart';
 part 'database_service.g.dart';
 
 @DriftDatabase(
-  tables: [Pensions, Statements, StatePensions],
+  tables: [Pensions, Statements, OtherIncomes],
 )
 class DatabaseService extends _$DatabaseService {
   DatabaseService(super.connection);
@@ -151,24 +151,26 @@ class DatabaseService extends _$DatabaseService {
     return (pension != null);
   }
 
-  // Get the state pension record.  There should only be one record in the table
-  Future<StatePension?> getStatePension() async {
-    return select(statePensions).getSingleOrNull();
+  // Get the state pension record.
+  Future<OtherIncome?> getStatePension() async {
+    return (select(otherIncomes)
+          ..where(
+              (o) => o.otherIncomeId.equals(defaults.defaultStatePensionId)))
+        .getSingleOrNull();
   }
 
   // Save the state pension data.  Update the existing record, or insert a new
   // one if it doesn't exist
-  // there should only be one record in the table
-  Future<StatePension?> saveStatePension(double projectedAnnualAmount) async {
-    StatePension statePension = StatePension(
-      statePensionId: defaults.defaultStatePensionId,
-      projectedAnnualAmount: projectedAnnualAmount,
+  Future<OtherIncome?> saveStatePension(double annualAmount) async {
+    OtherIncome statePension = OtherIncome(
+      otherIncomeId: defaults.defaultStatePensionId,
+      annualAmount: annualAmount,
     );
 
-    // attempt to update the state pension record, if it doesn't exist then insert it
-    bool success = await update(statePensions).replace(statePension);
+    // attempt to update the record, if it doesn't exist then insert it
+    bool success = await update(otherIncomes).replace(statePension);
     if (!success) {
-      return into(statePensions).insertReturning(statePension);
+      return into(otherIncomes).insertReturning(statePension);
     }
 
     return statePension;

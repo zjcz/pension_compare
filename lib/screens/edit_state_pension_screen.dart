@@ -76,7 +76,7 @@ class _EditStatePensionScreenState extends State<EditStatePensionScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  FutureBuilder<StatePension?>(
+                  FutureBuilder<OtherIncome?>(
                       future: _getDatabaseService().getStatePension(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
@@ -90,10 +90,10 @@ class _EditStatePensionScreenState extends State<EditStatePensionScreen> {
                         } else if (!snapshot.hasData || snapshot.data == null) {
                           return const Center(child: Text('Not found'));
                         } else {
-                          final StatePension statePension = snapshot.data!;
+                          final OtherIncome statePension = snapshot.data!;
                           yearlyValueController.text =
                               CurrencyHelper.formatCurrency(
-                                  statePension.projectedAnnualAmount);
+                                  statePension.annualAmount);
                           return TextFormField(
                             key: EditStatePensionScreen.yearlyValueKey,
                             controller: yearlyValueController,

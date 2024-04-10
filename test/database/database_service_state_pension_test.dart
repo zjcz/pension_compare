@@ -20,8 +20,8 @@ void main() {
       final entry = await database.getStatePension();
 
       expect(entry, match.isNotNull);
-      expect(entry!.statePensionId, defaults.defaultStatePensionId);
-      expect(entry.projectedAnnualAmount, isZero);
+      expect(entry!.otherIncomeId, defaults.defaultStatePensionId);
+      expect(entry.annualAmount, isZero);
     });
 
     test('read the state pension object after save', () async {
@@ -31,8 +31,8 @@ void main() {
       final entry = await database.getStatePension();
 
       expect(entry, match.isNotNull);
-      expect(entry!.statePensionId, defaults.defaultStatePensionId);
-      expect(entry.projectedAnnualAmount, statePensionValue);
+      expect(entry!.otherIncomeId, defaults.defaultStatePensionId);
+      expect(entry.annualAmount, statePensionValue);
     });
 
     test('update the state pension object', () async {
@@ -41,18 +41,18 @@ void main() {
 
       final saved1 = await database.saveStatePension(statePensionValue1);
       expect(saved1, match.isNotNull);
-      expect(saved1!.statePensionId, defaults.defaultStatePensionId);
-      expect(saved1.projectedAnnualAmount, statePensionValue1);
+      expect(saved1!.otherIncomeId, defaults.defaultStatePensionId);
+      expect(saved1.annualAmount, statePensionValue1);
 
       final saved2 = await database.saveStatePension(statePensionValue2);
       expect(saved2, match.isNotNull);
-      expect(saved2!.statePensionId, defaults.defaultStatePensionId);
-      expect(saved2.projectedAnnualAmount, statePensionValue2);
+      expect(saved2!.otherIncomeId, defaults.defaultStatePensionId);
+      expect(saved2.annualAmount, statePensionValue2);
 
       final entry = await database.getStatePension();
       expect(entry, match.isNotNull);
-      expect(entry!.statePensionId, defaults.defaultStatePensionId);
-      expect(entry.projectedAnnualAmount, statePensionValue2);
+      expect(entry!.otherIncomeId, defaults.defaultStatePensionId);
+      expect(entry.annualAmount, statePensionValue2);
     });
   });
 }
