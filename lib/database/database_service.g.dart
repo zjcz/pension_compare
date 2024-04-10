@@ -348,6 +348,10 @@ class $StatementsTable extends Statements
   @override
   Set<GeneratedColumn> get $primaryKey => {statementId};
   @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+        {pension, statementDate},
+      ];
+  @override
   Statement map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Statement(

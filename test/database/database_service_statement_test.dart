@@ -94,6 +94,48 @@ void main() {
       expect(result.transferValue, transferValue);
     });
 
+    test(
+        'Saving a new statement object removes time component from statement date',
+        () async {
+      DateTime statementDate = DateTime(2024, 2, 3, 12, 34, 56, 78);
+      double planValue = 123.45;
+      double projectedAnnualAmount = 456.78;
+      double? yearlyCharges = 78.90;
+      double? transferValue = 90.12;
+
+      final pension =
+          await database.createPension('pension', DateTime(2050, 1, 1));
+
+      final entry = await database.createStatement(
+          pension!.pensionId,
+          statementDate,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue);
+
+      expect(entry, match.isNotNull);
+      expect(entry!.statementDate.year, statementDate.year);
+      expect(entry.statementDate.month, statementDate.month);
+      expect(entry.statementDate.day, statementDate.day);
+      expect(entry.statementDate.hour, 0);
+      expect(entry.statementDate.minute, 0);
+      expect(entry.statementDate.second, 0);
+      expect(entry.statementDate.millisecond, 0);
+      expect(entry.statementDate.microsecond, 0);
+
+      final result = await database.getStatement(entry.statementId);
+      expect(result, match.isNotNull);
+      expect(result!.statementDate.year, statementDate.year);
+      expect(result.statementDate.month, statementDate.month);
+      expect(result.statementDate.day, statementDate.day);
+      expect(result.statementDate.hour, 0);
+      expect(result.statementDate.minute, 0);
+      expect(result.statementDate.second, 0);
+      expect(result.statementDate.millisecond, 0);
+      expect(result.statementDate.microsecond, 0);
+    });
+
     test('read all new statement objects', () async {
       DateTime statementDate1 = DateTime(2024, 2, 3);
       double planValue1 = 123.45;
@@ -239,7 +281,8 @@ void main() {
     });
 
     test('delete a pension also deletes all statement objects', () async {
-      DateTime statementDate = DateTime(2024, 2, 3);
+      DateTime statementDate1 = DateTime(2023, 1, 1);
+      DateTime statementDate2 = DateTime(2024, 1, 1);
       double planValue = 123.45;
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
@@ -248,9 +291,9 @@ void main() {
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
 
-      await database.createStatement(pension!.pensionId, statementDate,
+      await database.createStatement(pension!.pensionId, statementDate1,
           planValue, projectedAnnualAmount, yearlyCharges, transferValue);
-      await database.createStatement(pension.pensionId, statementDate,
+      await database.createStatement(pension.pensionId, statementDate2,
           planValue, projectedAnnualAmount, yearlyCharges, transferValue);
 
       final results =
@@ -265,6 +308,197 @@ void main() {
           await database.getAllStatementsForPension(pension.pensionId);
       expect(resultsAfterDelete, match.isNotNull);
       expect(resultsAfterDelete.length, 0);
+    });
+  });
+
+  group('Test pension / statement date combination is unique', () {
+    test('Create fails if statement date already in use', () async {
+      DateTime statementDate = DateTime(2024, 2, 3);
+      double planValue = 123.45;
+      double projectedAnnualAmount = 456.78;
+      double? yearlyCharges = 78.90;
+      double? transferValue = 90.12;
+
+      final pension =
+          await database.createPension('pension', DateTime(2050, 1, 1));
+
+      await database.createStatement(pension!.pensionId, statementDate,
+          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+      await expectLater(
+          database.createStatement(pension.pensionId, statementDate, planValue,
+              projectedAnnualAmount, yearlyCharges, transferValue),
+          throwsA(isException));
+    });
+
+    test('Create succeeds if statement date already in use but record deleted',
+        () async {
+      DateTime statementDate = DateTime(2024, 2, 3);
+      double planValue = 123.45;
+      double projectedAnnualAmount = 456.78;
+      double? yearlyCharges = 78.90;
+      double? transferValue = 90.12;
+
+      final pension =
+          await database.createPension('pension', DateTime(2050, 1, 1));
+
+      Statement? s1 = await database.createStatement(
+          pension!.pensionId,
+          statementDate,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue);
+      await database.deleteStatement(s1!.statementId);
+      await expectLater(
+          database.createStatement(pension.pensionId, statementDate, planValue,
+              projectedAnnualAmount, yearlyCharges, transferValue),
+          completes);
+    });
+
+    test('Create succeeds if statement date already in use on another pension',
+        () async {
+      DateTime statementDate = DateTime(2024, 2, 3);
+      double planValue = 123.45;
+      double projectedAnnualAmount = 456.78;
+      double? yearlyCharges = 78.90;
+      double? transferValue = 90.12;
+
+      final pension1 =
+          await database.createPension('pension 1', DateTime(2050, 1, 1));
+      final pension2 =
+          await database.createPension('pension 2', DateTime(2050, 1, 1));
+      await database.createStatement(pension1!.pensionId, statementDate,
+          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+      await expectLater(
+          database.createStatement(pension2!.pensionId, statementDate,
+              planValue, projectedAnnualAmount, yearlyCharges, transferValue),
+          completes);
+    });
+
+    test('Test if statement date already used in an empty table', () async {
+      int pensionId = 1;
+      DateTime statementDate = DateTime(2024, 2, 3);
+
+      bool response =
+          await database.doesStatementDateExist(null, pensionId, statementDate);
+
+      expect(response, isFalse);
+    });
+
+    test('Test if statement date already used in populated table', () async {
+      DateTime statementDate = DateTime(2024, 2, 3);
+      double planValue = 123.45;
+      double projectedAnnualAmount = 456.78;
+      double? yearlyCharges = 78.90;
+      double? transferValue = 90.12;
+
+      final pension1 =
+          await database.createPension('pension 1', DateTime(2050, 1, 1));
+      await database.createStatement(pension1!.pensionId, statementDate,
+          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+
+      bool response = await database.doesStatementDateExist(
+          null, pension1.pensionId, statementDate);
+
+      expect(response, isTrue);
+    });
+
+    test('Test if statement date already used for this record', () async {
+      DateTime statementDate = DateTime(2024, 2, 3);
+      double planValue = 123.45;
+      double projectedAnnualAmount = 456.78;
+      double? yearlyCharges = 78.90;
+      double? transferValue = 90.12;
+
+      final pension1 =
+          await database.createPension('pension 1', DateTime(2050, 1, 1));
+      final statement1 = await database.createStatement(
+          pension1!.pensionId,
+          statementDate,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue);
+
+      bool response = await database.doesStatementDateExist(
+          statement1!.statementId, pension1.pensionId, statementDate);
+
+      expect(response, isFalse);
+    });
+
+    test('Test if statement date already used for another record', () async {
+      DateTime statementDate1 = DateTime(2023, 1, 1);
+      DateTime statementDate2 = DateTime(2024, 1, 1);
+      DateTime statementDate2Updated = DateTime(2023, 1, 1);
+      double planValue = 123.45;
+      double projectedAnnualAmount = 456.78;
+      double? yearlyCharges = 78.90;
+      double? transferValue = 90.12;
+
+      Pension? pension1 =
+          await database.createPension('pension 1', DateTime(2050, 1, 1));
+      await database.createStatement(pension1!.pensionId, statementDate1,
+          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+      final statement2 = await database.createStatement(
+          pension1.pensionId,
+          statementDate2,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue);
+
+      bool response = await database.doesStatementDateExist(
+          statement2!.statementId, pension1.pensionId, statementDate2Updated);
+
+      expect(response, isTrue);
+    });
+
+    test('Test if statement date is already used with deleted record',
+        () async {
+      DateTime statementDate = DateTime(2024, 2, 3);
+      double planValue = 123.45;
+      double projectedAnnualAmount = 456.78;
+      double? yearlyCharges = 78.90;
+      double? transferValue = 90.12;
+
+      final pension =
+          await database.createPension('pension', DateTime(2050, 1, 1));
+
+      Statement? s1 = await database.createStatement(
+          pension!.pensionId,
+          statementDate,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue);
+      await database.deleteStatement(s1!.statementId);
+
+      bool response = await database.doesStatementDateExist(
+          null, pension.pensionId, statementDate);
+
+      expect(response, isFalse);
+    });
+
+    test(
+        'Test the time component is ignored when checking statement date exists',
+        () async {
+      DateTime statementDate = DateTime(2024, 2, 3, 12, 34, 56, 78);
+      DateTime statementDate2 = DateTime(2024, 2, 3, 18, 23, 45, 67);
+      double planValue = 123.45;
+      double projectedAnnualAmount = 456.78;
+      double? yearlyCharges = 78.90;
+      double? transferValue = 90.12;
+
+      final pension =
+          await database.createPension('pension', DateTime(2050, 1, 1));
+
+      await database.createStatement(pension!.pensionId, statementDate,
+          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+
+      bool response = await database.doesStatementDateExist(
+          null, pension.pensionId, statementDate2);
+
+      expect(response, isTrue);
     });
   });
 }

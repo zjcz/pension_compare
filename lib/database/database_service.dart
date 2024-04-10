@@ -6,6 +6,7 @@ import 'package:pension_compare/database/tables/statement.dart';
 import 'package:pension_compare/database/tables/state_pension.dart';
 import 'package:pension_compare/database/tables/pensions_with_latest_statement.dart';
 import 'package:pension_compare/constants/defaults.dart' as defaults;
+import 'package:pension_compare/helpers/date_helper.dart';
 
 part 'database_service.g.dart';
 
@@ -52,14 +53,16 @@ class DatabaseService extends _$DatabaseService {
 
   // Create a new pension record
   Future<Pension?> createPension(String name, DateTime maturityDate) {
-    return into(pensions).insertReturningOrNull(
-        PensionsCompanion.insert(name: name, maturityDate: maturityDate));
+    return into(pensions).insertReturningOrNull(PensionsCompanion.insert(
+        name: name, maturityDate: DateHelper.removeTime(maturityDate)));
   }
 
   // Update an existing pension record, return true if successful
   Future<bool> updatePension(int id, String name, DateTime maturityDate) {
-    return update(pensions).replace(
-        Pension(pensionId: id, name: name, maturityDate: maturityDate));
+    return update(pensions).replace(Pension(
+        pensionId: id,
+        name: name,
+        maturityDate: DateHelper.removeTime(maturityDate)));
   }
 
   // Delete a pension record by its id and return the number of records deleted
@@ -102,7 +105,7 @@ class DatabaseService extends _$DatabaseService {
       double? transferValue) {
     return into(statements).insertReturningOrNull(StatementsCompanion.insert(
         pension: pensionId,
-        statementDate: statementDate,
+        statementDate: DateHelper.removeTime(statementDate),
         planValue: planValue,
         projectedAnnualAmount: projectedAnnualAmount,
         yearlyCharges: Value(yearlyCharges),
@@ -121,7 +124,7 @@ class DatabaseService extends _$DatabaseService {
     return update(statements).replace(Statement(
         statementId: id,
         pension: pensionId,
-        statementDate: statementDate,
+        statementDate: DateHelper.removeTime(statementDate),
         planValue: planValue,
         projectedAnnualAmount: projectedAnnualAmount,
         yearlyCharges: yearlyCharges,
@@ -131,6 +134,21 @@ class DatabaseService extends _$DatabaseService {
   // Delete a statement record by its id and return the number of records deleted
   Future<int> deleteStatement(int id) {
     return (delete(statements)..where((s) => s.statementId.equals(id))).go();
+  }
+
+  // Checks to see if a statement date already exists in the database for this pension,
+  // but with a different id
+  Future<bool> doesStatementDateExist(
+      int? id, int pensionId, DateTime statementDate) async {
+    final pension = await (select(statements)
+          ..where((s) =>
+              s.pension.equals(pensionId) &
+              s.statementId.equals(id ?? 0).not() &
+              s.statementDate.equals(DateHelper.removeTime(statementDate)))
+          ..limit(1))
+        .getSingleOrNull();
+
+    return (pension != null);
   }
 
   // Get the state pension record.  There should only be one record in the table

@@ -9,14 +9,17 @@ final _formKey = GlobalKey<FormState>();
 Widget createDateField(
     DateTime? initialDate,
     String labelText,
+    String? errorText,
     Function(DateTime?) onDateSelected,
     String? Function(DateTime?)? onValidate) {
   DateField field = DateField(
-      key: key,
-      initialDate: initialDate,
-      onDateSelected: onDateSelected,
-      onValidate: onValidate,
-      labelText: labelText);
+    key: key,
+    initialDate: initialDate,
+    onDateSelected: onDateSelected,
+    onValidate: onValidate,
+    labelText: labelText,
+    errorText: errorText,
+  );
 
   return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
     return MaterialApp(
@@ -32,7 +35,7 @@ void main() {
   group('Test building dropdown', () {
     testWidgets('show the widget with no initial value', (tester) async {
       String label = 'test date field';
-      await tester.pumpWidget(createDateField(null, label, (_) {}, (_) {
+      await tester.pumpWidget(createDateField(null, label, null, (_) {}, (_) {
         return null;
       }));
       await tester.pumpAndSettle();
@@ -42,13 +45,16 @@ void main() {
 
     testWidgets('show the widget with initial value', (tester) async {
       String label = 'test date field';
+      String error = 'error msg';
       DateTime initialDate = DateTime(2024, 2, 15);
-      await tester.pumpWidget(createDateField(initialDate, label, (_) {}, (_) {
+      await tester
+          .pumpWidget(createDateField(initialDate, label, error, (_) {}, (_) {
         return null;
       }));
       await tester.pumpAndSettle();
 
       expect(find.bySemanticsLabel(label), findsOneWidget);
+      expect(find.bySemanticsLabel(error), findsOneWidget);
       expect(find.text(DateHelper.formatDate(initialDate)), findsOneWidget);
     });
 
@@ -65,7 +71,7 @@ void main() {
       }
 
       await tester.pumpWidget(
-          createDateField(initialDate, label, onSelectionChanged, (_) {
+          createDateField(initialDate, label, null, onSelectionChanged, (_) {
         return null;
       }));
 
@@ -109,7 +115,7 @@ void main() {
       }
 
       await tester.pumpWidget(
-          createDateField(null, label, onSelectionChanged, onValidate));
+          createDateField(null, label, null, onSelectionChanged, onValidate));
       await tester.pumpAndSettle();
 
       bool isValid = _formKey.currentState!.validate();
@@ -140,8 +146,8 @@ void main() {
         return value == null ? validationMessage : null;
       }
 
-      await tester.pumpWidget(
-          createDateField(initialDate, label, onSelectionChanged, onValidate));
+      await tester.pumpWidget(createDateField(
+          initialDate, label, null, onSelectionChanged, onValidate));
       await tester.pumpAndSettle();
 
       // Find the TextFormField by key

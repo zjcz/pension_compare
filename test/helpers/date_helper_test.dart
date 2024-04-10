@@ -48,4 +48,38 @@ void main() {
       expect(parsedDate, isNull);
     });
   });
+
+  group('Test removing time component', () {
+    test('Test the time removal', () {
+      DateTime dateToParse = DateTime(2024, 1, 1, 12, 30, 45);
+
+      DateTime parsedDate = DateHelper.removeTime(dateToParse);
+
+      expect(parsedDate.year, 2024);
+      expect(parsedDate.month, 1);
+      expect(parsedDate.day, 1);
+
+      expect(parsedDate.hour, 0);
+      expect(parsedDate.minute, 0);
+      expect(parsedDate.second, 0);
+      expect(parsedDate.millisecond, 0);
+      expect(parsedDate.microsecond, 0);
+    });
+
+    test('Test the time removal when no time specified', () {
+      DateTime dateToParse = DateTime(2024, 1, 1);
+
+      DateTime parsedDate = DateHelper.removeTime(dateToParse);
+
+      expect(parsedDate.year, 2024);
+      expect(parsedDate.month, 1);
+      expect(parsedDate.day, 1);
+
+      expect(parsedDate.hour, 0);
+      expect(parsedDate.minute, 0);
+      expect(parsedDate.second, 0);
+      expect(parsedDate.millisecond, 0);
+      expect(parsedDate.microsecond, 0);
+    });
+  });
 }

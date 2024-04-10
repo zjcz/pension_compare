@@ -3,6 +3,7 @@ import 'package:pension_compare/helpers/date_helper.dart';
 
 class DateField extends StatelessWidget {
   final String? labelText;
+  final String? errorText;
   final DateTime? initialDate;
   final Function(DateTime?)? onDateSelected;
   final String? Function(DateTime?)? onValidate;
@@ -12,6 +13,7 @@ class DateField extends StatelessWidget {
       {super.key,
       this.initialDate,
       this.labelText,
+      this.errorText,
       this.onDateSelected,
       this.onValidate});
 
@@ -24,7 +26,8 @@ class DateField extends StatelessWidget {
       controller: fieldController,
       decoration: InputDecoration(
           icon: const Icon(Icons.calendar_today), //icon of text field
-          labelText: labelText),
+          labelText: labelText,
+          errorText: errorText),
       readOnly: true, // when true user cannot edit text
       onTap: () async {
         DateTime? pickedDate = await showDatePicker(
