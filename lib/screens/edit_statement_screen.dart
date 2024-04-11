@@ -1,3 +1,4 @@
+import 'package:pension_compare/service_locator.dart';
 import 'package:pension_compare/extensions/material_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
@@ -21,13 +22,8 @@ class EditStatementScreen extends StatefulWidget {
   // If adding new this will be null
   final Statement? statement;
   final Pension? parentPension;
-  final DatabaseService databaseService;
 
-  const EditStatementScreen(
-      {super.key,
-      this.parentPension,
-      this.statement,
-      required this.databaseService});
+  const EditStatementScreen({super.key, this.parentPension, this.statement});
 
   @override
   State<EditStatementScreen> createState() => _EditStatmentScreenState();
@@ -267,7 +263,8 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
     String? validationMsg;
 
     if (statementDate != null && _pensionId != null) {
-      bool response = await widget.databaseService.doesStatementDateExist(
+      DatabaseService db = getIt<DatabaseService>();
+      bool response = await db.doesStatementDateExist(
           widget.statement?.statementId, _pensionId!, statementDate);
 
       if (response) {
@@ -283,12 +280,12 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
   }
 
   void _loadData() {
-    DatabaseService db = widget.databaseService;
+    DatabaseService db = getIt<DatabaseService>();
     _pensions = db.getAllPensions();
   }
 
   Future<bool> _saveData() async {
-    DatabaseService db = widget.databaseService;
+    DatabaseService db = getIt<DatabaseService>();
 
     if (widget.statement == null) {
       await db.createStatement(
@@ -356,8 +353,8 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
               TextButton(
                 child: const Text('Yes'),
                 onPressed: () async {
-                  await widget.databaseService
-                      .deleteStatement(widget.statement!.statementId);
+                  DatabaseService db = getIt<DatabaseService>();
+                  await db.deleteStatement(widget.statement!.statementId);
 
                   if (!context.mounted) return;
                   Navigator.pop(context, false);

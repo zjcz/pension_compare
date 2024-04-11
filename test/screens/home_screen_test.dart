@@ -5,11 +5,14 @@ import 'package:pension_compare/screens/home_screen.dart';
 import 'package:pension_compare/database/database_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:pension_compare/service_locator.dart';
 
 import 'home_screen_test.mocks.dart';
 
 Widget createHomeScreen(DatabaseService db) {
-  HomeScreen homeScreen = HomeScreen(databaseService: db);
+  getIt.registerSingleton<DatabaseService>(db);
+
+  HomeScreen homeScreen = const HomeScreen();
 
   return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
     return MaterialApp(home: homeScreen);
@@ -18,6 +21,11 @@ Widget createHomeScreen(DatabaseService db) {
 
 @GenerateMocks([DatabaseService])
 void main() {
+  setUp(() async {
+    // reset before each test to prevent errors with duplicate DatabaseService
+    await getIt.reset();
+  });
+
   group('Test displaying the home screen', () {
     testWidgets('show the home screen with no pension records', (tester) async {
       final databaseService = MockDatabaseService();

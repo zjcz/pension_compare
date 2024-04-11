@@ -5,12 +5,15 @@ import 'package:pension_compare/database/database_service.dart';
 import 'package:pension_compare/helpers/date_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:pension_compare/service_locator.dart';
 
 import 'edit_statement_screen_test.mocks.dart';
 
 Widget createEditScreen(Statement? statementRecord, DatabaseService db) {
+  getIt.registerSingleton<DatabaseService>(db);
+
   EditStatementScreen editStatementScreen =
-      EditStatementScreen(statement: statementRecord, databaseService: db);
+      EditStatementScreen(statement: statementRecord);
 
   return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
     return MaterialApp(home: editStatementScreen);
@@ -19,6 +22,11 @@ Widget createEditScreen(Statement? statementRecord, DatabaseService db) {
 
 @GenerateMocks([DatabaseService])
 void main() {
+  setUp(() async {
+    // reset before each test to prevent errors with duplicate DatabaseService
+    await getIt.reset();
+  });
+
   group('Test adding / editing of statement record', () {
     testWidgets('show the add screen with no statement record', (tester) async {
       final databaseService = MockDatabaseService();

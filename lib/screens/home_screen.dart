@@ -1,3 +1,4 @@
+import 'package:pension_compare/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/database/database_service.dart';
 import 'package:pension_compare/database/tables/pensions_with_latest_statement.dart';
@@ -5,16 +6,13 @@ import 'package:pension_compare/screens/edit_pension_screen.dart';
 import 'package:pension_compare/screens/edit_statement_screen.dart';
 import 'package:pension_compare/screens/edit_state_pension_screen.dart';
 import 'package:pension_compare/screens/settings_screen.dart';
-import 'package:pension_compare/settings/settings_service.dart';
 import 'package:pension_compare/widgets/pension_data_table.dart';
 import 'package:pension_compare/widgets/pension_summary_chart.dart';
 import 'package:pension_compare/screens/pension_overview_screen.dart';
 
 // TODO - Add Settings button
 class HomeScreen extends StatefulWidget {
-  final DatabaseService databaseService;
-
-  const HomeScreen({super.key, required this.databaseService});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -36,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    DatabaseService db = _getDatabaseService();
+    DatabaseService db = getIt<DatabaseService>();
     Future<List<PensionWithLatestStatement>> pensionsSummaryData =
         db.getAllPensionsWithLatestStatement();
 
@@ -46,11 +44,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             icon: const Icon(Icons.add),
             onPressed: () async {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => EditPensionScreen(
-                            databaseService: db,
-                          ))).then((_) => {setState(() {})});
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const EditPensionScreen()))
+                  .then((_) => {setState(() {})});
             },
           ),
           PopupMenuButton(
@@ -84,30 +81,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => EditPensionScreen(
-                                databaseService: widget.databaseService)))
+                            builder: (context) => const EditPensionScreen()))
                     .then((_) => {setState(() {})});
               } else if (value == 'statement') {
                 Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => EditStatementScreen(
-                                databaseService: widget.databaseService)))
+                            builder: (context) => const EditStatementScreen()))
                     .then((_) => {setState(() {})});
               } else if (value == 'state_pension') {
                 Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => EditStatePensionScreen(
-                                databaseService: widget.databaseService)))
+                            builder: (context) =>
+                                const EditStatePensionScreen()))
                     .then((_) => {setState(() {})});
               } else if (value == 'settings') {
                 Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SettingsScreen(
-                                settingsService: SettingsService(),
-                                databaseService: widget.databaseService)))
+                            builder: (context) => SettingsScreen()))
                     .then((_) => {setState(() {})});
               } else if (value == 'reset_test_data') {
                 await db.populateTestData();
@@ -155,7 +148,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                   builder: (context) =>
                                                       PensionOverviewScreen(
                                                         pension: pension,
-                                                        databaseService: db,
                                                       )))
                                           .then((_) => {setState(() {})});
                                     },
@@ -169,10 +161,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ],
           ),
         ));
-  }
-
-  DatabaseService _getDatabaseService() {
-    return widget.databaseService;
   }
 
   @override

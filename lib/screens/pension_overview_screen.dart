@@ -1,3 +1,4 @@
+import 'package:pension_compare/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/database/database_service.dart';
 import 'package:pension_compare/screens/edit_pension_screen.dart';
@@ -9,11 +10,9 @@ import 'package:pension_compare/widgets/statement_summary_chart.dart';
 // Contains a chart and a table of statements.  Can edit the pension or add or
 // edit statements.
 class PensionOverviewScreen extends StatefulWidget {
-  final DatabaseService databaseService;
   final Pension pension;
 
-  const PensionOverviewScreen(
-      {super.key, required this.pension, required this.databaseService});
+  const PensionOverviewScreen({super.key, required this.pension});
 
   @override
   State<PensionOverviewScreen> createState() => _PensionOverviewScreenState();
@@ -36,7 +35,7 @@ class _PensionOverviewScreenState extends State<PensionOverviewScreen>
 
   @override
   Widget build(BuildContext context) {
-    DatabaseService db = _getDatabaseService();
+    DatabaseService db = getIt<DatabaseService>();
     Future<List<Statement>> statementData =
         db.getAllStatementsForPension(widget.pension.pensionId);
 
@@ -50,7 +49,6 @@ class _PensionOverviewScreenState extends State<PensionOverviewScreen>
                     MaterialPageRoute(
                         builder: (context) => EditStatementScreen(
                               parentPension: widget.pension,
-                              databaseService: widget.databaseService,
                             ))).then((_) => {setState(() {})});
               }),
           PopupMenuButton(
@@ -68,8 +66,8 @@ class _PensionOverviewScreenState extends State<PensionOverviewScreen>
                 Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => EditPensionScreen(
-                                pension: widget.pension, databaseService: db)))
+                            builder: (context) =>
+                                EditPensionScreen(pension: widget.pension)))
                     .then((_) async => {setState(() {})});
               }
             },
@@ -113,9 +111,7 @@ class _PensionOverviewScreenState extends State<PensionOverviewScreen>
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     EditStatementScreen(
-                                                      statement: statement,
-                                                      databaseService: db,
-                                                    )))
+                                                        statement: statement)))
                                         .then((_) => {setState(() {})});
                                   },
                                 )
@@ -127,10 +123,6 @@ class _PensionOverviewScreenState extends State<PensionOverviewScreen>
             ],
           ),
         ));
-  }
-
-  DatabaseService _getDatabaseService() {
-    return widget.databaseService;
   }
 
   @override

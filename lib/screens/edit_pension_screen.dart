@@ -2,6 +2,7 @@ import 'package:pension_compare/extensions/material_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/database/database_service.dart';
+import 'package:pension_compare/service_locator.dart';
 import 'package:pension_compare/widgets/date_field.dart';
 
 // TODO - Add delete button
@@ -13,10 +14,8 @@ class EditPensionScreen extends StatefulWidget {
   // If editing, this is the pension record we are editing.
   // If adding new this will be null
   final Pension? pension;
-  final DatabaseService databaseService;
 
-  const EditPensionScreen(
-      {super.key, this.pension, required this.databaseService});
+  const EditPensionScreen({super.key, this.pension});
 
   @override
   State<EditPensionScreen> createState() => _EditPensionScreenState();
@@ -160,11 +159,12 @@ class _EditPensionScreenState extends State<EditPensionScreen> {
   }
 
   Future<bool> _validatePensionName(String? pensionName) async {
+    final db = getIt<DatabaseService>();
     String? validationMsg;
 
     if (pensionName != null && pensionName.isNotEmpty) {
-      bool response = await widget.databaseService
-          .doesPensionNameExist(widget.pension?.pensionId, pensionName);
+      bool response =
+          await db.doesPensionNameExist(widget.pension?.pensionId, pensionName);
 
       if (response) {
         validationMsg = "This name is already in use";
@@ -179,7 +179,7 @@ class _EditPensionScreenState extends State<EditPensionScreen> {
   }
 
   Future<bool> _saveData() async {
-    final db = widget.databaseService;
+    final db = getIt<DatabaseService>();
 
     if (widget.pension == null) {
       await db.createPension(nameController.text, _maturityDate!);
@@ -235,8 +235,8 @@ class _EditPensionScreenState extends State<EditPensionScreen> {
               TextButton(
                 child: const Text('Yes'),
                 onPressed: () async {
-                  await widget.databaseService
-                      .deletePension(widget.pension!.pensionId);
+                  final db = getIt<DatabaseService>();
+                  await db.deletePension(widget.pension!.pensionId);
 
                   if (!context.mounted) return;
                   Navigator.pop(context, false);

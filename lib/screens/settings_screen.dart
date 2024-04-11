@@ -1,3 +1,4 @@
+import 'package:pension_compare/service_locator.dart';
 import 'package:pension_compare/extensions/material_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
@@ -8,17 +9,11 @@ import 'package:pension_compare/widgets/date_field.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
 
 class SettingsScreen extends StatefulWidget {
-  final SettingsService settingsService;
-  final DatabaseService databaseService;
-
   static const settingRetirementDateKey = Key('retirementDate');
   static const settingTargetIncomeKey = Key('targetIncome');
   static const settingDeleteAllKey = Key('deleteAllButton');
 
-  const SettingsScreen(
-      {super.key,
-      required this.settingsService,
-      required this.databaseService});
+  const SettingsScreen({super.key});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -81,7 +76,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: Column(
                 children: [
                   FutureBuilder<Settings>(
-                      future: widget.settingsService.getSettings(),
+                      future: getIt<SettingsService>().getSettings(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -169,7 +164,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<bool> _saveData() async {
-    widget.settingsService.saveSettings(Settings(
+    getIt<SettingsService>().saveSettings(Settings(
         retirementDate: _retirementDate,
         targetIncome:
             CurrencyHelper.parseCurrency(targetIncomeController.text)));
@@ -220,7 +215,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             TextButton(
               child: const Text('Yes'),
               onPressed: () async {
-                await widget.databaseService.clearAllData();
+                DatabaseService db = getIt<DatabaseService>();
+                await db.clearAllData();
 
                 if (!context.mounted) return;
                 Navigator.pop(context, false);

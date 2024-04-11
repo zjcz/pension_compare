@@ -8,15 +8,16 @@ import 'package:pension_compare/helpers/currency_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pension_compare/database/database_service.dart';
+import 'package:pension_compare/service_locator.dart';
 
 import 'settings_screen_test.mocks.dart';
 
 Widget createSettingsScreen(
     SettingsService settingsService, DatabaseService databaseService) {
-  SettingsScreen settingsScreen = SettingsScreen(
-    settingsService: settingsService,
-    databaseService: databaseService,
-  );
+  getIt.registerSingleton<SettingsService>(settingsService);
+  getIt.registerSingleton<DatabaseService>(databaseService);
+
+  SettingsScreen settingsScreen = const SettingsScreen();
 
   return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
     return MaterialApp(home: settingsScreen);
@@ -25,6 +26,11 @@ Widget createSettingsScreen(
 
 @GenerateMocks([SettingsService, DatabaseService])
 void main() {
+  setUp(() async {
+    // reset before each test to prevent errors with duplicate DatabaseService
+    await getIt.reset();
+  });
+
   group('Test editing of settings', () {
     testWidgets('show the settings screen with no existing settings',
         (tester) async {
