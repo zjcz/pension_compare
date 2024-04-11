@@ -8,16 +8,24 @@ import 'package:pension_compare/constants/defaults.dart' as defaults;
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 import '../mocks/mock_url_launcher.dart';
 import 'edit_state_pension_screen_test.mocks.dart';
+import 'package:pension_compare/service_locator.dart';
 
-Widget createEditScreen(DatabaseService? db) {
+Widget createEditScreen(DatabaseService db) {
+  getIt.registerSingleton<DatabaseService>(db);
+
   EditStatePensionScreen editStatePensionScreen =
-      EditStatePensionScreen(databaseService: db);
+      const EditStatePensionScreen();
 
   return MaterialApp(home: editStatePensionScreen);
 }
 
 @GenerateMocks([DatabaseService])
 void main() {
+  setUp(() async {
+    // reset before each test to prevent errors with duplicate DatabaseService
+    await getIt.reset();
+  });
+
   group('Test editing of state pension record', () {
     testWidgets('show the screen', (tester) async {
       double value = 12345.67;

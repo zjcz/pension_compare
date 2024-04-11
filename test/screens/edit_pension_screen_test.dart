@@ -5,18 +5,26 @@ import 'package:pension_compare/database/database_service.dart';
 import 'package:pension_compare/helpers/date_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:pension_compare/service_locator.dart';
 
 import 'edit_pension_screen_test.mocks.dart';
 
 Widget createEditScreen(Pension? pensionRecord, DatabaseService db) {
+  getIt.registerSingleton<DatabaseService>(db);
+
   EditPensionScreen editPensionScreen =
-      EditPensionScreen(pension: pensionRecord, databaseService: db);
+      EditPensionScreen(pension: pensionRecord);
 
   return MaterialApp(home: editPensionScreen);
 }
 
 @GenerateMocks([DatabaseService])
 void main() {
+  setUp(() async {
+    // reset before each test to prevent errors with duplicate DatabaseService
+    await getIt.reset();
+  });
+
   group('Test adding / editing of pension record', () {
     testWidgets('show the add screen with no pension record', (tester) async {
       await tester.pumpWidget(createEditScreen(null, MockDatabaseService()));

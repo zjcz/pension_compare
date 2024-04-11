@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:pension_compare/database/database_service.dart';
 import 'package:pension_compare/screens/home_screen.dart';
+import 'package:pension_compare/service_locator.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // initialise getIt
+  setupServiceLocator();
+
   runApp(const PensionCompareApp());
 }
 
@@ -12,8 +16,6 @@ class PensionCompareApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DatabaseService databaseService = DatabaseService.withDefaultConnection();
-
     return MaterialApp(
       title: 'Pension Compare',
       theme: ThemeData(
@@ -25,7 +27,7 @@ class PensionCompareApp extends StatelessWidget {
         useMaterial3: true,
       ),
       themeMode: ThemeMode.system,
-      home: HomeScreen(databaseService: databaseService),
+      home: const HomeScreen(),
     );
   }
 }
