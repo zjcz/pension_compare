@@ -4,6 +4,8 @@ import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/database/database_service.dart';
 import 'package:pension_compare/service_locator.dart';
 import 'package:pension_compare/widgets/date_field.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pension_compare/route_config.dart';
 
 // TODO - Add delete button
 class EditPensionScreen extends StatefulWidget {
@@ -218,13 +220,13 @@ class _EditPensionScreenState extends State<EditPensionScreen> {
 
     if (shouldDiscard ?? false) {
       if (!mounted) return;
-      Navigator.of(context).pop();
+      context.pop();
     }
   }
 
   Future<void> _showDeleteDialog() async {
     if (widget.pension != null) {
-      final bool? shouldDiscard = await showDialog<bool>(
+      final bool? shouldDelete = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -235,17 +237,7 @@ class _EditPensionScreenState extends State<EditPensionScreen> {
               TextButton(
                 child: const Text('Yes'),
                 onPressed: () async {
-                  final db = getIt<DatabaseService>();
-                  await db.deletePension(widget.pension!.pensionId);
-
-                  if (!context.mounted) return;
-                  Navigator.pop(context, false);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Pension removed successfully!'),
-                    ),
-                  );
+                  Navigator.pop(context, true);
                 },
               ),
               TextButton(
@@ -258,6 +250,20 @@ class _EditPensionScreenState extends State<EditPensionScreen> {
           );
         },
       );
+
+      if (shouldDelete ?? false) {
+        final db = getIt<DatabaseService>();
+        await db.deletePension(widget.pension!.pensionId);
+
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Pension removed successfully!'),
+          ),
+        );
+
+        context.go(RouteDefs.home);
+      }
     }
   }
 }

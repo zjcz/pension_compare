@@ -7,6 +7,8 @@ import 'package:pension_compare/settings/settings_service.dart';
 import 'package:pension_compare/database/database_service.dart';
 import 'package:pension_compare/widgets/date_field.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pension_compare/route_config.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const settingRetirementDateKey = Key('retirementDate');
@@ -204,7 +206,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _showDeleteAllDialog() async {
-    final bool? shouldDiscard = await showDialog<bool>(
+    final bool? shouldDelete = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -215,17 +217,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             TextButton(
               child: const Text('Yes'),
               onPressed: () async {
-                DatabaseService db = getIt<DatabaseService>();
-                await db.clearAllData();
-
-                if (!context.mounted) return;
-                Navigator.pop(context, false);
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('All data removed successfully!'),
-                  ),
-                );
+                Navigator.pop(context, true);
               },
             ),
             TextButton(
@@ -239,9 +231,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
       },
     );
 
-    if (shouldDiscard ?? false) {
-      if (!mounted) return;
-      Navigator.of(context).pop();
+    if (shouldDelete ?? false) {
+      DatabaseService db = getIt<DatabaseService>();
+      await db.clearAllData();
+
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('All data removed successfully!'),
+        ),
+      );
+
+      context.go(RouteDefs.home);
     }
   }
 }
