@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pension_compare/screens/home_screen.dart';
 import 'package:pension_compare/service_locator.dart';
+
+import 'package:pension_compare/route_config.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +17,7 @@ class PensionCompareApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Pension Compare',
       theme: ThemeData(
         brightness: Brightness.light,
@@ -27,7 +28,7 @@ class PensionCompareApp extends StatelessWidget {
         useMaterial3: true,
       ),
       themeMode: ThemeMode.system,
-      home: const HomeScreen(),
+      routerConfig: setupRouter(),
     );
   }
 }

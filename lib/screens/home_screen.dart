@@ -2,15 +2,11 @@ import 'package:pension_compare/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/database/database_service.dart';
 import 'package:pension_compare/database/tables/pensions_with_latest_statement.dart';
-import 'package:pension_compare/screens/edit_pension_screen.dart';
-import 'package:pension_compare/screens/edit_statement_screen.dart';
-import 'package:pension_compare/screens/edit_state_pension_screen.dart';
-import 'package:pension_compare/screens/settings_screen.dart';
 import 'package:pension_compare/widgets/pension_data_table.dart';
 import 'package:pension_compare/widgets/pension_summary_chart.dart';
-import 'package:pension_compare/screens/pension_overview_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pension_compare/route_config.dart';
 
-// TODO - Add Settings button
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -43,10 +39,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () async {
-              Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const EditPensionScreen()))
+              context
+                  .push(RouteDefs.editPension)
                   .then((_) => {setState(() {})});
             },
           ),
@@ -78,29 +72,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             },
             onSelected: (value) async {
               if (value == 'pension') {
-                Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const EditPensionScreen()))
+                context
+                    .push(RouteDefs.editPension)
                     .then((_) => {setState(() {})});
               } else if (value == 'statement') {
-                Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const EditStatementScreen()))
+                context
+                    .push(RouteDefs.editStatement)
                     .then((_) => {setState(() {})});
               } else if (value == 'state_pension') {
-                Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const EditStatePensionScreen()))
+                context
+                    .push(RouteDefs.editStatePension)
                     .then((_) => {setState(() {})});
               } else if (value == 'settings') {
-                Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SettingsScreen()))
+                context
+                    .push(RouteDefs.editSettings)
                     .then((_) => {setState(() {})});
               } else if (value == 'reset_test_data') {
                 await db.populateTestData();
@@ -142,13 +127,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   PensionDataTable(
                                     pensionDataList: pensions,
                                     onTap: (Pension pension) {
-                                      Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PensionOverviewScreen(
-                                                        pension: pension,
-                                                      )))
+                                      context
+                                          .push(RouteDefs.pensionOverview,
+                                              extra: pension)
                                           .then((_) => {setState(() {})});
                                     },
                                   )

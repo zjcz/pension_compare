@@ -8,7 +8,9 @@ import 'package:pension_compare/helpers/currency_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pension_compare/database/database_service.dart';
+import 'package:pension_compare/screens/home_screen.dart';
 import 'package:pension_compare/service_locator.dart';
+import 'package:pension_compare/route_config.dart';
 
 import 'settings_screen_test.mocks.dart';
 
@@ -17,11 +19,17 @@ Widget createSettingsScreen(
   getIt.registerSingleton<SettingsService>(settingsService);
   getIt.registerSingleton<DatabaseService>(databaseService);
 
-  SettingsScreen settingsScreen = const SettingsScreen();
-
   return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
-    return MaterialApp(home: settingsScreen);
+    return MaterialApp.router(
+      routerConfig: setupRouter(initialLocation: RouteDefs.editSettings),
+    );
   });
+}
+
+DatabaseService createMockDatabaseService() {
+  DatabaseService ds = MockDatabaseService();
+  when(ds.getAllPensionsWithLatestStatement()).thenAnswer((_) async => []);
+  return ds;
 }
 
 @GenerateMocks([SettingsService, DatabaseService])
@@ -38,7 +46,7 @@ void main() {
       when(settingsService.getSettings()).thenAnswer((_) async =>
           const Settings(retirementDate: null, targetIncome: null));
       await tester.pumpWidget(
-          createSettingsScreen(settingsService, MockDatabaseService()));
+          createSettingsScreen(settingsService, createMockDatabaseService()));
       await tester.pumpAndSettle();
 
       expect(find.text("Settings"), findsOneWidget);
@@ -73,7 +81,7 @@ void main() {
 
       // Build your app and trigger a frame
       await tester.pumpWidget(
-          createSettingsScreen(settingsService, MockDatabaseService()));
+          createSettingsScreen(settingsService, createMockDatabaseService()));
       await tester.pumpAndSettle();
 
       expect(find.text(DateHelper.formatDate(retirementDate)), findsOneWidget);
@@ -90,7 +98,7 @@ void main() {
 
       // Build your app and trigger a frame
       await tester.pumpWidget(
-          createSettingsScreen(settingsService, MockDatabaseService()));
+          createSettingsScreen(settingsService, createMockDatabaseService()));
       await tester.pumpAndSettle();
 
       // Find the TextFormField by key
@@ -132,7 +140,7 @@ void main() {
           .thenAnswer((_) async => true);
 
       await tester.pumpWidget(
-          createSettingsScreen(settingsService, MockDatabaseService()));
+          createSettingsScreen(settingsService, createMockDatabaseService()));
       await tester.pumpAndSettle();
 
       // Set the date of the date picker
@@ -169,7 +177,7 @@ void main() {
           .thenAnswer((_) async => true);
 
       await tester.pumpWidget(
-          createSettingsScreen(settingsService, MockDatabaseService()));
+          createSettingsScreen(settingsService, createMockDatabaseService()));
       await tester.pumpAndSettle();
 
       // Set the date of the date picker
@@ -191,6 +199,42 @@ void main() {
               retirementDate: newRetirementDate, targetIncome: newTargetValue)))
           .called(1);
     });
+
+    testWidgets('navigate back to home screen after save', (tester) async {
+      DateTime originalRetirementDate = DateTime(2025, 1, 10);
+      double originalTargetValue = 12345.0;
+      double newTargetValue = 98765.43;
+
+      final settingsService = MockSettingsService();
+      when(settingsService.getSettings()).thenAnswer((_) async => Settings(
+          retirementDate: originalRetirementDate,
+          targetIncome: originalTargetValue));
+      when(settingsService.saveSettings(Settings(
+              retirementDate: originalRetirementDate,
+              targetIncome: newTargetValue)))
+          .thenAnswer((_) async => true);
+
+      await tester.pumpWidget(
+          createSettingsScreen(settingsService, createMockDatabaseService()));
+      await tester.pumpAndSettle();
+
+      // Enter values into the TextFormFields
+      await tester.enterText(find.byKey(SettingsScreen.settingTargetIncomeKey),
+          newTargetValue.toString());
+
+      // Tap the save button
+      await tester.tap(find.widgetWithText(TextButton, "Save"));
+      await tester.pumpAndSettle();
+
+      // should navigate back to home screen
+      expect(find.byType(HomeScreen), findsOneWidget);
+
+      verify(settingsService.getSettings()).called(1);
+      verify(settingsService.saveSettings(Settings(
+              retirementDate: originalRetirementDate,
+              targetIncome: newTargetValue)))
+          .called(1);
+    });
   });
 
   group('Test validation of settings screen', () {
@@ -204,7 +248,7 @@ void main() {
           .thenAnswer((_) async => true);
 
       await tester.pumpWidget(
-          createSettingsScreen(settingsService, MockDatabaseService()));
+          createSettingsScreen(settingsService, createMockDatabaseService()));
       await tester.pumpAndSettle();
 
       // Tap the save button
@@ -229,7 +273,7 @@ void main() {
           .thenAnswer((_) async => true);
 
       await tester.pumpWidget(
-          createSettingsScreen(settingsService, MockDatabaseService()));
+          createSettingsScreen(settingsService, createMockDatabaseService()));
       await tester.pumpAndSettle();
 
       // Set the date of the date picker
@@ -261,7 +305,7 @@ void main() {
           .thenAnswer((_) async => true);
 
       await tester.pumpWidget(
-          createSettingsScreen(settingsService, MockDatabaseService()));
+          createSettingsScreen(settingsService, createMockDatabaseService()));
       await tester.pumpAndSettle();
 
       // Set the date of the date picker
@@ -294,7 +338,7 @@ void main() {
           const Settings(retirementDate: null, targetIncome: null));
 
       await tester.pumpWidget(
-          createSettingsScreen(settingsService, MockDatabaseService()));
+          createSettingsScreen(settingsService, createMockDatabaseService()));
       await tester.pumpAndSettle();
 
       // check the elements are not yet visible
@@ -315,7 +359,7 @@ void main() {
       final settingsService = MockSettingsService();
       when(settingsService.getSettings()).thenAnswer((_) async =>
           const Settings(retirementDate: null, targetIncome: null));
-      final databaseService = MockDatabaseService();
+      final databaseService = createMockDatabaseService();
       when(databaseService.clearAllData()).thenAnswer((_) async => true);
 
       await tester
@@ -341,7 +385,7 @@ void main() {
       final settingsService = MockSettingsService();
       when(settingsService.getSettings()).thenAnswer((_) async =>
           const Settings(retirementDate: null, targetIncome: null));
-      final databaseService = MockDatabaseService();
+      final databaseService = createMockDatabaseService();
       when(databaseService.clearAllData()).thenAnswer((_) async => true);
 
       await tester
@@ -357,9 +401,11 @@ void main() {
       expect(find.text("Delete All Data?"), findsNothing);
       expect(find.text("Are you sure you want to delete all data in the app?"),
           findsNothing);
-      expect(find.text("Settings"), findsOneWidget); //stays on settings screen
       expect(find.widgetWithText(SnackBar, "All data removed successfully!"),
           findsOneWidget); //look for snackbar notification
+
+      // should navigate back to home screen
+      expect(find.byType(HomeScreen), findsOneWidget);
 
       verify(databaseService.clearAllData()).called(1);
     });

@@ -6,9 +6,9 @@ import 'package:pension_compare/database/database_service.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
 import 'package:pension_compare/widgets/date_field.dart';
 import 'package:pension_compare/widgets/pension_dropdown.dart';
-import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pension_compare/route_config.dart';
 
-// TODO - Add delete button
 class EditStatementScreen extends StatefulWidget {
   static const pensionKey = Key('pensionId');
   static const statementDateKey = Key('statementDate');
@@ -342,7 +342,7 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
 
   Future<void> _showDeleteDialog() async {
     if (widget.statement != null) {
-      final bool? shouldDiscard = await showDialog<bool>(
+      final bool? shouldDelete = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -353,17 +353,7 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
               TextButton(
                 child: const Text('Yes'),
                 onPressed: () async {
-                  DatabaseService db = getIt<DatabaseService>();
-                  await db.deleteStatement(widget.statement!.statementId);
-
-                  if (!context.mounted) return;
-                  Navigator.pop(context, false);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Statement removed successfully!'),
-                    ),
-                  );
+                  Navigator.pop(context, true);
                 },
               ),
               TextButton(
@@ -376,6 +366,24 @@ class _EditStatmentScreenState extends State<EditStatementScreen> {
           );
         },
       );
+
+      if (shouldDelete ?? false) {
+        final db = getIt<DatabaseService>();
+        await db.deleteStatement(widget.statement!.statementId);
+
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Statement removed successfully!'),
+          ),
+        );
+
+        Pension? parentPension = widget.parentPension ??
+            await db.getPension(widget.statement!.pension);
+
+        if (!context.mounted) return;
+        context.go(RouteDefs.pensionOverview, extra: parentPension);
+      }
     }
   }
 }

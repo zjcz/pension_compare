@@ -5,19 +5,28 @@ import 'package:pension_compare/database/database_service.dart';
 import 'package:pension_compare/helpers/date_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:pension_compare/screens/pension_overview_screen.dart';
 import 'package:pension_compare/service_locator.dart';
+import 'package:pension_compare/route_config.dart';
 
 import 'edit_statement_screen_test.mocks.dart';
 
 Widget createEditScreen(Statement? statementRecord, DatabaseService db) {
   getIt.registerSingleton<DatabaseService>(db);
 
-  EditStatementScreen editStatementScreen =
-      EditStatementScreen(statement: statementRecord);
-
   return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
-    return MaterialApp(home: editStatementScreen);
+    return MaterialApp.router(
+      routerConfig: setupRouter(
+          initialLocation: RouteDefs.editStatement,
+          initialExtra: statementRecord),
+    );
   });
+}
+
+DatabaseService createMockDatabaseService() {
+  DatabaseService ds = MockDatabaseService();
+  when(ds.getAllPensionsWithLatestStatement()).thenAnswer((_) async => []);
+  return ds;
 }
 
 @GenerateMocks([DatabaseService])
@@ -29,7 +38,7 @@ void main() {
 
   group('Test adding / editing of statement record', () {
     testWidgets('show the add screen with no statement record', (tester) async {
-      final databaseService = MockDatabaseService();
+      final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) async => [
             Pension(
                 pensionId: 1, name: "new pension", maturityDate: DateTime.now())
@@ -75,7 +84,7 @@ void main() {
     // });
 
     testWidgets('Set date of date picker', (WidgetTester tester) async {
-      final databaseService = MockDatabaseService();
+      final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) async => []);
 
       // Build your app and trigger a frame
@@ -118,7 +127,7 @@ void main() {
       double yearlyCharges = 100;
       double transferValue = 12345;
 
-      final databaseService = MockDatabaseService();
+      final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) async => [
             Pension(
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
@@ -188,7 +197,7 @@ void main() {
       double newYearlyCharges = 500;
       double newTransferValue = 98765;
 
-      final databaseService = MockDatabaseService();
+      final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) async => [
             Pension(
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
@@ -269,7 +278,7 @@ void main() {
       double yearlyCharges = 100;
       double transferValue = 12345;
 
-      final databaseService = MockDatabaseService();
+      final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) async => [
             Pension(
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
@@ -336,7 +345,7 @@ void main() {
       double yearlyCharges = 100;
       double transferValue = 12345;
 
-      final databaseService = MockDatabaseService();
+      final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) async => [
             Pension(
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
@@ -411,7 +420,7 @@ void main() {
       double yearlyCharges = 100;
       double transferValue = 12345;
 
-      final databaseService = MockDatabaseService();
+      final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) async => [
             Pension(
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
@@ -487,7 +496,7 @@ void main() {
       String name = "Test Pension";
       DateTime maturityDate = DateHelper.getToday();
 
-      final databaseService = MockDatabaseService();
+      final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) async => [
             Pension(
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
@@ -510,7 +519,7 @@ void main() {
       double yearlyCharges = 100;
       double transferValue = 12345;
 
-      final databaseService = MockDatabaseService();
+      final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) async => [
             Pension(
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
@@ -541,7 +550,7 @@ void main() {
       double yearlyCharges = 100;
       double transferValue = 12345;
 
-      final databaseService = MockDatabaseService();
+      final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) async => [
             Pension(
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
@@ -586,7 +595,7 @@ void main() {
       double yearlyCharges = 100;
       double transferValue = 12345;
 
-      final databaseService = MockDatabaseService();
+      final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) async => [
             Pension(
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
@@ -635,13 +644,15 @@ void main() {
       double yearlyCharges = 100;
       double transferValue = 12345;
 
-      final databaseService = MockDatabaseService();
-      when(databaseService.getAllPensions()).thenAnswer((_) async => [
-            Pension(
-                pensionId: pensionId, name: name, maturityDate: maturityDate)
-          ]);
+      final databaseService = createMockDatabaseService();
+      Pension p =
+          Pension(pensionId: pensionId, name: name, maturityDate: maturityDate);
+      when(databaseService.getAllPensions()).thenAnswer((_) async => [p]);
+      when(databaseService.getPension(pensionId)).thenAnswer((_) async => p);
       when(databaseService.deleteStatement(statementId))
           .thenAnswer((_) async => statementId);
+      when(databaseService.getAllStatementsForPension(pensionId))
+          .thenAnswer((_) async => []);
 
       final statement = Statement(
           statementId: statementId,
@@ -670,9 +681,10 @@ void main() {
       expect(find.widgetWithText(SnackBar, "Statement removed successfully!"),
           findsOneWidget); //look for snackbar notification
 
+      // should navigate back to pension overview
+      expect(find.byType(PensionOverviewScreen), findsOneWidget);
+
       verify(databaseService.deleteStatement(statementId)).called(1);
     });
-
-    // test cancel
   });
 }

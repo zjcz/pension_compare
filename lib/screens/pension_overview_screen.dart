@@ -1,10 +1,10 @@
 import 'package:pension_compare/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/database/database_service.dart';
-import 'package:pension_compare/screens/edit_pension_screen.dart';
-import 'package:pension_compare/screens/edit_statement_screen.dart';
 import 'package:pension_compare/widgets/statement_data_table.dart';
 import 'package:pension_compare/widgets/statement_summary_chart.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pension_compare/route_config.dart';
 
 // Pension Overview screen.  Shows an overview of one pension.
 // Contains a chart and a table of statements.  Can edit the pension or add or
@@ -44,12 +44,9 @@ class _PensionOverviewScreenState extends State<PensionOverviewScreen>
           IconButton(
               icon: const Icon(Icons.add),
               onPressed: () async {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => EditStatementScreen(
-                              parentPension: widget.pension,
-                            ))).then((_) => {setState(() {})});
+                context
+                    .push(RouteDefs.editStatement, extra: widget.pension)
+                    .then((_) => {setState(() {})});
               }),
           PopupMenuButton(
             icon: const Icon(Icons.more_vert),
@@ -63,12 +60,9 @@ class _PensionOverviewScreenState extends State<PensionOverviewScreen>
             },
             onSelected: (value) async {
               if (value == 'pension') {
-                Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                EditPensionScreen(pension: widget.pension)))
-                    .then((_) async => {setState(() {})});
+                context
+                    .push(RouteDefs.editPension, extra: widget.pension)
+                    .then((_) => {setState(() {})});
               }
             },
           ),
@@ -106,13 +100,11 @@ class _PensionOverviewScreenState extends State<PensionOverviewScreen>
                                 StatementDataTable(
                                   statementDataList: statements,
                                   onTap: (Statement statement) {
-                                    Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    EditStatementScreen(
-                                                        statement: statement)))
-                                        .then((_) => {setState(() {})});
+                                    context.push(RouteDefs.editStatement,
+                                        extra: (
+                                          widget.pension,
+                                          statement
+                                        )).then((_) => {setState(() {})});
                                   },
                                 )
                               ]);
