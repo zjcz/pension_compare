@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:pension_compare/service_locator.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pension_compare/route_config.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // initialise getIt
-  setupServiceLocator();
-
-  runApp(const PensionCompareApp());
+  runApp(const ProviderScope(
+    child: PensionCompareApp(),
+  ));
 }
 
 class PensionCompareApp extends StatelessWidget {
