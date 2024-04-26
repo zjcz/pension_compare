@@ -1,0 +1,60 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mockito/annotations.dart';
+import 'package:pension_compare/data/database/tables/pensions_with_latest_statement.dart';
+import 'package:pension_compare/app/home/views/home_screen.dart';
+import 'package:pension_compare/data/database/database_service.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+
+import 'home_screen_test.mocks.dart';
+
+Widget createHomeScreen(DatabaseService db) {
+  HomeScreen homeScreen = const HomeScreen();
+
+  return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
+    return ProviderScope(overrides: [
+      DatabaseService.provider.overrideWithValue(db),
+    ], child: MaterialApp(home: homeScreen));
+  });
+}
+
+@GenerateMocks([DatabaseService])
+void main() {
+  group('Test displaying the home screen', () {
+    testWidgets('show the home screen with no pension records', (tester) async {
+      final databaseService = MockDatabaseService();
+      when(databaseService.getAllPensionsWithLatestStatement())
+          .thenAnswer((_) => Stream.value([]));
+      await tester.pumpWidget(createHomeScreen(databaseService));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Overview"), findsOneWidget);
+
+      expect(
+          find.text("No pensions found.  Click + to add one"), findsOneWidget);
+    });
+
+    testWidgets('show the home screen with a single pension record',
+        (tester) async {
+      int pensionId = 1;
+      String pensionName = 'new pension';
+      final databaseService = MockDatabaseService();
+      when(databaseService.getAllPensionsWithLatestStatement())
+          .thenAnswer((_) => Stream.value([
+                PensionWithLatestStatement(
+                    Pension(
+                        pensionId: pensionId,
+                        name: pensionName,
+                        maturityDate: DateTime.now()),
+                    null)
+              ]));
+      await tester.pumpWidget(createHomeScreen(databaseService));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Overview"), findsOneWidget);
+
+      expect(find.widgetWithText(DataTable, pensionName), findsOneWidget);
+    });
+  });
+}

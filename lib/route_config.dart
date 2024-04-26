@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:pension_compare/screens/edit_pension_screen.dart';
-import 'package:pension_compare/screens/edit_state_pension_screen.dart';
-import 'package:pension_compare/screens/edit_statement_screen.dart';
-import 'package:pension_compare/screens/home_screen.dart';
-import 'package:pension_compare/screens/pension_overview_screen.dart';
-import 'package:pension_compare/screens/settings_screen.dart';
+import 'package:pension_compare/app/pension/models/pension_model.dart';
+import 'package:pension_compare/app/pension/views/edit_pension_screen.dart';
+import 'package:pension_compare/app/otherIncome/views/edit_state_pension_screen.dart';
+import 'package:pension_compare/app/settings/settings_service.dart';
+import 'package:pension_compare/app/statement/models/statement_model.dart';
+import 'package:pension_compare/app/statement/views/edit_statement_screen.dart';
+import 'package:pension_compare/app/home/views/home_screen.dart';
+import 'package:pension_compare/app/pension/views/pension_overview_screen.dart';
+import 'package:pension_compare/app/settings/views/settings_screen.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pension_compare/database/database_service.dart';
 
 class RouteDefs {
   static const String home = '/';
@@ -32,16 +34,16 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra}) {
             GoRoute(
               path: RouteDefs.pensionOverview.substring(1), //strip leading /
               builder: (BuildContext context, GoRouterState state) {
-                Pension p = state.extra! as Pension;
+                PensionModel p = state.extra! as PensionModel;
                 return PensionOverviewScreen(pension: p);
               },
             ),
             GoRoute(
               path: RouteDefs.editPension.substring(1), //strip leading /
               builder: (BuildContext context, GoRouterState state) {
-                Pension? p;
+                PensionModel? p;
                 if (state.extra != null) {
-                  p = state.extra! as Pension;
+                  p = state.extra! as PensionModel;
                 }
                 return EditPensionScreen(pension: p);
               },
@@ -49,16 +51,16 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra}) {
             GoRoute(
               path: RouteDefs.editStatement.substring(1), //strip leading /
               builder: (BuildContext context, GoRouterState state) {
-                Pension? p;
-                Statement? s;
+                PensionModel? p;
+                StatementModel? s;
 
                 if (state.extra != null) {
-                  if (state.extra is Pension) {
-                    p = state.extra as Pension;
-                  } else if (state.extra is Statement) {
-                    s = state.extra as Statement;
-                  } else if (state.extra is (Pension, Statement)) {
-                    (p, s) = state.extra as (Pension, Statement);
+                  if (state.extra is PensionModel) {
+                    p = state.extra as PensionModel;
+                  } else if (state.extra is StatementModel) {
+                    s = state.extra as StatementModel;
+                  } else if (state.extra is (PensionModel, StatementModel)) {
+                    (p, s) = state.extra as (PensionModel, StatementModel);
                   }
                 }
 
@@ -74,7 +76,12 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra}) {
             GoRoute(
               path: RouteDefs.editSettings.substring(1), //strip leading /
               builder: (BuildContext context, GoRouterState state) {
-                return const SettingsScreen();
+                SettingsService? settingsService;
+                if (state.extra != null) {
+                  settingsService = state.extra! as SettingsService;
+                }
+                return SettingsScreen(
+                    settingsService: settingsService ?? SettingsService());
               },
             )
           ]),
