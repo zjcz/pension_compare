@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'statement_controller.dart';
+part of 'single_pension_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$statementControllerHash() =>
-    r'2ed3620c464b3e4e256fc591ad98f7d7d3c4d703';
+String _$singlePensionControllerHash() =>
+    r'e598ac3ff062750d34b1abbe7e6f306712f878c2';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -30,37 +30,36 @@ class _SystemHash {
   }
 }
 
-abstract class _$StatementController
-    extends BuildlessAutoDisposeStreamNotifier<List<StatementModel>> {
+abstract class _$SinglePensionController
+    extends BuildlessAutoDisposeStreamNotifier<PensionModel?> {
   late final int pensionId;
 
-  Stream<List<StatementModel>> build(
+  Stream<PensionModel?> build(
     int pensionId,
   );
 }
 
-/// See also [StatementController].
-@ProviderFor(StatementController)
-const statementControllerProvider = StatementControllerFamily();
+/// See also [SinglePensionController].
+@ProviderFor(SinglePensionController)
+const singlePensionControllerProvider = SinglePensionControllerFamily();
 
-/// See also [StatementController].
-class StatementControllerFamily
-    extends Family<AsyncValue<List<StatementModel>>> {
-  /// See also [StatementController].
-  const StatementControllerFamily();
+/// See also [SinglePensionController].
+class SinglePensionControllerFamily extends Family<AsyncValue<PensionModel?>> {
+  /// See also [SinglePensionController].
+  const SinglePensionControllerFamily();
 
-  /// See also [StatementController].
-  StatementControllerProvider call(
+  /// See also [SinglePensionController].
+  SinglePensionControllerProvider call(
     int pensionId,
   ) {
-    return StatementControllerProvider(
+    return SinglePensionControllerProvider(
       pensionId,
     );
   }
 
   @override
-  StatementControllerProvider getProviderOverride(
-    covariant StatementControllerProvider provider,
+  SinglePensionControllerProvider getProviderOverride(
+    covariant SinglePensionControllerProvider provider,
   ) {
     return call(
       provider.pensionId,
@@ -79,30 +78,31 @@ class StatementControllerFamily
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'statementControllerProvider';
+  String? get name => r'singlePensionControllerProvider';
 }
 
-/// See also [StatementController].
-class StatementControllerProvider extends AutoDisposeStreamNotifierProviderImpl<
-    StatementController, List<StatementModel>> {
-  /// See also [StatementController].
-  StatementControllerProvider(
+/// See also [SinglePensionController].
+class SinglePensionControllerProvider
+    extends AutoDisposeStreamNotifierProviderImpl<SinglePensionController,
+        PensionModel?> {
+  /// See also [SinglePensionController].
+  SinglePensionControllerProvider(
     int pensionId,
   ) : this._internal(
-          () => StatementController()..pensionId = pensionId,
-          from: statementControllerProvider,
-          name: r'statementControllerProvider',
+          () => SinglePensionController()..pensionId = pensionId,
+          from: singlePensionControllerProvider,
+          name: r'singlePensionControllerProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$statementControllerHash,
-          dependencies: StatementControllerFamily._dependencies,
+                  : _$singlePensionControllerHash,
+          dependencies: SinglePensionControllerFamily._dependencies,
           allTransitiveDependencies:
-              StatementControllerFamily._allTransitiveDependencies,
+              SinglePensionControllerFamily._allTransitiveDependencies,
           pensionId: pensionId,
         );
 
-  StatementControllerProvider._internal(
+  SinglePensionControllerProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -115,8 +115,8 @@ class StatementControllerProvider extends AutoDisposeStreamNotifierProviderImpl<
   final int pensionId;
 
   @override
-  Stream<List<StatementModel>> runNotifierBuild(
-    covariant StatementController notifier,
+  Stream<PensionModel?> runNotifierBuild(
+    covariant SinglePensionController notifier,
   ) {
     return notifier.build(
       pensionId,
@@ -124,10 +124,10 @@ class StatementControllerProvider extends AutoDisposeStreamNotifierProviderImpl<
   }
 
   @override
-  Override overrideWith(StatementController Function() create) {
+  Override overrideWith(SinglePensionController Function() create) {
     return ProviderOverride(
       origin: this,
-      override: StatementControllerProvider._internal(
+      override: SinglePensionControllerProvider._internal(
         () => create()..pensionId = pensionId,
         from: from,
         name: null,
@@ -140,14 +140,15 @@ class StatementControllerProvider extends AutoDisposeStreamNotifierProviderImpl<
   }
 
   @override
-  AutoDisposeStreamNotifierProviderElement<StatementController,
-      List<StatementModel>> createElement() {
-    return _StatementControllerProviderElement(this);
+  AutoDisposeStreamNotifierProviderElement<SinglePensionController,
+      PensionModel?> createElement() {
+    return _SinglePensionControllerProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is StatementControllerProvider && other.pensionId == pensionId;
+    return other is SinglePensionControllerProvider &&
+        other.pensionId == pensionId;
   }
 
   @override
@@ -159,19 +160,19 @@ class StatementControllerProvider extends AutoDisposeStreamNotifierProviderImpl<
   }
 }
 
-mixin StatementControllerRef
-    on AutoDisposeStreamNotifierProviderRef<List<StatementModel>> {
+mixin SinglePensionControllerRef
+    on AutoDisposeStreamNotifierProviderRef<PensionModel?> {
   /// The parameter `pensionId` of this provider.
   int get pensionId;
 }
 
-class _StatementControllerProviderElement
-    extends AutoDisposeStreamNotifierProviderElement<StatementController,
-        List<StatementModel>> with StatementControllerRef {
-  _StatementControllerProviderElement(super.provider);
+class _SinglePensionControllerProviderElement
+    extends AutoDisposeStreamNotifierProviderElement<SinglePensionController,
+        PensionModel?> with SinglePensionControllerRef {
+  _SinglePensionControllerProviderElement(super.provider);
 
   @override
-  int get pensionId => (origin as StatementControllerProvider).pensionId;
+  int get pensionId => (origin as SinglePensionControllerProvider).pensionId;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

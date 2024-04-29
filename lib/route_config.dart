@@ -32,10 +32,10 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra}) {
           },
           routes: <RouteBase>[
             GoRoute(
-              path: RouteDefs.pensionOverview.substring(1), //strip leading /
+              path:
+                  '${RouteDefs.pensionOverview.substring(1)}/:pensionId', //strip leading /
               builder: (BuildContext context, GoRouterState state) {
-                PensionModel p = state.extra! as PensionModel;
-                return PensionOverviewScreen(pension: p);
+                return PensionOverviewScreen(pensionId: int.parse(state.pathParameters['pensionId']!));
               },
             ),
             GoRoute(

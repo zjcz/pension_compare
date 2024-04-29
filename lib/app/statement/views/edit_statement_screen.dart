@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pension_compare/app/pension/controllers/pension_controller.dart';
 import 'package:pension_compare/app/pension/models/pension_model.dart';
 import 'package:pension_compare/app/statement/controllers/statement_controller.dart';
 import 'package:pension_compare/app/statement/models/statement_model.dart';
@@ -374,16 +373,8 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
           ),
         );
 
-        PensionModel? parentPension = widget.parentPension;
-        if (parentPension == null) {
-          final pensionController =
-              ref.read(pensionControllerProvider.notifier);
-          parentPension =
-              await pensionController.getPension(widget.statement!.pension);
-        }
-
         if (!context.mounted) return;
-        context.go(RouteDefs.pensionOverview, extra: parentPension);
+        context.go('${RouteDefs.pensionOverview}/${widget.statement!.pension}');
       }
     }
   }

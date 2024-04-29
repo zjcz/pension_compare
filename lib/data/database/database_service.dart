@@ -52,6 +52,12 @@ class DatabaseService extends _$DatabaseService {
         .getSingleOrNull();
   }
 
+  // Watch a single pension by its id
+  Stream<Pension?> watchPension(int id) {
+    return (select(pensions)..where((p) => p.pensionId.equals(id)))
+        .watchSingleOrNull();
+  }
+
   // Create a new pension record
   Future<Pension?> createPension(String name, DateTime maturityDate) {
     return into(pensions).insertReturningOrNull(PensionsCompanion.insert(
@@ -252,7 +258,7 @@ class DatabaseService extends _$DatabaseService {
     await saveStatePension(0);
   }
 
-    // Provider for the database service
+  // Provider for the database service
   // Note: Declared here as Provider.  If the database connection was to change
   // at some point (for example the database connection is reset and
   // reinitialised after a backup / restore) we would need to declare this as a

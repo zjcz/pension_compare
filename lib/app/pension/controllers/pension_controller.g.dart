@@ -6,7 +6,7 @@ part of 'pension_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$pensionControllerHash() => r'02bfd1ec7275134d8bfe9fadb0061b01c2e7c1b0';
+String _$pensionControllerHash() => r'6d226852ec70f66b1876bd24a7380fac79cdb966';
 
 /// See also [PensionController].
 @ProviderFor(PensionController)

@@ -652,6 +652,8 @@ void main() {
       when(databaseService.getAllPensions())
           .thenAnswer((_) => Stream.value([p]));
       when(databaseService.getPension(pensionId)).thenAnswer((_) async => p);
+      when(databaseService.watchPension(pensionId))
+          .thenAnswer((_) => Stream.value(p));
       when(databaseService.deleteStatement(statementId))
           .thenAnswer((_) async => statementId);
       when(databaseService.getAllStatementsForPension(pensionId))
