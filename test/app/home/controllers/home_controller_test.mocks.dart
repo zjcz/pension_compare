@@ -415,6 +415,15 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
       ) as _i5.Future<_i3.Pension?>);
 
   @override
+  _i5.Stream<_i3.Pension?> watchPension(int? id) => (super.noSuchMethod(
+        Invocation.method(
+          #watchPension,
+          [id],
+        ),
+        returnValue: _i5.Stream<_i3.Pension?>.empty(),
+      ) as _i5.Stream<_i3.Pension?>);
+
+  @override
   _i5.Future<_i3.Pension?> createPension(
     String? name,
     DateTime? maturityDate,

@@ -41,6 +41,24 @@ void main() {
       expect(result.maturityDate, maturityDate);
     });
 
+    test('watch returns a new pension object', () async {
+      String name = 'new pension';
+      DateTime maturityDate = DateTime(2050, 1, 1);
+
+      final entry = await database.createPension(name, maturityDate);
+      expect(entry, match.isNotNull);
+      expect(entry!.name, name);
+      expect(entry.maturityDate, maturityDate);
+
+      final result = database.watchPension(entry.pensionId);
+      expect(result, match.isNotNull);
+      final pensionRecord = await result.first;
+      expect(pensionRecord, match.isNotNull);
+      expect(pensionRecord!.pensionId, entry.pensionId);
+      expect(pensionRecord.name, name);
+      expect(pensionRecord.maturityDate, maturityDate);
+    });
+
     test('read all new pension objects', () async {
       String name1 = 'new pension 1';
       DateTime maturityDate1 = DateTime(2050, 1, 1);

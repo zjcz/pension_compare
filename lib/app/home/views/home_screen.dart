@@ -108,8 +108,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     pensionDataList: pensions,
                                     onTap: (PensionModel pension) {
                                       context
-                                          .push(RouteDefs.pensionOverview,
-                                              extra: pension)
+                                          .push(
+                                              '${RouteDefs.pensionOverview}/${pension.pensionId}')
                                           .then((_) => {setState(() {})});
                                     },
                                   )
