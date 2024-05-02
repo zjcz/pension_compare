@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/app/settings/settings.dart';
 import 'package:pension_compare/app/settings/settings_service.dart';
+import 'package:pension_compare/helpers/file_picker_helper.dart';
 import 'package:pension_compare/widgets/date_field.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
 import 'package:go_router/go_router.dart';
@@ -14,6 +15,9 @@ class SettingsScreen extends ConsumerStatefulWidget {
   static const settingRetirementDateKey = Key('retirementDate');
   static const settingTargetIncomeKey = Key('targetIncome');
   static const settingDeleteAllKey = Key('deleteAllButton');
+  static const settingBackupKey = Key('backupButton');
+  static const settingRestoreKey = Key('restoreButton');
+
   final SettingsService settingsService;
   const SettingsScreen({super.key, required this.settingsService});
 
@@ -157,6 +161,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           'Delete All',
                           style: TextStyle(color: Colors.red),
                         )),
+                  ),
+                  CustomStyles.spacerBox,
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton(
+                        key: SettingsScreen.settingBackupKey,
+                        onPressed: () async {
+                          FilePickerHelper.getSaveToFilename();
+                        },
+                        style: TextButton.styleFrom(
+                            side: BorderSide(color: context.primary),
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero)),
+                        child: const Text('Backup Data')),
                   ),
                 ],
               )),
