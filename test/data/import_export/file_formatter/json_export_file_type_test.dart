@@ -1,0 +1,106 @@
+import 'dart:convert';
+import 'package:pension_compare/data/import_export/exporter.dart';
+import 'package:pension_compare/data/import_export/file_formatter/json_export_file_type.dart';
+import 'package:pension_compare/data/import_export/models/transfer_other_income_model.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:pension_compare/data/import_export/models/transfer_pension_model.dart';
+import 'package:pension_compare/data/import_export/models/transfer_settings_model.dart';
+import 'package:pension_compare/data/import_export/models/transfer_statement_model.dart';
+
+void main() {
+  group('Test export to json and back', () {
+    testWidgets('export data to json data files', (tester) async {
+      TransferOtherIncomeModel otherIncome = buildOtherIncomeModel();
+      TransferPensionModel pension = buildPensionModel();
+      TransferSettingsModel settings = buildSettingsModel();
+
+      TransferDataModel dataModel = TransferDataModel(
+        transferOtherIncomeModelList: [otherIncome],
+        transferPensionModelList: [pension],
+        transferSettingsModel: settings,
+      );
+
+      JsonExportFileType jsonExportFileType = JsonExportFileType();
+      List<ExportDataModel> exportDataModel =
+          jsonExportFileType.export(dataModel);
+
+      // Step 1: Check if the export data model is not null and has the correct length
+      expect(exportDataModel, isNotNull);
+      expect(exportDataModel.length, 3);
+      expect(exportDataModel[0].filename, 'pension_data.json');
+      expect(exportDataModel[0].fileContents, isNotEmpty);
+      expect(exportDataModel[1].filename, 'other_income_data.json');
+      expect(exportDataModel[1].fileContents, isNotEmpty);
+      expect(exportDataModel[2].filename, 'settings_data.json');
+      expect(exportDataModel[2].fileContents, isNotEmpty);
+
+      // Step 2: Parse the JSON string back to an object
+      List<dynamic> jsonPensionList =
+          jsonDecode(exportDataModel[0].fileContents);
+      List<TransferPensionModel> parsedPensions = jsonPensionList
+          .map((item) => TransferPensionModel.fromJson(item))
+          .toList();
+      List<dynamic> jsonOtherIncomeList =
+          jsonDecode(exportDataModel[1].fileContents);
+      List<TransferOtherIncomeModel> parsedOtherIncomes = jsonOtherIncomeList
+          .map((item) => TransferOtherIncomeModel.fromJson(item))
+          .toList();
+      TransferSettingsModel parsedSettings = TransferSettingsModel.fromJson(
+          jsonDecode(exportDataModel[2].fileContents));
+
+      // Step 3: Compare the original object with the parsed object
+      expect(parsedOtherIncomes[0], equals(otherIncome));
+      expect(parsedPensions[0], equals(pension));
+      expect(parsedSettings, equals(settings));
+    });
+  });
+}
+
+TransferOtherIncomeModel buildOtherIncomeModel() {
+  int otherIncomeId = 5;
+  String name = 'new income';
+  double amount = 123.45;
+  TransferOtherIncomeModel otherIncome = TransferOtherIncomeModel(
+      otherIncomeId: otherIncomeId, name: name, annualAmount: amount);
+
+  return otherIncome;
+}
+
+TransferPensionModel buildPensionModel() {
+  int pensionId = 5;
+  String pensionName = 'new pension';
+  DateTime maturityDate = DateTime(2050, 1, 1);
+  int statementId = 5;
+  DateTime statementDate = DateTime(2024, 1, 1);
+  double planValue = 123.45;
+  double projectedAnnualAmount = 678.90;
+  double yearlyCharges = 987.65;
+  double transferValue = 432.10;
+
+  TransferStatementModel transferStatement = TransferStatementModel(
+      statementId: statementId,
+      statementDate: statementDate,
+      planValue: planValue,
+      projectedAnnualAmount: projectedAnnualAmount,
+      yearlyCharges: yearlyCharges,
+      transferValue: transferValue);
+  TransferPensionModel transferPension = TransferPensionModel(
+      pensionId: pensionId,
+      name: pensionName,
+      maturityDate: maturityDate,
+      statements: [transferStatement]);
+
+  return transferPension;
+}
+
+TransferSettingsModel buildSettingsModel() {
+  DateTime retirementDate = DateTime(2000, 1, 1);
+  double targetIncome = 123.45;
+
+  TransferSettingsModel settings = TransferSettingsModel(
+    retirementDate: retirementDate,
+    targetIncome: targetIncome,
+  );
+
+  return settings;
+}

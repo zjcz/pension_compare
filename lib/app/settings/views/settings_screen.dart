@@ -1,5 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pension_compare/app/home/controllers/home_controller.dart';
+import 'package:pension_compare/data/database/database_service.dart';
+import 'package:pension_compare/data/import_export/exporter.dart';
+import 'package:pension_compare/data/import_export/file_formatter/json_export_file_type.dart';
+import 'package:pension_compare/data/import_export/file_handler/zip_file_handler.dart';
 import 'package:pension_compare/extensions/material_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
@@ -10,6 +14,8 @@ import 'package:pension_compare/widgets/date_field.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pension_compare/route_config.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 class SettingsScreen extends ConsumerStatefulWidget {
   static const settingRetirementDateKey = Key('retirementDate');
@@ -168,7 +174,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     child: TextButton(
                         key: SettingsScreen.settingBackupKey,
                         onPressed: () async {
-                          FilePickerHelper.getSaveToFilename();
+                          await exportData();
                         },
                         style: TextButton.styleFrom(
                             side: BorderSide(color: context.primary),
@@ -263,5 +269,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
       context.go(RouteDefs.home);
     }
+  }
+
+  Future<void> exportData() async {
+    final databaseService = ref.read(DatabaseService.provider);
+    final downloadPath = await getDownloadsDirectory();
+    final filename = path.join(downloadPath!.path, 'exporty.zip');
+
+    Exporter exporter = Exporter(
+        databaseService: databaseService,
+        settingsService: widget.settingsService,
+        exportFileType: JsonExportFileType(),
+        fileHandler: ZipFileHandler(filename: filename, password: null));
+    await exporter.export();
+
+    final finalfilename = await FilePickerHelper.getSaveToFilename(filename);
+    if (finalfilename == null) return;
   }
 }
