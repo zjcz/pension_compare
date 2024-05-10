@@ -173,7 +173,7 @@ class _EditStatePensionScreenState
       url,
       mode: LaunchMode.externalApplication,
     )) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Unable to launch website'),
       ));

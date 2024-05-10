@@ -76,7 +76,7 @@ void main() {
     });
 
     test('Test with null', () {
-      String? value = null;
+      String? value;
 
       double? parsedValue = CurrencyHelper.parseCurrency(value);
 

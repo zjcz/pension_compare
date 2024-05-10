@@ -12,6 +12,7 @@ class MockUrlLauncher extends Fake
     launchUrlReturnValue = returnValue;
   }
 
+  @override
   Future<bool> launchUrl(String url, LaunchOptions options) {
     launchModeCallCount++;
     return Future.value(launchUrlReturnValue);

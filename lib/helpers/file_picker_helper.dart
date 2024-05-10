@@ -19,7 +19,7 @@ class FilePickerHelper {
         bytes: fileContents,
       );
     } catch (e) {
-      print('Error saving file: $e');
+      //print('Error saving file: $e');
       return null;
     }
   }
