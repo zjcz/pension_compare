@@ -1,10 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pension_compare/app/home/controllers/home_controller.dart';
+import 'package:pension_compare/app/settings/views/widgets/backup_password_bottomsheet.dart';
+import 'package:pension_compare/app/settings/views/widgets/restore_password_bottomsheet.dart';
+import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/extensions/material_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/app/settings/settings.dart';
 import 'package:pension_compare/app/settings/settings_service.dart';
+import 'package:pension_compare/helpers/backup_restore_helper.dart';
 import 'package:pension_compare/widgets/date_field.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
 import 'package:go_router/go_router.dart';
@@ -14,6 +18,9 @@ class SettingsScreen extends ConsumerStatefulWidget {
   static const settingRetirementDateKey = Key('retirementDate');
   static const settingTargetIncomeKey = Key('targetIncome');
   static const settingDeleteAllKey = Key('deleteAllButton');
+  static const settingBackupKey = Key('backupButton');
+  static const settingRestoreKey = Key('restoreButton');
+
   final SettingsService settingsService;
   const SettingsScreen({super.key, required this.settingsService});
 
@@ -136,7 +143,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 ),
                                 CustomStyles.spacerBox,
                                 const Text(
-                                    'This is the amount you plan to receive as monthly income when you retire.  If you are unsure you can leave this blank for now.',
+                                    'This is the amount you plan to receive as a monthly income when you retire.  If you are unsure you can leave this blank for now.',
                                     style: CustomStyles.infoTextStyle),
                               ]);
                         }
@@ -157,6 +164,34 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           'Delete All',
                           style: TextStyle(color: Colors.red),
                         )),
+                  ),
+                  CustomStyles.spacerBox,
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton(
+                        key: SettingsScreen.settingBackupKey,
+                        onPressed: () async {
+                          await exportData();
+                        },
+                        style: TextButton.styleFrom(
+                            side: BorderSide(color: context.primary),
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero)),
+                        child: const Text('Backup Data')),
+                  ),
+                  CustomStyles.spacerBox,
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton(
+                        key: SettingsScreen.settingRestoreKey,
+                        onPressed: () async {
+                          await restoreData();
+                        },
+                        style: TextButton.styleFrom(
+                            side: BorderSide(color: context.primary),
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero)),
+                        child: const Text('Restore Data')),
                   ),
                 ],
               )),
@@ -235,7 +270,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final homeController = ref.read(homeControllerProvider.notifier);
       await homeController.clearAllData();
 
-      if (!context.mounted) return;
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -245,5 +280,72 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
       context.go(RouteDefs.home);
     }
+  }
+
+  Future<void> exportData() async {
+    final databaseService = ref.read(DatabaseService.provider);
+
+    showModalBottomSheet<void>(
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return BackupPasswordBottomsheet(onConfirm: (String password) async {
+          final response = await BackupRestoreHelper.backupData(
+              databaseService, widget.settingsService, password);
+
+          if (!response.userCancelled) {
+            if (response.message != null) {
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(response.message!),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+
+            if (response.success) {
+              if (!context.mounted) return;
+              Navigator.pop(context);
+            }
+          }
+        });
+      },
+    );
+  }
+
+  Future<void> restoreData() async {
+    final databaseService = ref.read(DatabaseService.provider);
+
+    showModalBottomSheet<void>(
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return RestorePasswordBottomsheet(onConfirm: (String password) async {
+          final response = await BackupRestoreHelper.importData(
+              databaseService, widget.settingsService, password);
+
+          if (!response.userCancelled) {
+            if (response.message != null) {
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(response.message!),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+
+            if (response.success) {
+              // force the screen to refresh with the new setting data
+              setState(() => {});
+
+              if (!context.mounted) return;
+              Navigator.pop(context);
+            }
+          }
+        });
+      },
+    );
   }
 }
