@@ -366,7 +366,7 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
         final controller = ref.read(statementControllerProvider(0).notifier);
         await controller.deleteStatement(widget.statement!.statementId!);
 
-        if (!context.mounted) return;
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Statement removed successfully!'),

@@ -23,8 +23,6 @@ class _PensionDataTableState extends State<PensionDataTable> {
           child: Text('No pensions found.  Click + to add one'));
     }
 
-// TODO - May need to replace with InteractiveViewer
-// https://api.flutter.dev/flutter/widgets/InteractiveViewer-class.html
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: DataTable(

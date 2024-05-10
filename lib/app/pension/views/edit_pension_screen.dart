@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:pension_compare/route_config.dart';
 import 'package:pension_compare/app/pension/controllers/pension_controller.dart';
 
-// TODO - Add delete button
 class EditPensionScreen extends ConsumerStatefulWidget {
   static const pensionNameKey = Key('name');
   static const pensionMaturityDateKey = Key('maturityDate');
@@ -256,7 +255,7 @@ class _EditPensionScreenState extends ConsumerState<EditPensionScreen> {
         final controller = ref.read(pensionControllerProvider.notifier);
         await controller.deletePension(widget.pension!.pensionId!);
 
-        if (!context.mounted) return;
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Pension removed successfully!'),

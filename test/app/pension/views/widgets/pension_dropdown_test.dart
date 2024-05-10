@@ -11,8 +11,6 @@ import 'pension_dropdown_test.mocks.dart';
 final _formKey = GlobalKey<FormState>();
 const String key = 'pension_dropdown';
 
-// TODO - re-write these tests without the database mocks (not required)
-
 Widget createDropdown(DatabaseService db, int? pensionId,
     Function(int?) onChanged, String? Function(int?) onValidate) {
   PensionDropdown dropdown = PensionDropdown(

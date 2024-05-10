@@ -216,7 +216,8 @@ class DatabaseService extends _$DatabaseService {
     // create some test pensions
     Pension? p1 = await createPension("Pension 1", DateTime(2030, 1, 1));
     Pension? p2 = await createPension("Pension 2", DateTime(2030, 1, 1));
-    Pension? p3 = await createPension("Pension 3", DateTime(2030, 1, 1));
+    await createPension(
+        "Pension 3", DateTime(2030, 1, 1)); // no statements required
     Pension? p4 = await createPension("Pension 4", DateTime(2030, 1, 1));
 
     // create some test statements
