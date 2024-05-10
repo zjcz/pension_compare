@@ -56,7 +56,7 @@ void main() {
       expect(find.text("This is the date you plan to retire."), findsOneWidget);
       expect(
           find.text(
-              "This is the amount you plan to receive as monthly income when you retire.  If you are unsure you can leave this blank for now."),
+              "This is the amount you plan to receive as a monthly income when you retire.  If you are unsure you can leave this blank for now."),
           findsOneWidget);
 
       expect(

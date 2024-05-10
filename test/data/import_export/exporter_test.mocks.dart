@@ -14,9 +14,6 @@ import 'package:pension_compare/app/settings/settings_service.dart' as _i9;
 import 'package:pension_compare/data/database/database_service.dart' as _i3;
 import 'package:pension_compare/data/database/tables/pensions_with_latest_statement.dart'
     as _i8;
-import 'package:pension_compare/data/import_export/exporter.dart' as _i11;
-import 'package:pension_compare/data/import_export/file_handler/file_handler.dart'
-    as _i10;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -1159,41 +1156,4 @@ class MockSettingsService extends _i1.Mock implements _i9.SettingsService {
         returnValue: _i5.Future<void>.value(),
         returnValueForMissingStub: _i5.Future<void>.value(),
       ) as _i5.Future<void>);
-}
-
-/// A class which mocks [FileHandler].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockFileHandler extends _i1.Mock implements _i10.FileHandler {
-  MockFileHandler() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  String get filename => (super.noSuchMethod(
-        Invocation.getter(#filename),
-        returnValue: _i7.dummyValue<String>(
-          this,
-          Invocation.getter(#filename),
-        ),
-      ) as String);
-
-  @override
-  void saveFile(List<_i11.ExportDataModel>? exportDataFiles) =>
-      super.noSuchMethod(
-        Invocation.method(
-          #saveFile,
-          [exportDataFiles],
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  List<_i11.ExportDataModel> loadFile() => (super.noSuchMethod(
-        Invocation.method(
-          #loadFile,
-          [],
-        ),
-        returnValue: <_i11.ExportDataModel>[],
-      ) as List<_i11.ExportDataModel>);
 }

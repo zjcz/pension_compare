@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:pension_compare/data/import_export/exporter.dart';
 import 'package:pension_compare/data/import_export/file_formatter/json_export_file_type.dart';
+import 'package:pension_compare/data/import_export/models/backup_config_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_other_income_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pension_compare/data/import_export/models/transfer_pension_model.dart';
@@ -13,12 +14,14 @@ void main() {
       TransferOtherIncomeModel otherIncome = buildOtherIncomeModel();
       TransferPensionModel pension = buildPensionModel();
       TransferSettingsModel settings = buildSettingsModel();
+      BackupConfigModel backupConfig =
+          BackupConfigModel(backupDate: DateTime.now(), backupVersion: '1');
 
       TransferDataModel dataModel = TransferDataModel(
-        transferOtherIncomeModelList: [otherIncome],
-        transferPensionModelList: [pension],
-        transferSettingsModel: settings,
-      );
+          transferOtherIncomeModelList: [otherIncome],
+          transferPensionModelList: [pension],
+          transferSettingsModel: settings,
+          backupConfigModel: backupConfig);
 
       JsonExportFileType jsonExportFileType = JsonExportFileType();
       List<ExportDataModel> exportDataModel =
@@ -26,13 +29,15 @@ void main() {
 
       // Step 1: Check if the export data model is not null and has the correct length
       expect(exportDataModel, isNotNull);
-      expect(exportDataModel.length, 3);
+      expect(exportDataModel.length, 4);
       expect(exportDataModel[0].filename, 'pension_data.json');
       expect(exportDataModel[0].fileContents, isNotEmpty);
       expect(exportDataModel[1].filename, 'other_income_data.json');
       expect(exportDataModel[1].fileContents, isNotEmpty);
       expect(exportDataModel[2].filename, 'settings_data.json');
       expect(exportDataModel[2].fileContents, isNotEmpty);
+      expect(exportDataModel[3].filename, 'backup_config.json');
+      expect(exportDataModel[3].fileContents, isNotEmpty);
 
       // Step 2: Parse the JSON string back to an object
       List<dynamic> jsonPensionList =
@@ -47,12 +52,167 @@ void main() {
           .toList();
       TransferSettingsModel parsedSettings = TransferSettingsModel.fromJson(
           jsonDecode(exportDataModel[2].fileContents));
+      BackupConfigModel parsedbackupConfig = BackupConfigModel.fromJson(
+          jsonDecode(exportDataModel[3].fileContents));
 
       // Step 3: Compare the original object with the parsed object
       expect(parsedOtherIncomes[0], equals(otherIncome));
       expect(parsedPensions[0], equals(pension));
       expect(parsedSettings, equals(settings));
+      expect(parsedbackupConfig, equals(backupConfig));
     });
+
+    testWidgets('import data to json data files', (tester) async {
+      TransferOtherIncomeModel otherIncome = buildOtherIncomeModel();
+      TransferPensionModel pension = buildPensionModel();
+      TransferSettingsModel settings = buildSettingsModel();
+      BackupConfigModel backupConfig =
+          BackupConfigModel(backupDate: DateTime.now(), backupVersion: '1');
+
+      TransferDataModel dataModel = TransferDataModel(
+        transferOtherIncomeModelList: [otherIncome],
+        transferPensionModelList: [pension],
+        transferSettingsModel: settings,
+        backupConfigModel: backupConfig,
+      );
+
+      JsonExportFileType jsonExportFileType = JsonExportFileType();
+      List<ExportDataModel> exportDataModel =
+          jsonExportFileType.export(dataModel);
+
+      // Now reimport the data
+      TransferDataModel importedDataModel =
+          jsonExportFileType.import(exportDataModel);
+
+      expect(importedDataModel, isNotNull);
+      expect(importedDataModel.transferOtherIncomeModelList,
+          equals(dataModel.transferOtherIncomeModelList));
+      expect(importedDataModel.transferPensionModelList,
+          equals(dataModel.transferPensionModelList));
+      expect(importedDataModel.transferSettingsModel,
+          equals(dataModel.transferSettingsModel));
+      expect(importedDataModel.backupConfigModel,
+          equals(dataModel.backupConfigModel));
+    });
+  });
+
+  group('Test invalid imports', () {
+    testWidgets('import empty data model', (tester) async {
+      JsonExportFileType jsonExportFileType = JsonExportFileType();
+      List<ExportDataModel> exportDataModel = [];
+
+      // Now reimport the data
+      final result = (() => jsonExportFileType.import(exportDataModel));
+
+      expect(result, throwsException);
+    });
+
+    testWidgets('import invalid files in data model', (tester) async {
+      JsonExportFileType jsonExportFileType = JsonExportFileType();
+      List<ExportDataModel> exportDataModel = [
+        ExportDataModel(
+            filename: jsonExportFileType.otherIncomeExportFilename,
+            fileContents: ''),
+        ExportDataModel(
+            filename: jsonExportFileType.settingsExportFilename,
+            fileContents: ''),
+        ExportDataModel(
+            filename: jsonExportFileType.pensionExportFilename,
+            fileContents: '')
+      ]; // only includes 3 files, expecting 4
+
+      // Now reimport the data
+      final result = (() => jsonExportFileType.import(exportDataModel));
+
+      expect(result, throwsException);
+    });
+
+    testWidgets('import file with missing pension data in data model',
+        (tester) async {
+      JsonExportFileType jsonExportFileType = JsonExportFileType();
+      List<ExportDataModel> exportDataModel = [
+        ExportDataModel(
+            filename: jsonExportFileType.otherIncomeExportFilename,
+            fileContents: ''),
+        ExportDataModel(
+            filename: jsonExportFileType.settingsExportFilename,
+            fileContents: ''),
+        ExportDataModel(
+            filename: jsonExportFileType.backupConfigExportFilename,
+            fileContents: ''),
+        ExportDataModel(filename: 'random_file.json', fileContents: '')
+      ];
+
+      // Now reimport the data
+      final result = (() => jsonExportFileType.import(exportDataModel));
+
+      expect(result, throwsException);
+    });
+
+    testWidgets('import file with missing other income data in data model',
+        (tester) async {
+      JsonExportFileType jsonExportFileType = JsonExportFileType();
+      List<ExportDataModel> exportDataModel = [
+        ExportDataModel(
+            filename: jsonExportFileType.pensionExportFilename,
+            fileContents: ''),
+        ExportDataModel(
+            filename: jsonExportFileType.settingsExportFilename,
+            fileContents: ''),
+        ExportDataModel(
+            filename: jsonExportFileType.backupConfigExportFilename,
+            fileContents: ''),
+        ExportDataModel(filename: 'random_file.json', fileContents: '')
+      ];
+
+      // Now reimport the data
+      final result = (() => jsonExportFileType.import(exportDataModel));
+
+      expect(result, throwsException);
+    });
+    testWidgets('import file with missing settings data in data model',
+        (tester) async {
+      JsonExportFileType jsonExportFileType = JsonExportFileType();
+      List<ExportDataModel> exportDataModel = [
+        ExportDataModel(
+            filename: jsonExportFileType.otherIncomeExportFilename,
+            fileContents: ''),
+        ExportDataModel(
+            filename: jsonExportFileType.pensionExportFilename,
+            fileContents: ''),
+        ExportDataModel(
+            filename: jsonExportFileType.backupConfigExportFilename,
+            fileContents: ''),
+        ExportDataModel(filename: 'random_file.json', fileContents: '')
+      ];
+
+      // Now reimport the data
+      final result = (() => jsonExportFileType.import(exportDataModel));
+
+      expect(result, throwsException);
+    });
+
+    testWidgets('import file with missing backup config data in data model',
+        (tester) async {
+      JsonExportFileType jsonExportFileType = JsonExportFileType();
+      List<ExportDataModel> exportDataModel = [
+        ExportDataModel(
+            filename: jsonExportFileType.otherIncomeExportFilename,
+            fileContents: ''),
+        ExportDataModel(
+            filename: jsonExportFileType.pensionExportFilename,
+            fileContents: ''),
+        ExportDataModel(
+            filename: jsonExportFileType.settingsExportFilename,
+            fileContents: ''),
+        ExportDataModel(filename: 'random_file.json', fileContents: '')
+      ];
+
+      // Now reimport the data
+      final result = (() => jsonExportFileType.import(exportDataModel));
+
+      expect(result, throwsException);
+    });    
   });
 }
 
