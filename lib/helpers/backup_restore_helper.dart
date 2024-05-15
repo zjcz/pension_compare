@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
-import 'package:pension_compare/app/settings/settings_service.dart';
+import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/data/import_export/exporter.dart';
 import 'package:pension_compare/data/import_export/file_formatter/json_export_file_type.dart';

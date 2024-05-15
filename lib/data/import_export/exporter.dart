@@ -1,5 +1,5 @@
-import 'package:pension_compare/app/settings/settings.dart';
-import 'package:pension_compare/app/settings/settings_service.dart';
+import 'package:pension_compare/app/settings/models/settings.dart';
+import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/data/import_export/file_formatter/export_file_type.dart';
 import 'package:pension_compare/data/import_export/file_handler/file_handler.dart';
@@ -56,7 +56,7 @@ class Exporter {
   Future<TransferDataModel> _buildExport() async {
     OtherIncome? otherIncome = await databaseService.getStatePension();
     List<Pension> pensions = await databaseService.getAllPensions().first;
-    Settings settings = await settingsService.getSettings();
+    Settings settings = await settingsService.getAllSettings();
 
     List<TransferPensionModel> transferPensions = [];
     for (Pension pension in pensions) {
@@ -111,9 +111,16 @@ class Exporter {
 
     await databaseService.saveStatePension(
         dataModel.transferOtherIncomeModelList.first.annualAmount);
-    await settingsService.saveSettings(Settings(
-        retirementDate: dataModel.transferSettingsModel.retirementDate,
-        targetIncome: dataModel.transferSettingsModel.targetIncome));
+    await settingsService.saveAllSettings(Settings(
+      retirementDate: dataModel.transferSettingsModel.retirementDate,
+      targetIncome: dataModel.transferSettingsModel.targetIncome,
+      acceptTermsAndConditions:
+          dataModel.transferSettingsModel.acceptTermsAndConditions,
+      acceptFinancialAdviceWarning:
+          dataModel.transferSettingsModel.acceptFinancialAdviceWarning,
+      welcomeScreenDismissed:
+          dataModel.transferSettingsModel.welcomeScreenDismissed,
+    ));
   }
 }
 

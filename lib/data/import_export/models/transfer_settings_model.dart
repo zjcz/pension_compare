@@ -12,6 +12,9 @@ class TransferSettingsModel with _$TransferSettingsModel {
   const factory TransferSettingsModel({
     required DateTime? retirementDate,
     required double? targetIncome,
+    required bool? acceptTermsAndConditions,
+    required bool? acceptFinancialAdviceWarning,
+    required bool? welcomeScreenDismissed,
   }) = _TransferSettingsModel;
 
   factory TransferSettingsModel.fromJson(Map<String, Object?> json) =>

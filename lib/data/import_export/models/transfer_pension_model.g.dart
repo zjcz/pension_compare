@@ -9,7 +9,7 @@ part of 'transfer_pension_model.dart';
 _$TransferPensionModelImpl _$$TransferPensionModelImplFromJson(
         Map<String, dynamic> json) =>
     _$TransferPensionModelImpl(
-      pensionId: json['pensionId'] as int,
+      pensionId: (json['pensionId'] as num).toInt(),
       name: json['name'] as String,
       maturityDate: DateTime.parse(json['maturityDate'] as String),
       statements: (json['statements'] as List<dynamic>)

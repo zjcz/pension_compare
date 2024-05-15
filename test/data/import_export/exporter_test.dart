@@ -1,6 +1,6 @@
 import 'package:mockito/annotations.dart';
-import 'package:pension_compare/app/settings/settings.dart';
-import 'package:pension_compare/app/settings/settings_service.dart';
+import 'package:pension_compare/app/settings/models/settings.dart';
+import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/data/import_export/exporter.dart';
 import 'package:pension_compare/data/import_export/file_formatter/json_export_file_type.dart';
@@ -41,8 +41,12 @@ void main() {
               ]));
 
       final settingsService = MockSettingsService();
-      when(settingsService.getSettings()).thenAnswer((_) async =>
-          Settings(retirementDate: DateTime(2050, 1, 1), targetIncome: 9000));
+      when(settingsService.getAllSettings()).thenAnswer((_) async => Settings(
+          retirementDate: DateTime(2050, 1, 1),
+          targetIncome: 9000,
+          acceptTermsAndConditions: true,
+          acceptFinancialAdviceWarning: true,
+          welcomeScreenDismissed: true));
 
       final fileHandler = MockFileHandler();
 
@@ -69,7 +73,7 @@ void main() {
       verify(databaseService.getAllPensions()).called(1);
       verify(databaseService.getStatePension()).called(1);
       verify(databaseService.getAllStatementsForPension(1)).called(1);
-      verify(settingsService.getSettings()).called(1);
+      verify(settingsService.getAllSettings()).called(1);
     });
   });
 
@@ -87,6 +91,9 @@ void main() {
       double statePensionAnnualAmount = 34567;
       DateTime retirementDate = DateTime(2024, 1, 1);
       double targetIncome = 87654;
+      bool acceptTermsAndConditions = true;
+      bool acceptFinancialAdviceWarning = true;
+      bool welcomeScreenDismissed = true;
 
       MockDatabaseService databaseService = MockDatabaseService();
       when(databaseService.clearAllData()).thenAnswer((_) async {});
@@ -112,8 +119,12 @@ void main() {
               annualAmount: statePensionAnnualAmount));
 
       MockSettingsService settingsService = MockSettingsService();
-      when(settingsService.saveSettings(Settings(
-              retirementDate: retirementDate, targetIncome: targetIncome)))
+      when(settingsService.saveAllSettings(Settings(
+              retirementDate: retirementDate,
+              targetIncome: targetIncome,
+              acceptTermsAndConditions: acceptTermsAndConditions,
+              acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
+              welcomeScreenDismissed: welcomeScreenDismissed)))
           .thenAnswer((_) async => {});
 
       // create the data to import
@@ -134,17 +145,19 @@ void main() {
           name: 'State Pension',
           annualAmount: statePensionAnnualAmount);
       TransferSettingsModel transferSettings = TransferSettingsModel(
-        retirementDate: retirementDate,
-        targetIncome: targetIncome,
-      );
+          retirementDate: retirementDate,
+          targetIncome: targetIncome,
+          acceptTermsAndConditions: acceptTermsAndConditions,
+          acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
+          welcomeScreenDismissed: welcomeScreenDismissed);
       TransferDataModel dataModel = TransferDataModel(
         transferOtherIncomeModelList: [transferOtherIncome],
         transferPensionModelList: [transferPension],
-        transferSettingsModel: transferSettings,     
+        transferSettingsModel: transferSettings,
         backupConfigModel: BackupConfigModel(
           backupDate: DateTime.now(),
           backupVersion: "1",
-        ),   
+        ),
       );
 
       JsonExportFileType jsonExportFileType = JsonExportFileType();
@@ -167,8 +180,12 @@ void main() {
           .called(1);
       verify(databaseService.saveStatePension(statePensionAnnualAmount))
           .called(1);
-      verify(settingsService.saveSettings(Settings(
-              retirementDate: retirementDate, targetIncome: targetIncome)))
+      verify(settingsService.saveAllSettings(Settings(
+              retirementDate: retirementDate,
+              targetIncome: targetIncome,
+              acceptTermsAndConditions: acceptTermsAndConditions,
+              acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
+              welcomeScreenDismissed: welcomeScreenDismissed)))
           .called(1);
     });
   });

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mockito/annotations.dart';
+import 'package:pension_compare/app/settings/models/user_settings.dart';
 import 'package:pension_compare/app/settings/views/settings_screen.dart';
-import 'package:pension_compare/app/settings/settings.dart';
-import 'package:pension_compare/app/settings/settings_service.dart';
+import 'package:pension_compare/app/settings/models/settings.dart';
+import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/helpers/date_helper.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -42,8 +43,13 @@ void main() {
     testWidgets('show the settings screen with no existing settings',
         (tester) async {
       final settingsService = MockSettingsService();
-      when(settingsService.getSettings()).thenAnswer((_) async =>
-          const Settings(retirementDate: null, targetIncome: null));
+      when(settingsService.getAllSettings()).thenAnswer((_) async =>
+          const Settings(
+              retirementDate: null,
+              targetIncome: null,
+              acceptTermsAndConditions: null,
+              acceptFinancialAdviceWarning: null,
+              welcomeScreenDismissed: null));
       await tester.pumpWidget(
           createSettingsScreen(settingsService, createMockDatabaseService()));
       await tester.pumpAndSettle();
@@ -66,17 +72,24 @@ void main() {
       expect(find.widgetWithText(TextButton, "Save"), findsOneWidget);
       expect(find.widgetWithText(TextButton, "Delete All"), findsOneWidget);
 
-      verify(settingsService.getSettings()).called(1);
+      verify(settingsService.getAllSettings()).called(1);
     });
 
     testWidgets('show the settings screen with existing settings',
         (tester) async {
       DateTime retirementDate = DateHelper.getToday();
       double targetValue = 12345.0;
+      bool acceptTermsAndConditions = true;
+      bool acceptFinancialAdviceWarning = true;
+      bool welcomeScreenDismissed = true;
 
       final settingsService = MockSettingsService();
-      when(settingsService.getSettings()).thenAnswer((_) async =>
-          Settings(retirementDate: retirementDate, targetIncome: targetValue));
+      when(settingsService.getAllSettings()).thenAnswer((_) async => Settings(
+          retirementDate: retirementDate,
+          targetIncome: targetValue,
+          acceptTermsAndConditions: acceptTermsAndConditions,
+          acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
+          welcomeScreenDismissed: welcomeScreenDismissed));
 
       // Build your app and trigger a frame
       await tester.pumpWidget(
@@ -87,13 +100,18 @@ void main() {
       expect(find.text(CurrencyHelper.formatCurrency(targetValue)),
           findsOneWidget);
 
-      verify(settingsService.getSettings()).called(1);
+      verify(settingsService.getAllSettings()).called(1);
     });
 
     testWidgets('Set date of date picker', (WidgetTester tester) async {
       final settingsService = MockSettingsService();
-      when(settingsService.getSettings()).thenAnswer((_) async =>
-          const Settings(retirementDate: null, targetIncome: null));
+      when(settingsService.getAllSettings()).thenAnswer((_) async =>
+          const Settings(
+              retirementDate: null,
+              targetIncome: null,
+              acceptTermsAndConditions: null,
+              acceptFinancialAdviceWarning: null,
+              welcomeScreenDismissed: null));
 
       // Build your app and trigger a frame
       await tester.pumpWidget(
@@ -132,10 +150,16 @@ void main() {
       double targetValue = 12345.0;
 
       final settingsService = MockSettingsService();
-      when(settingsService.getSettings()).thenAnswer((_) async =>
-          const Settings(retirementDate: null, targetIncome: null));
-      when(settingsService.saveSettings(Settings(
-              retirementDate: retirementDate, targetIncome: targetValue)))
+      when(settingsService.getAllSettings()).thenAnswer((_) async =>
+          const Settings(
+              retirementDate: null,
+              targetIncome: null,
+              acceptTermsAndConditions: null,
+              acceptFinancialAdviceWarning: null,
+              welcomeScreenDismissed: null));
+      when(settingsService.saveUserSettings(UserSettings(
+              retirementDate: retirementDate,
+              targetIncome: targetValue)))
           .thenAnswer((_) async => true);
 
       await tester.pumpWidget(
@@ -155,24 +179,32 @@ void main() {
       // Tap the save button
       await tester.tap(find.widgetWithText(TextButton, "Save"));
 
-      verify(settingsService.getSettings()).called(1);
-      verify(settingsService.saveSettings(Settings(
-              retirementDate: retirementDate, targetIncome: targetValue)))
+      verify(settingsService.getAllSettings()).called(1);
+      verify(settingsService.saveUserSettings(UserSettings(
+              retirementDate: retirementDate,
+              targetIncome: targetValue)))
           .called(1);
     });
 
     testWidgets('update existing settings', (tester) async {
       DateTime originalRetirementDate = DateTime(2025, 1, 10);
       double originalTargetValue = 12345.0;
+      bool originalAcceptTermsAndConditions = true;
+      bool originalAcceptFinancialAdviceWarning = true;
+      bool originalWelcomeScreenDismissed = true;
       DateTime newRetirementDate = DateTime(2025, 1, 20);
       double newTargetValue = 98765.43;
 
       final settingsService = MockSettingsService();
-      when(settingsService.getSettings()).thenAnswer((_) async => Settings(
+      when(settingsService.getAllSettings()).thenAnswer((_) async => Settings(
           retirementDate: originalRetirementDate,
-          targetIncome: originalTargetValue));
-      when(settingsService.saveSettings(Settings(
-              retirementDate: newRetirementDate, targetIncome: newTargetValue)))
+          targetIncome: originalTargetValue,
+          acceptTermsAndConditions: originalAcceptTermsAndConditions,
+          acceptFinancialAdviceWarning: originalAcceptFinancialAdviceWarning,
+          welcomeScreenDismissed: originalWelcomeScreenDismissed));
+      when(settingsService.saveUserSettings(UserSettings(
+              retirementDate: newRetirementDate,
+              targetIncome: newTargetValue)))
           .thenAnswer((_) async => true);
 
       await tester.pumpWidget(
@@ -193,22 +225,29 @@ void main() {
       // Tap the save button
       await tester.tap(find.widgetWithText(TextButton, "Save"));
 
-      verify(settingsService.getSettings()).called(1);
-      verify(settingsService.saveSettings(Settings(
-              retirementDate: newRetirementDate, targetIncome: newTargetValue)))
+      verify(settingsService.getAllSettings()).called(1);
+      verify(settingsService.saveUserSettings(UserSettings(
+              retirementDate: newRetirementDate,
+              targetIncome: newTargetValue)))
           .called(1);
     });
 
     testWidgets('navigate back to home screen after save', (tester) async {
       DateTime originalRetirementDate = DateTime(2025, 1, 10);
       double originalTargetValue = 12345.0;
+      bool originalAcceptTermsAndConditions = true;
+      bool originalAcceptFinancialAdviceWarning = true;
+      bool originalWelcomeScreenDismissed = true;
       double newTargetValue = 98765.43;
 
       final settingsService = MockSettingsService();
-      when(settingsService.getSettings()).thenAnswer((_) async => Settings(
+      when(settingsService.getAllSettings()).thenAnswer((_) async => Settings(
           retirementDate: originalRetirementDate,
-          targetIncome: originalTargetValue));
-      when(settingsService.saveSettings(Settings(
+          targetIncome: originalTargetValue,
+          acceptTermsAndConditions: originalAcceptTermsAndConditions,
+          acceptFinancialAdviceWarning: originalAcceptFinancialAdviceWarning,
+          welcomeScreenDismissed: originalWelcomeScreenDismissed));
+      when(settingsService.saveUserSettings(UserSettings(
               retirementDate: originalRetirementDate,
               targetIncome: newTargetValue)))
           .thenAnswer((_) async => true);
@@ -228,8 +267,8 @@ void main() {
       // should navigate back to home screen
       expect(find.byType(HomeScreen), findsOneWidget);
 
-      verify(settingsService.getSettings()).called(1);
-      verify(settingsService.saveSettings(Settings(
+      verify(settingsService.getAllSettings()).called(1);
+      verify(settingsService.saveUserSettings(UserSettings(
               retirementDate: originalRetirementDate,
               targetIncome: newTargetValue)))
           .called(1);
@@ -240,10 +279,16 @@ void main() {
     testWidgets('validation should allow empty values to remain',
         (tester) async {
       final settingsService = MockSettingsService();
-      when(settingsService.getSettings()).thenAnswer((_) async =>
-          const Settings(retirementDate: null, targetIncome: null));
-      when(settingsService.saveSettings(
-              const Settings(retirementDate: null, targetIncome: null)))
+      when(settingsService.getAllSettings()).thenAnswer((_) async =>
+          const Settings(
+              retirementDate: null,
+              targetIncome: null,
+              acceptTermsAndConditions: null,
+              acceptFinancialAdviceWarning: null,
+              welcomeScreenDismissed: null));
+      when(settingsService.saveUserSettings(const UserSettings(
+              retirementDate: null,
+              targetIncome: null)))
           .thenAnswer((_) async => true);
 
       await tester.pumpWidget(
@@ -254,9 +299,10 @@ void main() {
       await tester.tap(find.widgetWithText(TextButton, "Save"));
       await tester.pumpAndSettle();
 
-      verify(settingsService.getSettings()).called(1);
-      verify(settingsService.saveSettings(
-              const Settings(retirementDate: null, targetIncome: null)))
+      verify(settingsService.getAllSettings()).called(1);
+      verify(settingsService.saveUserSettings(const UserSettings(
+              retirementDate: null,
+              targetIncome: null)))
           .called(1);
     });
 
@@ -265,10 +311,15 @@ void main() {
       double targetValue = 12345.0;
 
       final settingsService = MockSettingsService();
-      when(settingsService.getSettings()).thenAnswer((_) async =>
-          Settings(retirementDate: null, targetIncome: targetValue));
-      when(settingsService.saveSettings(
-              const Settings(retirementDate: null, targetIncome: null)))
+      when(settingsService.getAllSettings()).thenAnswer((_) async => Settings(
+          retirementDate: null,
+          targetIncome: targetValue,
+          acceptTermsAndConditions: null,
+          acceptFinancialAdviceWarning: null,
+          welcomeScreenDismissed: null));
+      when(settingsService.saveUserSettings(const UserSettings(
+              retirementDate: null,
+              targetIncome: null)))
           .thenAnswer((_) async => true);
 
       await tester.pumpWidget(
@@ -285,9 +336,10 @@ void main() {
       await tester.tap(find.widgetWithText(TextButton, "Save"));
       await tester.pumpAndSettle();
 
-      verify(settingsService.getSettings()).called(1);
-      verify(settingsService.saveSettings(
-              const Settings(retirementDate: null, targetIncome: null)))
+      verify(settingsService.getAllSettings()).called(1);
+      verify(settingsService.saveUserSettings(const UserSettings(
+              retirementDate: null,
+              targetIncome: null)))
           .called(1);
     });
 
@@ -297,10 +349,16 @@ void main() {
       String invalidTargetValue = 'invalid';
 
       final settingsService = MockSettingsService();
-      when(settingsService.getSettings()).thenAnswer((_) async =>
-          const Settings(retirementDate: null, targetIncome: null));
-      when(settingsService.saveSettings(
-              Settings(retirementDate: retirementDate, targetIncome: null)))
+      when(settingsService.getAllSettings()).thenAnswer((_) async =>
+          const Settings(
+              retirementDate: null,
+              targetIncome: null,
+              acceptTermsAndConditions: null,
+              acceptFinancialAdviceWarning: null,
+              welcomeScreenDismissed: null));
+      when(settingsService.saveUserSettings(UserSettings(
+              retirementDate: retirementDate,
+              targetIncome: null)))
           .thenAnswer((_) async => true);
 
       await tester.pumpWidget(
@@ -323,9 +381,10 @@ void main() {
 
       expect(find.text("Please enter a valid number"), findsOneWidget);
 
-      verify(settingsService.getSettings()).called(1);
-      verifyNever(settingsService.saveSettings(
-          Settings(retirementDate: retirementDate, targetIncome: null)));
+      verify(settingsService.getAllSettings()).called(1);
+      verifyNever(settingsService.saveUserSettings(UserSettings(
+          retirementDate: retirementDate,
+          targetIncome: null)));
     });
   });
 
@@ -333,8 +392,13 @@ void main() {
     testWidgets('tapping the delete all button displays warning prompt',
         (tester) async {
       final settingsService = MockSettingsService();
-      when(settingsService.getSettings()).thenAnswer((_) async =>
-          const Settings(retirementDate: null, targetIncome: null));
+      when(settingsService.getAllSettings()).thenAnswer((_) async =>
+          const Settings(
+              retirementDate: null,
+              targetIncome: null,
+              acceptTermsAndConditions: null,
+              acceptFinancialAdviceWarning: null,
+              welcomeScreenDismissed: null));
 
       await tester.pumpWidget(
           createSettingsScreen(settingsService, createMockDatabaseService()));
@@ -356,8 +420,13 @@ void main() {
 
     testWidgets('tapping no dismissess the warning prompt', (tester) async {
       final settingsService = MockSettingsService();
-      when(settingsService.getSettings()).thenAnswer((_) async =>
-          const Settings(retirementDate: null, targetIncome: null));
+      when(settingsService.getAllSettings()).thenAnswer((_) async =>
+          const Settings(
+              retirementDate: null,
+              targetIncome: null,
+              acceptTermsAndConditions: null,
+              acceptFinancialAdviceWarning: null,
+              welcomeScreenDismissed: null));
       final databaseService = createMockDatabaseService();
       when(databaseService.clearAllData()).thenAnswer((_) async => true);
 
@@ -382,8 +451,13 @@ void main() {
     testWidgets('tapping yes clears data and dismissess the warning prompt',
         (tester) async {
       final settingsService = MockSettingsService();
-      when(settingsService.getSettings()).thenAnswer((_) async =>
-          const Settings(retirementDate: null, targetIncome: null));
+      when(settingsService.getAllSettings()).thenAnswer((_) async =>
+          const Settings(
+              retirementDate: null,
+              targetIncome: null,
+              acceptTermsAndConditions: null,
+              acceptFinancialAdviceWarning: null,
+              welcomeScreenDismissed: null));
       final databaseService = createMockDatabaseService();
       when(databaseService.clearAllData()).thenAnswer((_) async => true);
 

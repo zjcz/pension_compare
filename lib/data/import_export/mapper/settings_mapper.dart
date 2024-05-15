@@ -1,4 +1,4 @@
-import 'package:pension_compare/app/settings/settings.dart';
+import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/data/import_export/models/transfer_settings_model.dart';
 
 class SettingsMapper {
@@ -6,6 +6,9 @@ class SettingsMapper {
     return TransferSettingsModel(
       retirementDate: settings.retirementDate,
       targetIncome: settings.targetIncome,
+      acceptTermsAndConditions: settings.acceptTermsAndConditions,
+      acceptFinancialAdviceWarning: settings.acceptFinancialAdviceWarning,
+      welcomeScreenDismissed: settings.welcomeScreenDismissed,
     );
   }
 
@@ -13,6 +16,9 @@ class SettingsMapper {
     return Settings(
       retirementDate: settings.retirementDate,
       targetIncome: settings.targetIncome,
+      acceptTermsAndConditions: settings.acceptTermsAndConditions,
+      acceptFinancialAdviceWarning: settings.acceptFinancialAdviceWarning,
+      welcomeScreenDismissed: settings.welcomeScreenDismissed,
     );
   }
 }

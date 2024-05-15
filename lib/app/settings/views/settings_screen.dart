@@ -6,8 +6,9 @@ import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/extensions/material_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
-import 'package:pension_compare/app/settings/settings.dart';
-import 'package:pension_compare/app/settings/settings_service.dart';
+import 'package:pension_compare/app/settings/models/settings.dart';
+import 'package:pension_compare/app/settings/models/user_settings.dart';
+import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/helpers/backup_restore_helper.dart';
 import 'package:pension_compare/widgets/date_field.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
@@ -85,7 +86,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   child: Column(
                 children: [
                   FutureBuilder<Settings>(
-                      future: widget.settingsService.getSettings(),
+                      future: widget.settingsService.getAllSettings(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -201,7 +202,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<bool> _saveData() async {
-    widget.settingsService.saveSettings(Settings(
+    widget.settingsService.saveUserSettings(UserSettings(
         retirementDate: _retirementDate,
         targetIncome:
             CurrencyHelper.parseCurrency(targetIncomeController.text)));

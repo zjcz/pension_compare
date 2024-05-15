@@ -27,5 +27,14 @@ class CustomStyles {
     fontSize: 10,
   );
 
+  static const headerTextStyle = TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 14,
+  );
+
+  static const highlightedTextStyle = TextStyle(
+    fontWeight: FontWeight.bold,
+  );
+
   static const spacerBox = SizedBox(height: 20);
 }
