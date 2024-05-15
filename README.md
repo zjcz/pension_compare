@@ -15,6 +15,10 @@ Uses the following packages:
 - [archive](https://pub.dev/packages/archive) for backup / restore of data and settings.
 - [go_router](https://pub.dev/packages/go_router) for routing / page navigation.
 
+## Terms and Conditions, Privacy Policy
+
+The Terms and Conditions and the Privicy Policy was generated at [App Privacy Policy Generator](https://app-privacy-policy-generator.firebaseapp.com/)
+
 ## 🖥️ Instructions
 
 To run the app you will need to install flutter. Follow this [Get Started](https://docs.flutter.dev/get-started/install) guide.

@@ -9,7 +9,7 @@ part of 'other_income_model.dart';
 _$OtherIncomeModelImpl _$$OtherIncomeModelImplFromJson(
         Map<String, dynamic> json) =>
     _$OtherIncomeModelImpl(
-      otherIncomeId: json['otherIncomeId'] as int?,
+      otherIncomeId: (json['otherIncomeId'] as num?)?.toInt(),
       name: json['name'] as String,
       annualAmount: (json['annualAmount'] as num).toDouble(),
     );

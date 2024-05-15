@@ -9,7 +9,7 @@ part of 'transfer_statement_model.dart';
 _$TransferStatementModelImpl _$$TransferStatementModelImplFromJson(
         Map<String, dynamic> json) =>
     _$TransferStatementModelImpl(
-      statementId: json['statementId'] as int,
+      statementId: (json['statementId'] as num).toInt(),
       statementDate: DateTime.parse(json['statementDate'] as String),
       planValue: (json['planValue'] as num).toDouble(),
       projectedAnnualAmount: (json['projectedAnnualAmount'] as num).toDouble(),

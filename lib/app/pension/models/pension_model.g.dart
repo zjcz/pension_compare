@@ -8,7 +8,7 @@ part of 'pension_model.dart';
 
 _$PensionModelImpl _$$PensionModelImplFromJson(Map<String, dynamic> json) =>
     _$PensionModelImpl(
-      pensionId: json['pensionId'] as int?,
+      pensionId: (json['pensionId'] as num?)?.toInt(),
       name: json['name'] as String,
       maturityDate: json['maturityDate'] == null
           ? null

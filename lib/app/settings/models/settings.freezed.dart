@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'transfer_settings_model.dart';
+part of 'settings.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -14,13 +14,12 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-TransferSettingsModel _$TransferSettingsModelFromJson(
-    Map<String, dynamic> json) {
-  return _TransferSettingsModel.fromJson(json);
+Settings _$SettingsFromJson(Map<String, dynamic> json) {
+  return _Settings.fromJson(json);
 }
 
 /// @nodoc
-mixin _$TransferSettingsModel {
+mixin _$Settings {
   DateTime? get retirementDate => throw _privateConstructorUsedError;
   double? get targetIncome => throw _privateConstructorUsedError;
   bool? get acceptTermsAndConditions => throw _privateConstructorUsedError;
@@ -29,15 +28,14 @@ mixin _$TransferSettingsModel {
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $TransferSettingsModelCopyWith<TransferSettingsModel> get copyWith =>
+  $SettingsCopyWith<Settings> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $TransferSettingsModelCopyWith<$Res> {
-  factory $TransferSettingsModelCopyWith(TransferSettingsModel value,
-          $Res Function(TransferSettingsModel) then) =
-      _$TransferSettingsModelCopyWithImpl<$Res, TransferSettingsModel>;
+abstract class $SettingsCopyWith<$Res> {
+  factory $SettingsCopyWith(Settings value, $Res Function(Settings) then) =
+      _$SettingsCopyWithImpl<$Res, Settings>;
   @useResult
   $Res call(
       {DateTime? retirementDate,
@@ -48,10 +46,9 @@ abstract class $TransferSettingsModelCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$TransferSettingsModelCopyWithImpl<$Res,
-        $Val extends TransferSettingsModel>
-    implements $TransferSettingsModelCopyWith<$Res> {
-  _$TransferSettingsModelCopyWithImpl(this._value, this._then);
+class _$SettingsCopyWithImpl<$Res, $Val extends Settings>
+    implements $SettingsCopyWith<$Res> {
+  _$SettingsCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -93,12 +90,11 @@ class _$TransferSettingsModelCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$TransferSettingsModelImplCopyWith<$Res>
-    implements $TransferSettingsModelCopyWith<$Res> {
-  factory _$$TransferSettingsModelImplCopyWith(
-          _$TransferSettingsModelImpl value,
-          $Res Function(_$TransferSettingsModelImpl) then) =
-      __$$TransferSettingsModelImplCopyWithImpl<$Res>;
+abstract class _$$SettingsImplCopyWith<$Res>
+    implements $SettingsCopyWith<$Res> {
+  factory _$$SettingsImplCopyWith(
+          _$SettingsImpl value, $Res Function(_$SettingsImpl) then) =
+      __$$SettingsImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -110,12 +106,11 @@ abstract class _$$TransferSettingsModelImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$TransferSettingsModelImplCopyWithImpl<$Res>
-    extends _$TransferSettingsModelCopyWithImpl<$Res,
-        _$TransferSettingsModelImpl>
-    implements _$$TransferSettingsModelImplCopyWith<$Res> {
-  __$$TransferSettingsModelImplCopyWithImpl(_$TransferSettingsModelImpl _value,
-      $Res Function(_$TransferSettingsModelImpl) _then)
+class __$$SettingsImplCopyWithImpl<$Res>
+    extends _$SettingsCopyWithImpl<$Res, _$SettingsImpl>
+    implements _$$SettingsImplCopyWith<$Res> {
+  __$$SettingsImplCopyWithImpl(
+      _$SettingsImpl _value, $Res Function(_$SettingsImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -127,7 +122,7 @@ class __$$TransferSettingsModelImplCopyWithImpl<$Res>
     Object? acceptFinancialAdviceWarning = freezed,
     Object? welcomeScreenDismissed = freezed,
   }) {
-    return _then(_$TransferSettingsModelImpl(
+    return _then(_$SettingsImpl(
       retirementDate: freezed == retirementDate
           ? _value.retirementDate
           : retirementDate // ignore: cast_nullable_to_non_nullable
@@ -154,18 +149,16 @@ class __$$TransferSettingsModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$TransferSettingsModelImpl
-    with DiagnosticableTreeMixin
-    implements _TransferSettingsModel {
-  const _$TransferSettingsModelImpl(
+class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
+  const _$SettingsImpl(
       {required this.retirementDate,
       required this.targetIncome,
       required this.acceptTermsAndConditions,
       required this.acceptFinancialAdviceWarning,
       required this.welcomeScreenDismissed});
 
-  factory _$TransferSettingsModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$TransferSettingsModelImplFromJson(json);
+  factory _$SettingsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SettingsImplFromJson(json);
 
   @override
   final DateTime? retirementDate;
@@ -180,14 +173,14 @@ class _$TransferSettingsModelImpl
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'TransferSettingsModel(retirementDate: $retirementDate, targetIncome: $targetIncome, acceptTermsAndConditions: $acceptTermsAndConditions, acceptFinancialAdviceWarning: $acceptFinancialAdviceWarning, welcomeScreenDismissed: $welcomeScreenDismissed)';
+    return 'Settings(retirementDate: $retirementDate, targetIncome: $targetIncome, acceptTermsAndConditions: $acceptTermsAndConditions, acceptFinancialAdviceWarning: $acceptFinancialAdviceWarning, welcomeScreenDismissed: $welcomeScreenDismissed)';
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties
-      ..add(DiagnosticsProperty('type', 'TransferSettingsModel'))
+      ..add(DiagnosticsProperty('type', 'Settings'))
       ..add(DiagnosticsProperty('retirementDate', retirementDate))
       ..add(DiagnosticsProperty('targetIncome', targetIncome))
       ..add(DiagnosticsProperty(
@@ -202,7 +195,7 @@ class _$TransferSettingsModelImpl
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$TransferSettingsModelImpl &&
+            other is _$SettingsImpl &&
             (identical(other.retirementDate, retirementDate) ||
                 other.retirementDate == retirementDate) &&
             (identical(other.targetIncome, targetIncome) ||
@@ -231,29 +224,27 @@ class _$TransferSettingsModelImpl
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$TransferSettingsModelImplCopyWith<_$TransferSettingsModelImpl>
-      get copyWith => __$$TransferSettingsModelImplCopyWithImpl<
-          _$TransferSettingsModelImpl>(this, _$identity);
+  _$$SettingsImplCopyWith<_$SettingsImpl> get copyWith =>
+      __$$SettingsImplCopyWithImpl<_$SettingsImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$TransferSettingsModelImplToJson(
+    return _$$SettingsImplToJson(
       this,
     );
   }
 }
 
-abstract class _TransferSettingsModel implements TransferSettingsModel {
-  const factory _TransferSettingsModel(
-          {required final DateTime? retirementDate,
-          required final double? targetIncome,
-          required final bool? acceptTermsAndConditions,
-          required final bool? acceptFinancialAdviceWarning,
-          required final bool? welcomeScreenDismissed}) =
-      _$TransferSettingsModelImpl;
+abstract class _Settings implements Settings {
+  const factory _Settings(
+      {required final DateTime? retirementDate,
+      required final double? targetIncome,
+      required final bool? acceptTermsAndConditions,
+      required final bool? acceptFinancialAdviceWarning,
+      required final bool? welcomeScreenDismissed}) = _$SettingsImpl;
 
-  factory _TransferSettingsModel.fromJson(Map<String, dynamic> json) =
-      _$TransferSettingsModelImpl.fromJson;
+  factory _Settings.fromJson(Map<String, dynamic> json) =
+      _$SettingsImpl.fromJson;
 
   @override
   DateTime? get retirementDate;
@@ -267,6 +258,6 @@ abstract class _TransferSettingsModel implements TransferSettingsModel {
   bool? get welcomeScreenDismissed;
   @override
   @JsonKey(ignore: true)
-  _$$TransferSettingsModelImplCopyWith<_$TransferSettingsModelImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$SettingsImplCopyWith<_$SettingsImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

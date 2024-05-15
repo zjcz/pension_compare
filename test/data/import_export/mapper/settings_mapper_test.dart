@@ -1,4 +1,4 @@
-import 'package:pension_compare/app/settings/settings.dart';
+import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/data/import_export/models/transfer_settings_model.dart';
 import 'package:pension_compare/data/import_export/mapper/settings_mapper.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,8 +8,16 @@ void main() {
     testWidgets('map settings to transfer object', (tester) async {
       DateTime retirementDate = DateTime.now();
       double targetIncome = 123.45;
-      Settings settings =
-          Settings(retirementDate: retirementDate, targetIncome: targetIncome);
+      bool acceptTermsAndConditions = true;
+      bool acceptFinancialAdviceWarning = true;
+      bool welcomeScreenDismissed = true;
+
+      Settings settings = Settings(
+          retirementDate: retirementDate,
+          targetIncome: targetIncome,
+          acceptTermsAndConditions: acceptTermsAndConditions,
+          acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
+          welcomeScreenDismissed: welcomeScreenDismissed);
 
       TransferSettingsModel settingsModel = SettingsMapper.toTransfer(settings);
 
@@ -21,8 +29,16 @@ void main() {
     testWidgets('map transfer object to settings object', (tester) async {
       DateTime retirementDate = DateTime.now();
       double targetIncome = 123.45;
+      bool acceptTermsAndConditions = true;
+      bool acceptFinancialAdviceWarning = true;
+      bool welcomeScreenDismissed = true;
+
       TransferSettingsModel settings = TransferSettingsModel(
-          retirementDate: retirementDate, targetIncome: targetIncome);
+          retirementDate: retirementDate,
+          targetIncome: targetIncome,
+          acceptTermsAndConditions: acceptTermsAndConditions,
+          acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
+          welcomeScreenDismissed: welcomeScreenDismissed);
 
       Settings settingsModel = SettingsMapper.fromTransfer(settings);
 
@@ -34,8 +50,16 @@ void main() {
     testWidgets('map to transfer and back again', (tester) async {
       DateTime retirementDate = DateTime.now();
       double targetIncome = 123.45;
-      Settings settings =
-          Settings(retirementDate: retirementDate, targetIncome: targetIncome);
+      bool acceptTermsAndConditions = true;
+      bool acceptFinancialAdviceWarning = true;
+      bool welcomeScreenDismissed = true;
+
+      Settings settings = Settings(
+          retirementDate: retirementDate,
+          targetIncome: targetIncome,
+          acceptTermsAndConditions: acceptTermsAndConditions,
+          acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
+          welcomeScreenDismissed: welcomeScreenDismissed);
 
       TransferSettingsModel settingsModel = SettingsMapper.toTransfer(settings);
 

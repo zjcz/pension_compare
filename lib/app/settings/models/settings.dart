@@ -7,11 +7,15 @@ part 'settings.freezed.dart';
 // But if Settings was not serializable, we could skip it.
 part 'settings.g.dart';
 
+/// All settings for the app.
 @freezed
 class Settings with _$Settings {
   const factory Settings({
     required DateTime? retirementDate,
     required double? targetIncome,
+    required bool? acceptTermsAndConditions,
+    required bool? acceptFinancialAdviceWarning,
+    required bool? welcomeScreenDismissed,
   }) = _Settings;
 
   factory Settings.fromJson(Map<String, Object?> json) =>

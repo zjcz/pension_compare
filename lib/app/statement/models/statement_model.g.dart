@@ -8,8 +8,8 @@ part of 'statement_model.dart';
 
 _$StatementModelImpl _$$StatementModelImplFromJson(Map<String, dynamic> json) =>
     _$StatementModelImpl(
-      statementId: json['statementId'] as int?,
-      pension: json['pension'] as int,
+      statementId: (json['statementId'] as num?)?.toInt(),
+      pension: (json['pension'] as num).toInt(),
       statementDate: DateTime.parse(json['statementDate'] as String),
       planValue: (json['planValue'] as num).toDouble(),
       projectedAnnualAmount: (json['projectedAnnualAmount'] as num).toDouble(),

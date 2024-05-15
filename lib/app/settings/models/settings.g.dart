@@ -1,14 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'transfer_settings_model.dart';
+part of 'settings.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$TransferSettingsModelImpl _$$TransferSettingsModelImplFromJson(
-        Map<String, dynamic> json) =>
-    _$TransferSettingsModelImpl(
+_$SettingsImpl _$$SettingsImplFromJson(Map<String, dynamic> json) =>
+    _$SettingsImpl(
       retirementDate: json['retirementDate'] == null
           ? null
           : DateTime.parse(json['retirementDate'] as String),
@@ -19,8 +18,7 @@ _$TransferSettingsModelImpl _$$TransferSettingsModelImplFromJson(
       welcomeScreenDismissed: json['welcomeScreenDismissed'] as bool?,
     );
 
-Map<String, dynamic> _$$TransferSettingsModelImplToJson(
-        _$TransferSettingsModelImpl instance) =>
+Map<String, dynamic> _$$SettingsImplToJson(_$SettingsImpl instance) =>
     <String, dynamic>{
       'retirementDate': instance.retirementDate?.toIso8601String(),
       'targetIncome': instance.targetIncome,

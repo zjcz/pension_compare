@@ -9,11 +9,16 @@ import 'package:drift/drift.dart' as _i2;
 import 'package:drift/src/runtime/executor/stream_queries.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i7;
-import 'package:pension_compare/app/settings/settings.dart' as _i6;
-import 'package:pension_compare/app/settings/settings_service.dart' as _i9;
+import 'package:pension_compare/app/settings/controllers/settings_service.dart'
+    as _i9;
+import 'package:pension_compare/app/settings/models/settings.dart' as _i6;
+import 'package:pension_compare/app/settings/models/user_settings.dart' as _i10;
+import 'package:pension_compare/app/settings/models/welcome_settings.dart'
+    as _i12;
 import 'package:pension_compare/data/database/database_service.dart' as _i3;
 import 'package:pension_compare/data/database/tables/pensions_with_latest_statement.dart'
     as _i8;
+import 'package:shared_preferences/shared_preferences.dart' as _i11;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -1133,25 +1138,60 @@ class MockSettingsService extends _i1.Mock implements _i9.SettingsService {
   }
 
   @override
-  _i5.Future<_i6.Settings> getSettings() => (super.noSuchMethod(
+  _i5.Future<_i6.Settings> getAllSettings() => (super.noSuchMethod(
         Invocation.method(
-          #getSettings,
+          #getAllSettings,
           [],
         ),
         returnValue: _i5.Future<_i6.Settings>.value(_FakeSettings_21(
           this,
           Invocation.method(
-            #getSettings,
+            #getAllSettings,
             [],
           ),
         )),
       ) as _i5.Future<_i6.Settings>);
 
   @override
-  _i5.Future<void> saveSettings(_i6.Settings? settings) => (super.noSuchMethod(
+  _i5.Future<void> saveAllSettings(_i6.Settings? settings) =>
+      (super.noSuchMethod(
         Invocation.method(
-          #saveSettings,
+          #saveAllSettings,
           [settings],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> saveUserSettings(
+    _i10.UserSettings? settings, [
+    _i11.SharedPreferences? sharedPreferences,
+  ]) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveUserSettings,
+          [
+            settings,
+            sharedPreferences,
+          ],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> saveWelcomeSettings(
+    _i12.WelcomeSettings? settings, [
+    _i11.SharedPreferences? sharedPreferences,
+  ]) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveWelcomeSettings,
+          [
+            settings,
+            sharedPreferences,
+          ],
         ),
         returnValue: _i5.Future<void>.value(),
         returnValueForMissingStub: _i5.Future<void>.value(),

@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:pension_compare/app/home/views/loading_screen.dart';
 import 'package:pension_compare/app/pension/models/pension_model.dart';
 import 'package:pension_compare/app/pension/views/edit_pension_screen.dart';
 import 'package:pension_compare/app/otherIncome/views/edit_state_pension_screen.dart';
-import 'package:pension_compare/app/settings/settings_service.dart';
+import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/app/statement/models/statement_model.dart';
 import 'package:pension_compare/app/statement/views/edit_statement_screen.dart';
 import 'package:pension_compare/app/home/views/home_screen.dart';
 import 'package:pension_compare/app/pension/views/pension_overview_screen.dart';
 import 'package:pension_compare/app/settings/views/settings_screen.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pension_compare/app/home/views/policy_viewer_screen.dart';
+import 'package:pension_compare/app/home/views/welcome_screen.dart';
 
 class RouteDefs {
   static const String home = '/';
+  static const String welcome = '/welcome';
   static const String pensionOverview = '/pension_overview';
   static const String editPension = '/edit_pension';
   static const String editStatement = '/edit_statement';
   static const String editStatePension = '/edit_state_pension';
   static const String editSettings = '/edit_settings';
+  static const String loading = '/loading';
+  static const String policyViewer = '/policy_view';
 }
 
 // The route configuration.
@@ -32,10 +38,22 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra}) {
           },
           routes: <RouteBase>[
             GoRoute(
+              path: RouteDefs.welcome.substring(1), //strip leading /
+              builder: (BuildContext context, GoRouterState state) {
+                SettingsService? settingsService;
+                if (state.extra != null) {
+                  settingsService = state.extra! as SettingsService;
+                }
+                return WelcomeScreen(
+                    settingsService: settingsService ?? SettingsService());
+              },
+            ),
+            GoRoute(
               path:
                   '${RouteDefs.pensionOverview.substring(1)}/:pensionId', //strip leading /
               builder: (BuildContext context, GoRouterState state) {
-                return PensionOverviewScreen(pensionId: int.parse(state.pathParameters['pensionId']!));
+                return PensionOverviewScreen(
+                    pensionId: int.parse(state.pathParameters['pensionId']!));
               },
             ),
             GoRoute(
@@ -83,7 +101,29 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra}) {
                 return SettingsScreen(
                     settingsService: settingsService ?? SettingsService());
               },
-            )
+            ),
+            GoRoute(
+              path: RouteDefs.loading.substring(1), //strip leading /
+              builder: (BuildContext context, GoRouterState state) {
+                SettingsService? settingsService;
+                if (state.extra != null) {
+                  settingsService = state.extra! as SettingsService;
+                }
+                return LoadingScreen(
+                    settingsService: settingsService ?? SettingsService());
+              },
+            ),
+            GoRoute(
+              path: RouteDefs.policyViewer.substring(1), //strip leading /
+              builder: (BuildContext context, GoRouterState state) {
+                PolicyType? policyType;
+                if (state.extra != null) {
+                  policyType = state.extra! as PolicyType;
+                }
+                return PolicyViewerScreen(
+                    policyType: policyType ?? PolicyType.termsAndConditions);
+              },
+            ),
           ]),
     ],
   );

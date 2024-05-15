@@ -212,7 +212,7 @@ void main() {
       final result = (() => jsonExportFileType.import(exportDataModel));
 
       expect(result, throwsException);
-    });    
+    });
   });
 }
 
@@ -256,11 +256,16 @@ TransferPensionModel buildPensionModel() {
 TransferSettingsModel buildSettingsModel() {
   DateTime retirementDate = DateTime(2000, 1, 1);
   double targetIncome = 123.45;
+  bool acceptTermsAndConditions = true;
+  bool acceptFinancialAdviceWarning = true;
+  bool welcomeScreenDismissed = true;
 
   TransferSettingsModel settings = TransferSettingsModel(
-    retirementDate: retirementDate,
-    targetIncome: targetIncome,
-  );
+      retirementDate: retirementDate,
+      targetIncome: targetIncome,
+      acceptTermsAndConditions: acceptTermsAndConditions,
+      acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
+      welcomeScreenDismissed: welcomeScreenDismissed);
 
   return settings;
 }
