@@ -39,7 +39,6 @@ class PensionCompareApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final s = MaterialApp(navigatorObservers: [observer]);
     return MaterialApp.router(
       title: 'Pension Compare',
       theme: ThemeData(
