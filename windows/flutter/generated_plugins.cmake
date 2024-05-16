@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  firebase_core
   sqlcipher_flutter_libs
   url_launcher_windows
 )

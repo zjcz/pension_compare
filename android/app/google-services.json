@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "125080939904",
+    "project_id": "pensioncompare-1780a",
+    "storage_bucket": "pensioncompare-1780a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:125080939904:android:fe4c89cc49aa26d1c12565",
+        "android_client_info": {
+          "package_name": "uk.co.happybunnysoftware.pension_compare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKwODuvq6ZcZsT9QUZkKSlsgXvuL1KSPo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
