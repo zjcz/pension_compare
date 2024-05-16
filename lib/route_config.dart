@@ -26,19 +26,22 @@ class RouteDefs {
 }
 
 // The route configuration.
-GoRouter setupRouter({String? initialLocation, Object? initialExtra}) {
+GoRouter setupRouter({String? initialLocation, Object? initialExtra, List<NavigatorObserver>? observers}) {
   return GoRouter(
     initialLocation: initialLocation ?? RouteDefs.home,
-    initialExtra: initialExtra,
+    initialExtra: initialExtra,    
+    observers: observers,
     routes: <RouteBase>[
       GoRoute(
           path: RouteDefs.home,
+          name: 'home',
           builder: (BuildContext context, GoRouterState state) {
             return const HomeScreen();
           },
           routes: <RouteBase>[
             GoRoute(
               path: RouteDefs.welcome.substring(1), //strip leading /
+              name: 'welcome',
               builder: (BuildContext context, GoRouterState state) {
                 SettingsService? settingsService;
                 if (state.extra != null) {
@@ -51,6 +54,7 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra}) {
             GoRoute(
               path:
                   '${RouteDefs.pensionOverview.substring(1)}/:pensionId', //strip leading /
+              name: 'pensionOverview',
               builder: (BuildContext context, GoRouterState state) {
                 return PensionOverviewScreen(
                     pensionId: int.parse(state.pathParameters['pensionId']!));
@@ -58,6 +62,7 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra}) {
             ),
             GoRoute(
               path: RouteDefs.editPension.substring(1), //strip leading /
+              name: 'editPension',
               builder: (BuildContext context, GoRouterState state) {
                 PensionModel? p;
                 if (state.extra != null) {
@@ -68,6 +73,7 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra}) {
             ),
             GoRoute(
               path: RouteDefs.editStatement.substring(1), //strip leading /
+              name: 'editStatement',
               builder: (BuildContext context, GoRouterState state) {
                 PensionModel? p;
                 StatementModel? s;
@@ -87,12 +93,14 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra}) {
             ),
             GoRoute(
               path: RouteDefs.editStatePension.substring(1), //strip leading /
+              name: 'editStatePension',
               builder: (BuildContext context, GoRouterState state) {
                 return const EditStatePensionScreen();
               },
             ),
             GoRoute(
               path: RouteDefs.editSettings.substring(1), //strip leading /
+              name: 'editSettings',
               builder: (BuildContext context, GoRouterState state) {
                 SettingsService? settingsService;
                 if (state.extra != null) {
@@ -104,6 +112,7 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra}) {
             ),
             GoRoute(
               path: RouteDefs.loading.substring(1), //strip leading /
+              name: 'loading',
               builder: (BuildContext context, GoRouterState state) {
                 SettingsService? settingsService;
                 if (state.extra != null) {
@@ -115,6 +124,7 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra}) {
             ),
             GoRoute(
               path: RouteDefs.policyViewer.substring(1), //strip leading /
+              name: 'policyViewer',
               builder: (BuildContext context, GoRouterState state) {
                 PolicyType? policyType;
                 if (state.extra != null) {

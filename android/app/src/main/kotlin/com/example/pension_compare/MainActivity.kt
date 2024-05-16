@@ -1,4 +1,4 @@
-package com.example.pension_compare
+package uk.co.happybunnysoftware.pension_compare
 
 import io.flutter.embedding.android.FlutterActivity
 
