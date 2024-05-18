@@ -60,14 +60,15 @@ class _EditPensionScreenState extends ConsumerState<EditPensionScreen> {
                 onPressed: () async {
                   if (await _validatePensionName(nameController.text)) {
                     if (_formKey.currentState!.validate()) {
-                      if (!await _saveData()) {
+                      int? pensionId = await _saveData();
+                      if (pensionId == null) {
                         // an error occurred and we cannot save?
-                        // TODO Log and report error
                         return;
                       }
 
                       if (!context.mounted) return;
                       Navigator.of(context).pop();
+                      context.go('${RouteDefs.pensionOverview}/$pensionId');
                     }
                   }
                 },
@@ -180,17 +181,22 @@ class _EditPensionScreenState extends ConsumerState<EditPensionScreen> {
     return (validationMsg == null);
   }
 
-  Future<bool> _saveData() async {
+  Future<int?> _saveData() async {
     final controller = ref.read(pensionControllerProvider.notifier);
+    int? pensionId = widget.pension?.pensionId;
 
     if (widget.pension == null) {
-      await controller.createPension(nameController.text, _maturityDate!);
+      PensionModel? p =
+          await controller.createPension(nameController.text, _maturityDate!);
+      if (p != null) {
+        pensionId = p.pensionId;
+      }
     } else {
       await controller.updatePension(
-          widget.pension!.pensionId!, nameController.text, _maturityDate!);
+          pensionId!, nameController.text, _maturityDate!);
     }
 
-    return true;
+    return pensionId;
   }
 
   Future<void> _showSaveChangesDialog() async {

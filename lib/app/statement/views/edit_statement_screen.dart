@@ -93,7 +93,11 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
                       }
 
                       if (!context.mounted) return;
-                      Navigator.of(context).pop();
+                      if (_pensionId == null) {
+                        Navigator.of(context).pop();
+                      } else {
+                        context.go('${RouteDefs.pensionOverview}/$_pensionId');
+                      }
                     }
                   }
                 },

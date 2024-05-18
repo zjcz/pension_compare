@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mockito/annotations.dart';
 import 'package:pension_compare/app/pension/views/edit_pension_screen.dart';
+import 'package:pension_compare/app/pension/views/pension_overview_screen.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/data/mapper/pension_mapper.dart';
 import 'package:pension_compare/helpers/date_helper.dart';
@@ -177,6 +178,72 @@ void main() {
       verifyNever(databaseService.createPension(newName, newMaturityDate));
       verify(databaseService.updatePension(id, newName, newMaturityDate))
           .called(1);
+    });
+  });
+
+  group('Test navigation after save pension record', () {
+    testWidgets('save add new pension record returns to pension summary screen',
+        (tester) async {
+      String name = "Test Pension";
+      DateTime maturityDate = DateHelper.getToday();
+      final databaseService = createMockDatabaseService();
+      when(databaseService.doesPensionNameExist(null, name))
+          .thenAnswer((_) async => false);
+      when(databaseService.createPension(name, maturityDate)).thenAnswer(
+          (_) async =>
+              Pension(pensionId: 1, name: name, maturityDate: maturityDate));
+
+      await tester.pumpWidget(createEditScreen(null, databaseService));
+
+      // Enter name into the TextFormField
+      await tester.enterText(
+          find.byKey(EditPensionScreen.pensionNameKey), name);
+      await tester.pumpAndSettle();
+
+      // Set the date of the date picker
+      await tester.tap(find.byKey(EditPensionScreen.pensionMaturityDateKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(maturityDate.day.toString()));
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      // Tap the save button
+      await tester.tap(find.widgetWithText(TextButton, "Save"));
+      await tester.pumpAndSettle();
+
+      // should navigate to summary screen
+      expect(find.byType(PensionOverviewScreen), findsOneWidget);
+    });
+
+    testWidgets(
+        'saving existing pension record returns to pension summary screen',
+        (tester) async {
+      int id = 3;
+      String originalName = "Test Pension";
+      DateTime maturityDate = DateHelper.getToday();
+      String newName = "New Pension";
+
+      final databaseService = createMockDatabaseService();
+      when(databaseService.doesPensionNameExist(id, newName))
+          .thenAnswer((_) async => false);
+      when(databaseService.updatePension(id, newName, maturityDate))
+          .thenAnswer((_) async => true);
+
+      await tester.pumpWidget(createEditScreen(
+          Pension(
+              pensionId: id, name: originalName, maturityDate: maturityDate),
+          databaseService));
+
+      // Enter name into the TextFormField
+      await tester.enterText(
+          find.byKey(EditPensionScreen.pensionNameKey), newName);
+
+      // Tap the save button
+      await tester.tap(find.widgetWithText(TextButton, "Save"));
+      await tester.pumpAndSettle();
+
+      // should navigate to summary screen
+      expect(find.byType(PensionOverviewScreen), findsOneWidget);
     });
   });
 

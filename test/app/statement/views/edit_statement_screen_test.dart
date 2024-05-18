@@ -269,6 +269,146 @@ void main() {
     });
   });
 
+  group('Test navigation after save statement record', () {
+    testWidgets(
+        'save add new statement record returns to pension summary screen',
+        (tester) async {
+      String name = "Test Pension";
+      DateTime maturityDate = DateHelper.getToday();
+      int pensionId = 1;
+      DateTime statementDate = DateHelper.getToday();
+      double planValue = 12345.0;
+      double projectedAnnualAmount = 1234;
+      double yearlyCharges = 100;
+      double transferValue = 12345;
+
+      final databaseService = createMockDatabaseService();
+      when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
+            Pension(
+                pensionId: pensionId, name: name, maturityDate: maturityDate)
+          ]));
+      when(databaseService.createStatement(pensionId, statementDate, planValue,
+              projectedAnnualAmount, yearlyCharges, transferValue))
+          .thenAnswer((_) async => Statement(
+              statementId: 1,
+              pension: pensionId,
+              statementDate: statementDate,
+              planValue: planValue,
+              projectedAnnualAmount: projectedAnnualAmount,
+              yearlyCharges: yearlyCharges,
+              transferValue: transferValue));
+      when(databaseService.doesStatementDateExist(
+              null, pensionId, statementDate))
+          .thenAnswer((_) async => false);
+
+      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpAndSettle();
+
+      // select the pension from the DropDownButtonFormField
+      await tester.tap(find.byKey(EditStatementScreen.pensionKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(DropdownMenuItem<int>, name).last);
+      await tester.pumpAndSettle();
+
+      // Set the date of the date picker
+      await tester.tap(find.byKey(EditStatementScreen.statementDateKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(statementDate.day.toString()));
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(EditStatementScreen.planValueKey), planValue.toString());
+      await tester.enterText(
+          find.byKey(EditStatementScreen.projectedAnnualAmountKey),
+          projectedAnnualAmount.toString());
+      await tester.enterText(find.byKey(EditStatementScreen.yearlyChargesKey),
+          yearlyCharges.toString());
+      await tester.enterText(find.byKey(EditStatementScreen.transferValueKey),
+          transferValue.toString());
+
+      // Tap the save button
+      await tester.tap(find.widgetWithText(TextButton, "Save"));
+      await tester.pumpAndSettle();
+
+      // should navigate to summary screen
+      expect(find.byType(PensionOverviewScreen), findsOneWidget);
+    });
+
+    testWidgets(
+        'update existing statement record returns to pension summary screen',
+        (tester) async {
+      int pensionId = 1;
+      String name = "Test Pension";
+      DateTime maturityDate = DateHelper.getToday();
+      int statementId = 3;
+      DateTime originalStatementDate = DateTime(2024, 1, 1);
+      double originalPlanValue = 12345.0;
+      double originalProjectedAnnualAmount = 1234;
+      double originalYearlyCharges = 100;
+      double originalTransferValue = 12345;
+      DateTime newStatementDate = DateTime(2024, 1, 20);
+      double newPlanValue = 54321.0;
+      double newProjectedAnnualAmount = 9876;
+      double newYearlyCharges = 500;
+      double newTransferValue = 98765;
+
+      final databaseService = createMockDatabaseService();
+      when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
+            Pension(
+                pensionId: pensionId, name: name, maturityDate: maturityDate)
+          ]));
+      when(databaseService.updateStatement(
+              statementId,
+              pensionId,
+              newStatementDate,
+              newPlanValue,
+              newProjectedAnnualAmount,
+              newYearlyCharges,
+              newTransferValue))
+          .thenAnswer((_) async => true);
+      when(databaseService.doesStatementDateExist(
+              statementId, pensionId, newStatementDate))
+          .thenAnswer((_) async => false);
+
+      await tester.pumpWidget(createEditScreen(
+          Statement(
+              statementId: statementId,
+              pension: pensionId,
+              statementDate: originalStatementDate,
+              planValue: originalPlanValue,
+              projectedAnnualAmount: originalProjectedAnnualAmount,
+              yearlyCharges: originalYearlyCharges,
+              transferValue: originalTransferValue),
+          databaseService));
+
+      // Set the date of the date picker
+      await tester.tap(find.byKey(EditStatementScreen.statementDateKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(newStatementDate.day.toString()));
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      // Enter values into the TextFormFields
+      await tester.enterText(find.byKey(EditStatementScreen.planValueKey),
+          newPlanValue.toString());
+      await tester.enterText(
+          find.byKey(EditStatementScreen.projectedAnnualAmountKey),
+          newProjectedAnnualAmount.toString());
+      await tester.enterText(find.byKey(EditStatementScreen.yearlyChargesKey),
+          newYearlyCharges.toString());
+      await tester.enterText(find.byKey(EditStatementScreen.transferValueKey),
+          newTransferValue.toString());
+
+      // Tap the save button
+      await tester.tap(find.widgetWithText(TextButton, "Save"));
+      await tester.pumpAndSettle();
+
+      // should navigate to summary screen
+      expect(find.byType(PensionOverviewScreen), findsOneWidget);
+    });
+  });
+
   group('Test validation of add/edit statement screen', () {
     testWidgets('validation should prevent invalid plan value', (tester) async {
       String name = "Test Pension";
