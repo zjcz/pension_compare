@@ -8,16 +8,15 @@ import 'dart:async' as _i6;
 import 'package:drift/drift.dart' as _i3;
 import 'package:drift/src/runtime/executor/stream_queries.dart' as _i5;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i11;
+import 'package:mockito/src/dummies.dart' as _i10;
 import 'package:pension_compare/app/settings/controllers/settings_service.dart'
     as _i7;
 import 'package:pension_compare/app/settings/models/settings.dart' as _i2;
 import 'package:pension_compare/app/settings/models/user_settings.dart' as _i8;
-import 'package:pension_compare/app/settings/models/welcome_settings.dart'
-    as _i10;
 import 'package:pension_compare/data/database/database_service.dart' as _i4;
 import 'package:pension_compare/data/database/tables/pensions_with_latest_statement.dart'
-    as _i12;
+    as _i11;
+import 'package:pension_compare/helpers/analytics_helper.dart' as _i12;
 import 'package:shared_preferences/shared_preferences.dart' as _i9;
 
 // ignore_for_file: type=lint
@@ -319,23 +318,6 @@ class MockSettingsService extends _i1.Mock implements _i7.SettingsService {
         returnValue: _i6.Future<void>.value(),
         returnValueForMissingStub: _i6.Future<void>.value(),
       ) as _i6.Future<void>);
-
-  @override
-  _i6.Future<void> saveWelcomeSettings(
-    _i10.WelcomeSettings? settings, [
-    _i9.SharedPreferences? sharedPreferences,
-  ]) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #saveWelcomeSettings,
-          [
-            settings,
-            sharedPreferences,
-          ],
-        ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
 }
 
 /// A class which mocks [DatabaseService].
@@ -449,7 +431,7 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
   @override
   _i3.SqlTypes get typeMapping => (super.noSuchMethod(
         Invocation.getter(#typeMapping),
-        returnValue: _i11.dummyValue<_i3.SqlTypes>(
+        returnValue: _i10.dummyValue<_i3.SqlTypes>(
           this,
           Invocation.getter(#typeMapping),
         ),
@@ -684,15 +666,15 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
       ) as _i6.Future<_i4.OtherIncome?>);
 
   @override
-  _i6.Stream<List<_i12.PensionWithLatestStatement>>
+  _i6.Stream<List<_i11.PensionWithLatestStatement>>
       getAllPensionsWithLatestStatement() => (super.noSuchMethod(
             Invocation.method(
               #getAllPensionsWithLatestStatement,
               [],
             ),
             returnValue:
-                _i6.Stream<List<_i12.PensionWithLatestStatement>>.empty(),
-          ) as _i6.Stream<List<_i12.PensionWithLatestStatement>>);
+                _i6.Stream<List<_i11.PensionWithLatestStatement>>.empty(),
+          ) as _i6.Stream<List<_i11.PensionWithLatestStatement>>);
 
   @override
   _i6.Future<void> populateTestData() => (super.noSuchMethod(
@@ -780,7 +762,7 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
             alias,
           ],
         ),
-        returnValue: _i11.dummyValue<T>(
+        returnValue: _i10.dummyValue<T>(
           this,
           Invocation.method(
             #alias,
@@ -830,8 +812,8 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
           #doWhenOpened,
           [fn],
         ),
-        returnValue: _i11.ifNotNull(
-              _i11.dummyValueOrNull<T>(
+        returnValue: _i10.ifNotNull(
+              _i10.dummyValueOrNull<T>(
                 this,
                 Invocation.method(
                   #doWhenOpened,
@@ -1084,8 +1066,8 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
           [action],
           {#requireNew: requireNew},
         ),
-        returnValue: _i11.ifNotNull(
-              _i11.dummyValueOrNull<T>(
+        returnValue: _i10.ifNotNull(
+              _i10.dummyValueOrNull<T>(
                 this,
                 Invocation.method(
                   #transaction,
@@ -1185,7 +1167,7 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
             amount,
           ],
         ),
-        returnValue: _i11.dummyValue<String>(
+        returnValue: _i10.dummyValue<String>(
           this,
           Invocation.method(
             #$expandVar,
@@ -1196,4 +1178,22 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
           ),
         ),
       ) as String);
+}
+
+/// A class which mocks [AnalyticsHelper].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockAnalyticsHelper extends _i1.Mock implements _i12.AnalyticsHelper {
+  MockAnalyticsHelper() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  void enableAnalytics(bool? enable) => super.noSuchMethod(
+        Invocation.method(
+          #enableAnalytics,
+          [enable],
+        ),
+        returnValueForMissingStub: null,
+      );
 }

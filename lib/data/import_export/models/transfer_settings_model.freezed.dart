@@ -26,6 +26,7 @@ mixin _$TransferSettingsModel {
   bool? get acceptTermsAndConditions => throw _privateConstructorUsedError;
   bool? get acceptFinancialAdviceWarning => throw _privateConstructorUsedError;
   bool? get welcomeScreenDismissed => throw _privateConstructorUsedError;
+  bool get optIntoAnalyticsWarning => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -44,7 +45,8 @@ abstract class $TransferSettingsModelCopyWith<$Res> {
       double? targetIncome,
       bool? acceptTermsAndConditions,
       bool? acceptFinancialAdviceWarning,
-      bool? welcomeScreenDismissed});
+      bool? welcomeScreenDismissed,
+      bool optIntoAnalyticsWarning});
 }
 
 /// @nodoc
@@ -66,6 +68,7 @@ class _$TransferSettingsModelCopyWithImpl<$Res,
     Object? acceptTermsAndConditions = freezed,
     Object? acceptFinancialAdviceWarning = freezed,
     Object? welcomeScreenDismissed = freezed,
+    Object? optIntoAnalyticsWarning = null,
   }) {
     return _then(_value.copyWith(
       retirementDate: freezed == retirementDate
@@ -88,6 +91,10 @@ class _$TransferSettingsModelCopyWithImpl<$Res,
           ? _value.welcomeScreenDismissed
           : welcomeScreenDismissed // ignore: cast_nullable_to_non_nullable
               as bool?,
+      optIntoAnalyticsWarning: null == optIntoAnalyticsWarning
+          ? _value.optIntoAnalyticsWarning
+          : optIntoAnalyticsWarning // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -106,7 +113,8 @@ abstract class _$$TransferSettingsModelImplCopyWith<$Res>
       double? targetIncome,
       bool? acceptTermsAndConditions,
       bool? acceptFinancialAdviceWarning,
-      bool? welcomeScreenDismissed});
+      bool? welcomeScreenDismissed,
+      bool optIntoAnalyticsWarning});
 }
 
 /// @nodoc
@@ -126,6 +134,7 @@ class __$$TransferSettingsModelImplCopyWithImpl<$Res>
     Object? acceptTermsAndConditions = freezed,
     Object? acceptFinancialAdviceWarning = freezed,
     Object? welcomeScreenDismissed = freezed,
+    Object? optIntoAnalyticsWarning = null,
   }) {
     return _then(_$TransferSettingsModelImpl(
       retirementDate: freezed == retirementDate
@@ -148,6 +157,10 @@ class __$$TransferSettingsModelImplCopyWithImpl<$Res>
           ? _value.welcomeScreenDismissed
           : welcomeScreenDismissed // ignore: cast_nullable_to_non_nullable
               as bool?,
+      optIntoAnalyticsWarning: null == optIntoAnalyticsWarning
+          ? _value.optIntoAnalyticsWarning
+          : optIntoAnalyticsWarning // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -162,7 +175,8 @@ class _$TransferSettingsModelImpl
       required this.targetIncome,
       required this.acceptTermsAndConditions,
       required this.acceptFinancialAdviceWarning,
-      required this.welcomeScreenDismissed});
+      required this.welcomeScreenDismissed,
+      required this.optIntoAnalyticsWarning});
 
   factory _$TransferSettingsModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$TransferSettingsModelImplFromJson(json);
@@ -177,10 +191,12 @@ class _$TransferSettingsModelImpl
   final bool? acceptFinancialAdviceWarning;
   @override
   final bool? welcomeScreenDismissed;
+  @override
+  final bool optIntoAnalyticsWarning;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'TransferSettingsModel(retirementDate: $retirementDate, targetIncome: $targetIncome, acceptTermsAndConditions: $acceptTermsAndConditions, acceptFinancialAdviceWarning: $acceptFinancialAdviceWarning, welcomeScreenDismissed: $welcomeScreenDismissed)';
+    return 'TransferSettingsModel(retirementDate: $retirementDate, targetIncome: $targetIncome, acceptTermsAndConditions: $acceptTermsAndConditions, acceptFinancialAdviceWarning: $acceptFinancialAdviceWarning, welcomeScreenDismissed: $welcomeScreenDismissed, optIntoAnalyticsWarning: $optIntoAnalyticsWarning)';
   }
 
   @override
@@ -194,8 +210,10 @@ class _$TransferSettingsModelImpl
           'acceptTermsAndConditions', acceptTermsAndConditions))
       ..add(DiagnosticsProperty(
           'acceptFinancialAdviceWarning', acceptFinancialAdviceWarning))
+      ..add(
+          DiagnosticsProperty('welcomeScreenDismissed', welcomeScreenDismissed))
       ..add(DiagnosticsProperty(
-          'welcomeScreenDismissed', welcomeScreenDismissed));
+          'optIntoAnalyticsWarning', optIntoAnalyticsWarning));
   }
 
   @override
@@ -215,7 +233,10 @@ class _$TransferSettingsModelImpl
                 other.acceptFinancialAdviceWarning ==
                     acceptFinancialAdviceWarning) &&
             (identical(other.welcomeScreenDismissed, welcomeScreenDismissed) ||
-                other.welcomeScreenDismissed == welcomeScreenDismissed));
+                other.welcomeScreenDismissed == welcomeScreenDismissed) &&
+            (identical(
+                    other.optIntoAnalyticsWarning, optIntoAnalyticsWarning) ||
+                other.optIntoAnalyticsWarning == optIntoAnalyticsWarning));
   }
 
   @JsonKey(ignore: true)
@@ -226,7 +247,8 @@ class _$TransferSettingsModelImpl
       targetIncome,
       acceptTermsAndConditions,
       acceptFinancialAdviceWarning,
-      welcomeScreenDismissed);
+      welcomeScreenDismissed,
+      optIntoAnalyticsWarning);
 
   @JsonKey(ignore: true)
   @override
@@ -249,7 +271,8 @@ abstract class _TransferSettingsModel implements TransferSettingsModel {
           required final double? targetIncome,
           required final bool? acceptTermsAndConditions,
           required final bool? acceptFinancialAdviceWarning,
-          required final bool? welcomeScreenDismissed}) =
+          required final bool? welcomeScreenDismissed,
+          required final bool optIntoAnalyticsWarning}) =
       _$TransferSettingsModelImpl;
 
   factory _TransferSettingsModel.fromJson(Map<String, dynamic> json) =
@@ -265,6 +288,8 @@ abstract class _TransferSettingsModel implements TransferSettingsModel {
   bool? get acceptFinancialAdviceWarning;
   @override
   bool? get welcomeScreenDismissed;
+  @override
+  bool get optIntoAnalyticsWarning;
   @override
   @JsonKey(ignore: true)
   _$$TransferSettingsModelImplCopyWith<_$TransferSettingsModelImpl>

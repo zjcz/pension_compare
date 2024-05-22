@@ -17,6 +17,7 @@ _$TransferSettingsModelImpl _$$TransferSettingsModelImplFromJson(
       acceptFinancialAdviceWarning:
           json['acceptFinancialAdviceWarning'] as bool?,
       welcomeScreenDismissed: json['welcomeScreenDismissed'] as bool?,
+      optIntoAnalyticsWarning: json['optIntoAnalyticsWarning'] as bool,
     );
 
 Map<String, dynamic> _$$TransferSettingsModelImplToJson(
@@ -27,4 +28,5 @@ Map<String, dynamic> _$$TransferSettingsModelImplToJson(
       'acceptTermsAndConditions': instance.acceptTermsAndConditions,
       'acceptFinancialAdviceWarning': instance.acceptFinancialAdviceWarning,
       'welcomeScreenDismissed': instance.welcomeScreenDismissed,
+      'optIntoAnalyticsWarning': instance.optIntoAnalyticsWarning,
     };

@@ -9,6 +9,7 @@ class SettingsMapper {
       acceptTermsAndConditions: settings.acceptTermsAndConditions,
       acceptFinancialAdviceWarning: settings.acceptFinancialAdviceWarning,
       welcomeScreenDismissed: settings.welcomeScreenDismissed,
+      optIntoAnalyticsWarning: settings.optIntoAnalyticsWarning,
     );
   }
 
@@ -19,6 +20,7 @@ class SettingsMapper {
       acceptTermsAndConditions: settings.acceptTermsAndConditions,
       acceptFinancialAdviceWarning: settings.acceptFinancialAdviceWarning,
       welcomeScreenDismissed: settings.welcomeScreenDismissed,
+      optIntoAnalyticsWarning: settings.optIntoAnalyticsWarning,
     );
   }
 }

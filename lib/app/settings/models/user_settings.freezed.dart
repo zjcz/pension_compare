@@ -22,6 +22,7 @@ UserSettings _$UserSettingsFromJson(Map<String, dynamic> json) {
 mixin _$UserSettings {
   DateTime? get retirementDate => throw _privateConstructorUsedError;
   double? get targetIncome => throw _privateConstructorUsedError;
+  bool get optIntoAnalyticsWarning => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -35,7 +36,10 @@ abstract class $UserSettingsCopyWith<$Res> {
           UserSettings value, $Res Function(UserSettings) then) =
       _$UserSettingsCopyWithImpl<$Res, UserSettings>;
   @useResult
-  $Res call({DateTime? retirementDate, double? targetIncome});
+  $Res call(
+      {DateTime? retirementDate,
+      double? targetIncome,
+      bool optIntoAnalyticsWarning});
 }
 
 /// @nodoc
@@ -53,6 +57,7 @@ class _$UserSettingsCopyWithImpl<$Res, $Val extends UserSettings>
   $Res call({
     Object? retirementDate = freezed,
     Object? targetIncome = freezed,
+    Object? optIntoAnalyticsWarning = null,
   }) {
     return _then(_value.copyWith(
       retirementDate: freezed == retirementDate
@@ -63,6 +68,10 @@ class _$UserSettingsCopyWithImpl<$Res, $Val extends UserSettings>
           ? _value.targetIncome
           : targetIncome // ignore: cast_nullable_to_non_nullable
               as double?,
+      optIntoAnalyticsWarning: null == optIntoAnalyticsWarning
+          ? _value.optIntoAnalyticsWarning
+          : optIntoAnalyticsWarning // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -75,7 +84,10 @@ abstract class _$$UserSettingsImplCopyWith<$Res>
       __$$UserSettingsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({DateTime? retirementDate, double? targetIncome});
+  $Res call(
+      {DateTime? retirementDate,
+      double? targetIncome,
+      bool optIntoAnalyticsWarning});
 }
 
 /// @nodoc
@@ -91,6 +103,7 @@ class __$$UserSettingsImplCopyWithImpl<$Res>
   $Res call({
     Object? retirementDate = freezed,
     Object? targetIncome = freezed,
+    Object? optIntoAnalyticsWarning = null,
   }) {
     return _then(_$UserSettingsImpl(
       retirementDate: freezed == retirementDate
@@ -101,6 +114,10 @@ class __$$UserSettingsImplCopyWithImpl<$Res>
           ? _value.targetIncome
           : targetIncome // ignore: cast_nullable_to_non_nullable
               as double?,
+      optIntoAnalyticsWarning: null == optIntoAnalyticsWarning
+          ? _value.optIntoAnalyticsWarning
+          : optIntoAnalyticsWarning // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -109,7 +126,9 @@ class __$$UserSettingsImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$UserSettingsImpl with DiagnosticableTreeMixin implements _UserSettings {
   const _$UserSettingsImpl(
-      {required this.retirementDate, required this.targetIncome});
+      {required this.retirementDate,
+      required this.targetIncome,
+      required this.optIntoAnalyticsWarning});
 
   factory _$UserSettingsImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserSettingsImplFromJson(json);
@@ -118,10 +137,12 @@ class _$UserSettingsImpl with DiagnosticableTreeMixin implements _UserSettings {
   final DateTime? retirementDate;
   @override
   final double? targetIncome;
+  @override
+  final bool optIntoAnalyticsWarning;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'UserSettings(retirementDate: $retirementDate, targetIncome: $targetIncome)';
+    return 'UserSettings(retirementDate: $retirementDate, targetIncome: $targetIncome, optIntoAnalyticsWarning: $optIntoAnalyticsWarning)';
   }
 
   @override
@@ -130,7 +151,9 @@ class _$UserSettingsImpl with DiagnosticableTreeMixin implements _UserSettings {
     properties
       ..add(DiagnosticsProperty('type', 'UserSettings'))
       ..add(DiagnosticsProperty('retirementDate', retirementDate))
-      ..add(DiagnosticsProperty('targetIncome', targetIncome));
+      ..add(DiagnosticsProperty('targetIncome', targetIncome))
+      ..add(DiagnosticsProperty(
+          'optIntoAnalyticsWarning', optIntoAnalyticsWarning));
   }
 
   @override
@@ -141,12 +164,16 @@ class _$UserSettingsImpl with DiagnosticableTreeMixin implements _UserSettings {
             (identical(other.retirementDate, retirementDate) ||
                 other.retirementDate == retirementDate) &&
             (identical(other.targetIncome, targetIncome) ||
-                other.targetIncome == targetIncome));
+                other.targetIncome == targetIncome) &&
+            (identical(
+                    other.optIntoAnalyticsWarning, optIntoAnalyticsWarning) ||
+                other.optIntoAnalyticsWarning == optIntoAnalyticsWarning));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, retirementDate, targetIncome);
+  int get hashCode => Object.hash(
+      runtimeType, retirementDate, targetIncome, optIntoAnalyticsWarning);
 
   @JsonKey(ignore: true)
   @override
@@ -165,7 +192,8 @@ class _$UserSettingsImpl with DiagnosticableTreeMixin implements _UserSettings {
 abstract class _UserSettings implements UserSettings {
   const factory _UserSettings(
       {required final DateTime? retirementDate,
-      required final double? targetIncome}) = _$UserSettingsImpl;
+      required final double? targetIncome,
+      required final bool optIntoAnalyticsWarning}) = _$UserSettingsImpl;
 
   factory _UserSettings.fromJson(Map<String, dynamic> json) =
       _$UserSettingsImpl.fromJson;
@@ -174,6 +202,8 @@ abstract class _UserSettings implements UserSettings {
   DateTime? get retirementDate;
   @override
   double? get targetIncome;
+  @override
+  bool get optIntoAnalyticsWarning;
   @override
   @JsonKey(ignore: true)
   _$$UserSettingsImplCopyWith<_$UserSettingsImpl> get copyWith =>

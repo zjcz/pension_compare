@@ -3,7 +3,6 @@ import 'package:pension_compare/app/home/views/loading_screen.dart';
 import 'package:pension_compare/app/pension/models/pension_model.dart';
 import 'package:pension_compare/app/pension/views/edit_pension_screen.dart';
 import 'package:pension_compare/app/otherIncome/views/edit_state_pension_screen.dart';
-import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/app/statement/models/statement_model.dart';
 import 'package:pension_compare/app/statement/views/edit_statement_screen.dart';
 import 'package:pension_compare/app/home/views/home_screen.dart';
@@ -43,12 +42,8 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra, List<Naviga
               path: RouteDefs.welcome.substring(1), //strip leading /
               name: 'welcome',
               builder: (BuildContext context, GoRouterState state) {
-                SettingsService? settingsService;
-                if (state.extra != null) {
-                  settingsService = state.extra! as SettingsService;
-                }
-                return WelcomeScreen(
-                    settingsService: settingsService ?? SettingsService());
+
+                return const WelcomeScreen();
               },
             ),
             GoRoute(
@@ -102,24 +97,14 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra, List<Naviga
               path: RouteDefs.editSettings.substring(1), //strip leading /
               name: 'editSettings',
               builder: (BuildContext context, GoRouterState state) {
-                SettingsService? settingsService;
-                if (state.extra != null) {
-                  settingsService = state.extra! as SettingsService;
-                }
-                return SettingsScreen(
-                    settingsService: settingsService ?? SettingsService());
+                return const SettingsScreen();
               },
             ),
             GoRoute(
               path: RouteDefs.loading.substring(1), //strip leading /
               name: 'loading',
               builder: (BuildContext context, GoRouterState state) {
-                SettingsService? settingsService;
-                if (state.extra != null) {
-                  settingsService = state.extra! as SettingsService;
-                }
-                return LoadingScreen(
-                    settingsService: settingsService ?? SettingsService());
+                return const LoadingScreen();
               },
             ),
             GoRoute(

@@ -16,6 +16,7 @@ _$SettingsImpl _$$SettingsImplFromJson(Map<String, dynamic> json) =>
       acceptFinancialAdviceWarning:
           json['acceptFinancialAdviceWarning'] as bool?,
       welcomeScreenDismissed: json['welcomeScreenDismissed'] as bool?,
+      optIntoAnalyticsWarning: json['optIntoAnalyticsWarning'] as bool,
     );
 
 Map<String, dynamic> _$$SettingsImplToJson(_$SettingsImpl instance) =>
@@ -25,4 +26,5 @@ Map<String, dynamic> _$$SettingsImplToJson(_$SettingsImpl instance) =>
       'acceptTermsAndConditions': instance.acceptTermsAndConditions,
       'acceptFinancialAdviceWarning': instance.acceptFinancialAdviceWarning,
       'welcomeScreenDismissed': instance.welcomeScreenDismissed,
+      'optIntoAnalyticsWarning': instance.optIntoAnalyticsWarning,
     };

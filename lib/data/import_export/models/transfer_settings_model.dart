@@ -15,6 +15,7 @@ class TransferSettingsModel with _$TransferSettingsModel {
     required bool? acceptTermsAndConditions,
     required bool? acceptFinancialAdviceWarning,
     required bool? welcomeScreenDismissed,
+    required bool optIntoAnalyticsWarning,
   }) = _TransferSettingsModel;
 
   factory TransferSettingsModel.fromJson(Map<String, Object?> json) =>

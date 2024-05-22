@@ -10,6 +10,7 @@ class UserSettings with _$UserSettings {
   const factory UserSettings({
     required DateTime? retirementDate,
     required double? targetIncome,
+    required bool optIntoAnalyticsWarning,
   }) = _UserSettings;
 
   factory UserSettings.fromJson(Map<String, Object?> json) =>

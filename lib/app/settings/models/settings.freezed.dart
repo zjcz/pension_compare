@@ -25,6 +25,7 @@ mixin _$Settings {
   bool? get acceptTermsAndConditions => throw _privateConstructorUsedError;
   bool? get acceptFinancialAdviceWarning => throw _privateConstructorUsedError;
   bool? get welcomeScreenDismissed => throw _privateConstructorUsedError;
+  bool get optIntoAnalyticsWarning => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -42,7 +43,8 @@ abstract class $SettingsCopyWith<$Res> {
       double? targetIncome,
       bool? acceptTermsAndConditions,
       bool? acceptFinancialAdviceWarning,
-      bool? welcomeScreenDismissed});
+      bool? welcomeScreenDismissed,
+      bool optIntoAnalyticsWarning});
 }
 
 /// @nodoc
@@ -63,6 +65,7 @@ class _$SettingsCopyWithImpl<$Res, $Val extends Settings>
     Object? acceptTermsAndConditions = freezed,
     Object? acceptFinancialAdviceWarning = freezed,
     Object? welcomeScreenDismissed = freezed,
+    Object? optIntoAnalyticsWarning = null,
   }) {
     return _then(_value.copyWith(
       retirementDate: freezed == retirementDate
@@ -85,6 +88,10 @@ class _$SettingsCopyWithImpl<$Res, $Val extends Settings>
           ? _value.welcomeScreenDismissed
           : welcomeScreenDismissed // ignore: cast_nullable_to_non_nullable
               as bool?,
+      optIntoAnalyticsWarning: null == optIntoAnalyticsWarning
+          ? _value.optIntoAnalyticsWarning
+          : optIntoAnalyticsWarning // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -102,7 +109,8 @@ abstract class _$$SettingsImplCopyWith<$Res>
       double? targetIncome,
       bool? acceptTermsAndConditions,
       bool? acceptFinancialAdviceWarning,
-      bool? welcomeScreenDismissed});
+      bool? welcomeScreenDismissed,
+      bool optIntoAnalyticsWarning});
 }
 
 /// @nodoc
@@ -121,6 +129,7 @@ class __$$SettingsImplCopyWithImpl<$Res>
     Object? acceptTermsAndConditions = freezed,
     Object? acceptFinancialAdviceWarning = freezed,
     Object? welcomeScreenDismissed = freezed,
+    Object? optIntoAnalyticsWarning = null,
   }) {
     return _then(_$SettingsImpl(
       retirementDate: freezed == retirementDate
@@ -143,6 +152,10 @@ class __$$SettingsImplCopyWithImpl<$Res>
           ? _value.welcomeScreenDismissed
           : welcomeScreenDismissed // ignore: cast_nullable_to_non_nullable
               as bool?,
+      optIntoAnalyticsWarning: null == optIntoAnalyticsWarning
+          ? _value.optIntoAnalyticsWarning
+          : optIntoAnalyticsWarning // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -155,7 +168,8 @@ class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
       required this.targetIncome,
       required this.acceptTermsAndConditions,
       required this.acceptFinancialAdviceWarning,
-      required this.welcomeScreenDismissed});
+      required this.welcomeScreenDismissed,
+      required this.optIntoAnalyticsWarning});
 
   factory _$SettingsImpl.fromJson(Map<String, dynamic> json) =>
       _$$SettingsImplFromJson(json);
@@ -170,10 +184,12 @@ class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
   final bool? acceptFinancialAdviceWarning;
   @override
   final bool? welcomeScreenDismissed;
+  @override
+  final bool optIntoAnalyticsWarning;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Settings(retirementDate: $retirementDate, targetIncome: $targetIncome, acceptTermsAndConditions: $acceptTermsAndConditions, acceptFinancialAdviceWarning: $acceptFinancialAdviceWarning, welcomeScreenDismissed: $welcomeScreenDismissed)';
+    return 'Settings(retirementDate: $retirementDate, targetIncome: $targetIncome, acceptTermsAndConditions: $acceptTermsAndConditions, acceptFinancialAdviceWarning: $acceptFinancialAdviceWarning, welcomeScreenDismissed: $welcomeScreenDismissed, optIntoAnalyticsWarning: $optIntoAnalyticsWarning)';
   }
 
   @override
@@ -187,8 +203,10 @@ class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
           'acceptTermsAndConditions', acceptTermsAndConditions))
       ..add(DiagnosticsProperty(
           'acceptFinancialAdviceWarning', acceptFinancialAdviceWarning))
+      ..add(
+          DiagnosticsProperty('welcomeScreenDismissed', welcomeScreenDismissed))
       ..add(DiagnosticsProperty(
-          'welcomeScreenDismissed', welcomeScreenDismissed));
+          'optIntoAnalyticsWarning', optIntoAnalyticsWarning));
   }
 
   @override
@@ -208,7 +226,10 @@ class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
                 other.acceptFinancialAdviceWarning ==
                     acceptFinancialAdviceWarning) &&
             (identical(other.welcomeScreenDismissed, welcomeScreenDismissed) ||
-                other.welcomeScreenDismissed == welcomeScreenDismissed));
+                other.welcomeScreenDismissed == welcomeScreenDismissed) &&
+            (identical(
+                    other.optIntoAnalyticsWarning, optIntoAnalyticsWarning) ||
+                other.optIntoAnalyticsWarning == optIntoAnalyticsWarning));
   }
 
   @JsonKey(ignore: true)
@@ -219,7 +240,8 @@ class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
       targetIncome,
       acceptTermsAndConditions,
       acceptFinancialAdviceWarning,
-      welcomeScreenDismissed);
+      welcomeScreenDismissed,
+      optIntoAnalyticsWarning);
 
   @JsonKey(ignore: true)
   @override
@@ -241,7 +263,8 @@ abstract class _Settings implements Settings {
       required final double? targetIncome,
       required final bool? acceptTermsAndConditions,
       required final bool? acceptFinancialAdviceWarning,
-      required final bool? welcomeScreenDismissed}) = _$SettingsImpl;
+      required final bool? welcomeScreenDismissed,
+      required final bool optIntoAnalyticsWarning}) = _$SettingsImpl;
 
   factory _Settings.fromJson(Map<String, dynamic> json) =
       _$SettingsImpl.fromJson;
@@ -256,6 +279,8 @@ abstract class _Settings implements Settings {
   bool? get acceptFinancialAdviceWarning;
   @override
   bool? get welcomeScreenDismissed;
+  @override
+  bool get optIntoAnalyticsWarning;
   @override
   @JsonKey(ignore: true)
   _$$SettingsImplCopyWith<_$SettingsImpl> get copyWith =>

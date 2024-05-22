@@ -259,13 +259,15 @@ TransferSettingsModel buildSettingsModel() {
   bool acceptTermsAndConditions = true;
   bool acceptFinancialAdviceWarning = true;
   bool welcomeScreenDismissed = true;
+  bool optIntoAnalyticsWarning = true;
 
   TransferSettingsModel settings = TransferSettingsModel(
       retirementDate: retirementDate,
       targetIncome: targetIncome,
       acceptTermsAndConditions: acceptTermsAndConditions,
       acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
-      welcomeScreenDismissed: welcomeScreenDismissed);
+      welcomeScreenDismissed: welcomeScreenDismissed,
+      optIntoAnalyticsWarning: optIntoAnalyticsWarning);
 
   return settings;
 }

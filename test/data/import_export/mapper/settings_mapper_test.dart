@@ -11,13 +11,15 @@ void main() {
       bool acceptTermsAndConditions = true;
       bool acceptFinancialAdviceWarning = true;
       bool welcomeScreenDismissed = true;
+      bool optIntoAnalyticsWarning = true;
 
       Settings settings = Settings(
           retirementDate: retirementDate,
           targetIncome: targetIncome,
           acceptTermsAndConditions: acceptTermsAndConditions,
           acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
-          welcomeScreenDismissed: welcomeScreenDismissed);
+          welcomeScreenDismissed: welcomeScreenDismissed,
+          optIntoAnalyticsWarning: optIntoAnalyticsWarning);
 
       TransferSettingsModel settingsModel = SettingsMapper.toTransfer(settings);
 
@@ -32,13 +34,15 @@ void main() {
       bool acceptTermsAndConditions = true;
       bool acceptFinancialAdviceWarning = true;
       bool welcomeScreenDismissed = true;
+      bool optIntoAnalyticsWarning = true;
 
       TransferSettingsModel settings = TransferSettingsModel(
           retirementDate: retirementDate,
           targetIncome: targetIncome,
           acceptTermsAndConditions: acceptTermsAndConditions,
           acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
-          welcomeScreenDismissed: welcomeScreenDismissed);
+          welcomeScreenDismissed: welcomeScreenDismissed,
+          optIntoAnalyticsWarning: optIntoAnalyticsWarning);
 
       Settings settingsModel = SettingsMapper.fromTransfer(settings);
 
@@ -53,13 +57,16 @@ void main() {
       bool acceptTermsAndConditions = true;
       bool acceptFinancialAdviceWarning = true;
       bool welcomeScreenDismissed = true;
+      bool optIntoAnalyticsWarning = true;
 
       Settings settings = Settings(
           retirementDate: retirementDate,
           targetIncome: targetIncome,
           acceptTermsAndConditions: acceptTermsAndConditions,
           acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
-          welcomeScreenDismissed: welcomeScreenDismissed);
+          welcomeScreenDismissed: welcomeScreenDismissed,
+          optIntoAnalyticsWarning: optIntoAnalyticsWarning
+          );
 
       TransferSettingsModel settingsModel = SettingsMapper.toTransfer(settings);
 

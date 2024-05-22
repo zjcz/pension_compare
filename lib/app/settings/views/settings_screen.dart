@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pension_compare/app/home/controllers/home_controller.dart';
 import 'package:pension_compare/app/settings/views/widgets/backup_password_bottomsheet.dart';
+import 'package:pension_compare/app/settings/views/widgets/edit_settings_widget.dart';
 import 'package:pension_compare/app/settings/views/widgets/restore_password_bottomsheet.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/extensions/material_colors.dart';
@@ -9,36 +10,34 @@ import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/app/settings/models/user_settings.dart';
 import 'package:pension_compare/app/settings/controllers/settings_service.dart';
+import 'package:pension_compare/helpers/analytics_helper.dart';
 import 'package:pension_compare/helpers/backup_restore_helper.dart';
-import 'package:pension_compare/widgets/date_field.dart';
-import 'package:pension_compare/helpers/currency_helper.dart';
+import 'package:pension_compare/service_locator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pension_compare/route_config.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
-  static const settingRetirementDateKey = Key('retirementDate');
-  static const settingTargetIncomeKey = Key('targetIncome');
   static const settingDeleteAllKey = Key('deleteAllButton');
   static const settingBackupKey = Key('backupButton');
   static const settingRestoreKey = Key('restoreButton');
 
-  final SettingsService settingsService;
-  const SettingsScreen({super.key, required this.settingsService});
+  const SettingsScreen({super.key});
 
   @override
   ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  TextEditingController targetIncomeController = TextEditingController();
-  DateTime? _retirementDate;
-
+  late Future<Settings> _settings;
   bool _unsavedChanges = false;
+  UserSettings? _userSettings;
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
+
+    _settings = getIt<SettingsService>().getAllSettings();
   }
 
   @override
@@ -56,7 +55,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   color: context.onPrimary,
                 )),
             onPressed: () async {
-              if (_formKey.currentState!.validate()) {
+              if (_formKey.currentState!.validate() && _userSettings != null) {
                 if (!await _saveData()) {
                   // an error occurred and we cannot save?
                   // TODO Log and report error
@@ -86,7 +85,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   child: Column(
                 children: [
                   FutureBuilder<Settings>(
-                      future: widget.settingsService.getAllSettings(),
+                      future: _settings,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -98,55 +97,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   'Error loading settings: ${snapshot.error}'));
                         } else {
                           final Settings settings = snapshot.data!;
-                          _retirementDate = settings.retirementDate;
-                          targetIncomeController.text =
-                              CurrencyHelper.formatCurrency(
-                                  settings.targetIncome);
+                          _userSettings = UserSettings(
+                              retirementDate: settings.retirementDate,
+                              targetIncome: settings.targetIncome,
+                              optIntoAnalyticsWarning:
+                                  settings.optIntoAnalyticsWarning);
 
-                          return Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                DateField(
-                                  key: SettingsScreen.settingRetirementDateKey,
-                                  initialDate: _retirementDate,
-                                  labelText: 'Planned Retirement Date',
-                                  onDateSelected: (DateTime? value) {
-                                    _retirementDate = value;
-                                    _unsavedChanges = true;
-                                  },
-                                ),
-                                CustomStyles.spacerBox,
-                                const Text(
-                                    'This is the date you plan to retire.',
-                                    style: CustomStyles.infoTextStyle),
-                                CustomStyles.spacerBox,
-                                TextFormField(
-                                  key: SettingsScreen.settingTargetIncomeKey,
-                                  controller: targetIncomeController,
-                                  keyboardType:
-                                      const TextInputType.numberWithOptions(
-                                          decimal: true),
-                                  decoration: const InputDecoration(
-                                      labelText: "Target Monthly Income"),
-                                  validator: (value) {
-                                    if (value != null && value.isNotEmpty) {
-                                      if (CurrencyHelper.parseCurrency(value) ==
-                                          null) {
-                                        return "Please enter a valid number";
-                                      }
-                                    }
-                                    return null;
-                                  },
-                                  onChanged: (val) {
-                                    _unsavedChanges = true;
-                                  },
-                                ),
-                                CustomStyles.spacerBox,
-                                const Text(
-                                    'This is the amount you plan to receive as a monthly income when you retire.  If you are unsure you can leave this blank for now.',
-                                    style: CustomStyles.infoTextStyle),
-                              ]);
+                          return EditSettingsWidget(
+                              userSettings: _userSettings!,
+                              onChanged: (UserSettings updated) {
+                                _userSettings = updated;
+                                _unsavedChanges = true;
+                              });
                         }
                       }),
                   CustomStyles.spacerBox,
@@ -202,10 +164,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<bool> _saveData() async {
-    widget.settingsService.saveUserSettings(UserSettings(
-        retirementDate: _retirementDate,
-        targetIncome:
-            CurrencyHelper.parseCurrency(targetIncomeController.text)));
+    if (_userSettings == null) return false;
+
+    getIt<SettingsService>().saveUserSettings(_userSettings!);
+
+    // enable / disable analytics
+    getIt<AnalyticsHelper>()
+        .enableAnalytics(_userSettings!.optIntoAnalyticsWarning);
 
     return true;
   }
@@ -292,7 +257,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       builder: (BuildContext context) {
         return BackupPasswordBottomsheet(onConfirm: (String password) async {
           final response = await BackupRestoreHelper.backupData(
-              databaseService, widget.settingsService, password);
+              databaseService, getIt<SettingsService>(), password);
 
           if (!response.userCancelled) {
             if (response.message != null) {
@@ -324,7 +289,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       builder: (BuildContext context) {
         return RestorePasswordBottomsheet(onConfirm: (String password) async {
           final response = await BackupRestoreHelper.importData(
-              databaseService, widget.settingsService, password);
+              databaseService, getIt<SettingsService>(), password);
 
           if (!response.userCancelled) {
             if (response.message != null) {
