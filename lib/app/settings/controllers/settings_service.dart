@@ -1,6 +1,5 @@
 import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/app/settings/models/user_settings.dart';
-import 'package:pension_compare/app/settings/models/welcome_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsService {
@@ -10,6 +9,7 @@ class SettingsService {
   final String _keyAcceptFinancialAdviceWarning =
       'acceptFinancialAdviceWarning';
   final String _keyWelcomeScreenDismissed = 'welcomeScreenDismissed';
+  final String _keyOptIntoAnalyticsWarning = 'optIntoAnalyticsWarning';
 
   Future<Settings> getAllSettings() async {
     final prefs = await SharedPreferences.getInstance();
@@ -18,48 +18,17 @@ class SettingsService {
       retirementDate:
           DateTime.tryParse(prefs.getString(_keyRetirementDate) ?? ''),
       targetIncome: prefs.getDouble(_keyTargetIncome),
-      acceptTermsAndConditions:
-          prefs.getBool(_keyAcceptTermsAndConditions),
+      acceptTermsAndConditions: prefs.getBool(_keyAcceptTermsAndConditions),
       acceptFinancialAdviceWarning:
           prefs.getBool(_keyAcceptFinancialAdviceWarning),
-      welcomeScreenDismissed:
-          prefs.getBool(_keyWelcomeScreenDismissed),
+      welcomeScreenDismissed: prefs.getBool(_keyWelcomeScreenDismissed),
+      optIntoAnalyticsWarning:
+          prefs.getBool(_keyOptIntoAnalyticsWarning) ?? false,
     );
   }
 
   Future<void> saveAllSettings(Settings settings) async {
     final prefs = await SharedPreferences.getInstance();
-
-    await saveUserSettings(
-        UserSettings(
-            retirementDate: settings.retirementDate,
-            targetIncome: settings.targetIncome),
-        prefs);
-
-    await saveWelcomeSettings(
-        WelcomeSettings(
-            acceptTermsAndConditions: settings.acceptTermsAndConditions,
-            acceptFinancialAdviceWarning: settings.acceptFinancialAdviceWarning,
-            welcomeScreenDismissed: settings.welcomeScreenDismissed),
-        prefs);
-  }
-
-  Future<void> saveUserSettings(UserSettings settings,
-      [SharedPreferences? sharedPreferences]) async {
-    final prefs = sharedPreferences ?? await SharedPreferences.getInstance();
-
-    await prefs.setString(
-        _keyRetirementDate, settings.retirementDate?.toIso8601String() ?? '');
-    if (settings.targetIncome != null) {
-      await prefs.setDouble(_keyTargetIncome, settings.targetIncome ?? 0);
-    } else {
-      await prefs.remove(_keyTargetIncome);
-    }
-  }
-
-  Future<void> saveWelcomeSettings(WelcomeSettings settings,
-      [SharedPreferences? sharedPreferences]) async {
-    final prefs = sharedPreferences ?? await SharedPreferences.getInstance();
 
     if (settings.acceptTermsAndConditions != null) {
       await prefs.setBool(_keyAcceptTermsAndConditions,
@@ -81,5 +50,27 @@ class SettingsService {
     } else {
       await prefs.remove(_keyWelcomeScreenDismissed);
     }
+
+    await saveUserSettings(
+        UserSettings(
+            retirementDate: settings.retirementDate,
+            targetIncome: settings.targetIncome,
+            optIntoAnalyticsWarning: settings.optIntoAnalyticsWarning),
+        prefs);
+  }
+
+  Future<void> saveUserSettings(UserSettings settings,
+      [SharedPreferences? sharedPreferences]) async {
+    final prefs = sharedPreferences ?? await SharedPreferences.getInstance();
+
+    await prefs.setString(
+        _keyRetirementDate, settings.retirementDate?.toIso8601String() ?? '');
+    if (settings.targetIncome != null) {
+      await prefs.setDouble(_keyTargetIncome, settings.targetIncome ?? 0);
+    } else {
+      await prefs.remove(_keyTargetIncome);
+    }
+    await prefs.setBool(
+        _keyOptIntoAnalyticsWarning, settings.optIntoAnalyticsWarning);
   }
 }

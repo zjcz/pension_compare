@@ -120,6 +120,8 @@ class Exporter {
           dataModel.transferSettingsModel.acceptFinancialAdviceWarning,
       welcomeScreenDismissed:
           dataModel.transferSettingsModel.welcomeScreenDismissed,
+      optIntoAnalyticsWarning:
+          dataModel.transferSettingsModel.optIntoAnalyticsWarning,
     ));
   }
 }

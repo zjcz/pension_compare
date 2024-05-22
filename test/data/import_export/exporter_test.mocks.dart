@@ -13,8 +13,6 @@ import 'package:pension_compare/app/settings/controllers/settings_service.dart'
     as _i9;
 import 'package:pension_compare/app/settings/models/settings.dart' as _i6;
 import 'package:pension_compare/app/settings/models/user_settings.dart' as _i10;
-import 'package:pension_compare/app/settings/models/welcome_settings.dart'
-    as _i12;
 import 'package:pension_compare/data/database/database_service.dart' as _i3;
 import 'package:pension_compare/data/database/tables/pensions_with_latest_statement.dart'
     as _i8;
@@ -1171,23 +1169,6 @@ class MockSettingsService extends _i1.Mock implements _i9.SettingsService {
       (super.noSuchMethod(
         Invocation.method(
           #saveUserSettings,
-          [
-            settings,
-            sharedPreferences,
-          ],
-        ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
-
-  @override
-  _i5.Future<void> saveWelcomeSettings(
-    _i12.WelcomeSettings? settings, [
-    _i11.SharedPreferences? sharedPreferences,
-  ]) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #saveWelcomeSettings,
           [
             settings,
             sharedPreferences,

@@ -1,27 +1,30 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pension_compare/app/home/views/policy_viewer_screen.dart';
 import 'package:pension_compare/app/home/views/widgets/terms_of_use_widget.dart';
-import 'package:pension_compare/app/settings/models/welcome_settings.dart';
+import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/app/settings/views/widgets/restore_password_bottomsheet.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/extensions/material_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/app/settings/controllers/settings_service.dart';
+import 'package:pension_compare/helpers/analytics_helper.dart';
 import 'package:pension_compare/helpers/backup_restore_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pension_compare/route_config.dart';
+import 'package:pension_compare/service_locator.dart';
+import 'package:pension_compare/widgets/analytics_opt_in.dart';
 
 class WelcomeScreen extends ConsumerStatefulWidget {
   static const welcomeAcceptTermsAndConditionsKey =
       Key('acceptTermsAndConditions');
   static const welcomeAcceptFinanicalAdviceWarningKey =
       Key('acceptFinancialAdviceWarning');
+  static const welcomeOptIntoAnalyticsKey = Key('optIntoAnalytics');
   static const welcomeRestoreKey = Key('restoreButton');
   static const welcomeContinueKey = Key('continueButton');
 
-  final SettingsService settingsService;
-  const WelcomeScreen({super.key, required this.settingsService});
+  const WelcomeScreen({super.key});
 
   @override
   ConsumerState<WelcomeScreen> createState() => _WelcomeScreenState();
@@ -30,6 +33,7 @@ class WelcomeScreen extends ConsumerStatefulWidget {
 class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
   bool acceptTermsAndConditions = false;
   bool acceptFinancialAdviceWarning = false;
+  bool optIntoAnalyticsWarning = false;
 
   @override
   void initState() {
@@ -105,6 +109,16 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                       ],
                     ),
                     CustomStyles.spacerBox,
+                    AnalyticsOptIn(
+                      key: WelcomeScreen.welcomeOptIntoAnalyticsKey,
+                      optIntoAnalyticsValue: optIntoAnalyticsWarning,
+                      onChanged: (newValue) {
+                        setState(() {
+                          optIntoAnalyticsWarning = newValue;
+                        });
+                      },
+                    ),
+                    CustomStyles.spacerBox,
                     SizedBox(
                         width: double.infinity,
                         child: TextButton(
@@ -140,11 +154,18 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
     if (!acceptTermsAndConditions || !acceptFinancialAdviceWarning) {
       return false;
     }
+    getIt<SettingsService>().saveAllSettings(Settings(
+      retirementDate: null,
+      targetIncome: null,
+      acceptTermsAndConditions: acceptTermsAndConditions,
+      acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
+      welcomeScreenDismissed: true,
+      optIntoAnalyticsWarning: optIntoAnalyticsWarning,
+    ));
 
-    widget.settingsService.saveWelcomeSettings(WelcomeSettings(
-        acceptTermsAndConditions: acceptTermsAndConditions,
-        acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
-        welcomeScreenDismissed: true));
+    if (optIntoAnalyticsWarning) {
+      getIt<AnalyticsHelper>().enableAnalytics(true);
+    }
 
     // redirect the user to the home screen
     context.go(RouteDefs.home);
@@ -161,7 +182,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
       builder: (BuildContext context) {
         return RestorePasswordBottomsheet(onConfirm: (String password) async {
           final response = await BackupRestoreHelper.importData(
-              databaseService, widget.settingsService, password);
+              databaseService, getIt<SettingsService>(), password);
 
           if (!response.userCancelled) {
             if (response.message != null) {

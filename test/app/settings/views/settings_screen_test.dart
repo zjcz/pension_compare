@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mockito/annotations.dart';
 import 'package:pension_compare/app/settings/models/user_settings.dart';
-import 'package:pension_compare/app/settings/views/settings_screen.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/app/settings/controllers/settings_service.dart';
+import 'package:pension_compare/app/settings/views/widgets/edit_settings_widget.dart';
+import 'package:pension_compare/helpers/analytics_helper.dart';
 import 'package:pension_compare/helpers/date_helper.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,20 +13,22 @@ import 'package:mockito/mockito.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/app/home/views/home_screen.dart';
 import 'package:pension_compare/route_config.dart';
+import 'package:pension_compare/service_locator.dart';
 
 import 'settings_screen_test.mocks.dart';
 
-Widget createSettingsScreen(
-    SettingsService settingsService, DatabaseService databaseService) {
+Widget createSettingsScreen(SettingsService settingsService,
+    DatabaseService databaseService, AnalyticsHelper mockAnalyticsHelper) {
+  getIt.registerSingleton<SettingsService>(settingsService);
+  getIt.registerSingleton<AnalyticsHelper>(mockAnalyticsHelper);
+
   return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
     return ProviderScope(
         overrides: [
           DatabaseService.provider.overrideWithValue(databaseService),
         ],
         child: MaterialApp.router(
-          routerConfig: setupRouter(
-              initialLocation: RouteDefs.editSettings,
-              initialExtra: settingsService),
+          routerConfig: setupRouter(initialLocation: RouteDefs.editSettings),
         ));
   });
 }
@@ -37,8 +40,13 @@ DatabaseService createMockDatabaseService() {
   return ds;
 }
 
-@GenerateMocks([SettingsService, DatabaseService])
+@GenerateMocks([SettingsService, DatabaseService, AnalyticsHelper])
 void main() {
+  setUp(() async {
+    // reset before each test to prevent errors with duplicate DatabaseService
+    await getIt.reset();
+  });
+
   group('Test editing of settings', () {
     testWidgets('show the settings screen with no existing settings',
         (tester) async {
@@ -49,9 +57,14 @@ void main() {
               targetIncome: null,
               acceptTermsAndConditions: null,
               acceptFinancialAdviceWarning: null,
-              welcomeScreenDismissed: null));
-      await tester.pumpWidget(
-          createSettingsScreen(settingsService, createMockDatabaseService()));
+              welcomeScreenDismissed: null,
+              optIntoAnalyticsWarning: false));
+      final mockAnalyticsHelper = MockAnalyticsHelper();
+      when(mockAnalyticsHelper.enableAnalytics(false))
+          .thenAnswer((_) async => {});
+
+      await tester.pumpWidget(createSettingsScreen(
+          settingsService, createMockDatabaseService(), mockAnalyticsHelper));
       await tester.pumpAndSettle();
 
       expect(find.text("Settings"), findsOneWidget);
@@ -66,8 +79,8 @@ void main() {
           findsOneWidget);
 
       expect(
-          find.byKey(SettingsScreen.settingRetirementDateKey), findsOneWidget);
-      expect(find.byKey(SettingsScreen.settingTargetIncomeKey), findsOneWidget);
+          find.byKey(EditSettingsWidget.editSettingRetirementDateKey), findsOneWidget);
+      expect(find.byKey(EditSettingsWidget.editSettingTargetIncomeKey), findsOneWidget);
 
       expect(find.widgetWithText(TextButton, "Save"), findsOneWidget);
       expect(find.widgetWithText(TextButton, "Delete All"), findsOneWidget);
@@ -82,6 +95,7 @@ void main() {
       bool acceptTermsAndConditions = true;
       bool acceptFinancialAdviceWarning = true;
       bool welcomeScreenDismissed = true;
+      bool optIntoAnalyticsWarning = true;
 
       final settingsService = MockSettingsService();
       when(settingsService.getAllSettings()).thenAnswer((_) async => Settings(
@@ -89,11 +103,15 @@ void main() {
           targetIncome: targetValue,
           acceptTermsAndConditions: acceptTermsAndConditions,
           acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
-          welcomeScreenDismissed: welcomeScreenDismissed));
+          welcomeScreenDismissed: welcomeScreenDismissed,
+          optIntoAnalyticsWarning: optIntoAnalyticsWarning));
+      final mockAnalyticsHelper = MockAnalyticsHelper();
+      when(mockAnalyticsHelper.enableAnalytics(false))
+          .thenAnswer((_) async => {});
 
       // Build your app and trigger a frame
-      await tester.pumpWidget(
-          createSettingsScreen(settingsService, createMockDatabaseService()));
+      await tester.pumpWidget(createSettingsScreen(
+          settingsService, createMockDatabaseService(), mockAnalyticsHelper));
       await tester.pumpAndSettle();
 
       expect(find.text(DateHelper.formatDate(retirementDate)), findsOneWidget);
@@ -111,15 +129,19 @@ void main() {
               targetIncome: null,
               acceptTermsAndConditions: null,
               acceptFinancialAdviceWarning: null,
-              welcomeScreenDismissed: null));
+              welcomeScreenDismissed: null,
+              optIntoAnalyticsWarning: false));
+      final mockAnalyticsHelper = MockAnalyticsHelper();
+      when(mockAnalyticsHelper.enableAnalytics(false))
+          .thenAnswer((_) async => {});
 
       // Build your app and trigger a frame
-      await tester.pumpWidget(
-          createSettingsScreen(settingsService, createMockDatabaseService()));
+      await tester.pumpWidget(createSettingsScreen(
+          settingsService, createMockDatabaseService(), mockAnalyticsHelper));
       await tester.pumpAndSettle();
 
       // Find the TextFormField by key
-      final fieldFinder = find.byKey(SettingsScreen.settingRetirementDateKey);
+      final fieldFinder = find.byKey(EditSettingsWidget.editSettingRetirementDateKey);
 
       // Check that the TextFormField exists
       expect(fieldFinder, findsOneWidget);
@@ -148,6 +170,7 @@ void main() {
     testWidgets('save settings with no previous settings', (tester) async {
       DateTime retirementDate = DateHelper.getToday();
       double targetValue = 12345.0;
+      bool optIntoAnalyticsWarning = true;
 
       final settingsService = MockSettingsService();
       when(settingsService.getAllSettings()).thenAnswer((_) async =>
@@ -156,25 +179,33 @@ void main() {
               targetIncome: null,
               acceptTermsAndConditions: null,
               acceptFinancialAdviceWarning: null,
-              welcomeScreenDismissed: null));
+              welcomeScreenDismissed: null,
+              optIntoAnalyticsWarning: false));
       when(settingsService.saveUserSettings(UserSettings(
               retirementDate: retirementDate,
-              targetIncome: targetValue)))
+              targetIncome: targetValue,
+              optIntoAnalyticsWarning: optIntoAnalyticsWarning)))
           .thenAnswer((_) async => true);
+      final mockAnalyticsHelper = MockAnalyticsHelper();
+      when(mockAnalyticsHelper.enableAnalytics(false))
+          .thenAnswer((_) async => {});
 
-      await tester.pumpWidget(
-          createSettingsScreen(settingsService, createMockDatabaseService()));
+      await tester.pumpWidget(createSettingsScreen(
+          settingsService, createMockDatabaseService(), mockAnalyticsHelper));
       await tester.pumpAndSettle();
 
       // Set the date of the date picker
-      await tester.tap(find.byKey(SettingsScreen.settingRetirementDateKey));
+      await tester.tap(find.byKey(EditSettingsWidget.editSettingRetirementDateKey));
       await tester.pumpAndSettle();
       await tester.tap(find.text(retirementDate.day.toString()));
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byKey(SettingsScreen.settingTargetIncomeKey),
+      await tester.enterText(find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
           targetValue.toString());
+
+      await tester.tap(find.byType(Switch));
+      await tester.pumpAndSettle();
 
       // Tap the save button
       await tester.tap(find.widgetWithText(TextButton, "Save"));
@@ -182,7 +213,8 @@ void main() {
       verify(settingsService.getAllSettings()).called(1);
       verify(settingsService.saveUserSettings(UserSettings(
               retirementDate: retirementDate,
-              targetIncome: targetValue)))
+              targetIncome: targetValue,
+              optIntoAnalyticsWarning: optIntoAnalyticsWarning)))
           .called(1);
     });
 
@@ -192,8 +224,10 @@ void main() {
       bool originalAcceptTermsAndConditions = true;
       bool originalAcceptFinancialAdviceWarning = true;
       bool originalWelcomeScreenDismissed = true;
+      bool originalOptIntoAnalyticsWarning = true;
       DateTime newRetirementDate = DateTime(2025, 1, 20);
       double newTargetValue = 98765.43;
+      bool newOptIntoAnalyticsWarning = false;
 
       final settingsService = MockSettingsService();
       when(settingsService.getAllSettings()).thenAnswer((_) async => Settings(
@@ -201,26 +235,35 @@ void main() {
           targetIncome: originalTargetValue,
           acceptTermsAndConditions: originalAcceptTermsAndConditions,
           acceptFinancialAdviceWarning: originalAcceptFinancialAdviceWarning,
-          welcomeScreenDismissed: originalWelcomeScreenDismissed));
+          welcomeScreenDismissed: originalWelcomeScreenDismissed,
+          optIntoAnalyticsWarning: originalOptIntoAnalyticsWarning));
       when(settingsService.saveUserSettings(UserSettings(
               retirementDate: newRetirementDate,
-              targetIncome: newTargetValue)))
+              targetIncome: newTargetValue,
+              optIntoAnalyticsWarning: newOptIntoAnalyticsWarning)))
           .thenAnswer((_) async => true);
+      final mockAnalyticsHelper = MockAnalyticsHelper();
+      when(mockAnalyticsHelper.enableAnalytics(false))
+          .thenAnswer((_) async => {});
 
-      await tester.pumpWidget(
-          createSettingsScreen(settingsService, createMockDatabaseService()));
+      await tester.pumpWidget(createSettingsScreen(
+          settingsService, createMockDatabaseService(), mockAnalyticsHelper));
       await tester.pumpAndSettle();
 
       // Set the date of the date picker
-      await tester.tap(find.byKey(SettingsScreen.settingRetirementDateKey));
+      await tester.tap(find.byKey(EditSettingsWidget.editSettingRetirementDateKey));
       await tester.pumpAndSettle();
       await tester.tap(find.text(newRetirementDate.day.toString()));
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
       // Enter values into the TextFormFields
-      await tester.enterText(find.byKey(SettingsScreen.settingTargetIncomeKey),
+      await tester.enterText(find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
           newTargetValue.toString());
+
+      //tap the opt into analytics switch
+      await tester.tap(find.byType(Switch));
+      await tester.pumpAndSettle();
 
       // Tap the save button
       await tester.tap(find.widgetWithText(TextButton, "Save"));
@@ -228,7 +271,8 @@ void main() {
       verify(settingsService.getAllSettings()).called(1);
       verify(settingsService.saveUserSettings(UserSettings(
               retirementDate: newRetirementDate,
-              targetIncome: newTargetValue)))
+              targetIncome: newTargetValue,
+              optIntoAnalyticsWarning: newOptIntoAnalyticsWarning)))
           .called(1);
     });
 
@@ -238,6 +282,7 @@ void main() {
       bool originalAcceptTermsAndConditions = true;
       bool originalAcceptFinancialAdviceWarning = true;
       bool originalWelcomeScreenDismissed = true;
+      bool originalOptIntoAnalyticsWarning = true;
       double newTargetValue = 98765.43;
 
       final settingsService = MockSettingsService();
@@ -246,18 +291,23 @@ void main() {
           targetIncome: originalTargetValue,
           acceptTermsAndConditions: originalAcceptTermsAndConditions,
           acceptFinancialAdviceWarning: originalAcceptFinancialAdviceWarning,
-          welcomeScreenDismissed: originalWelcomeScreenDismissed));
+          welcomeScreenDismissed: originalWelcomeScreenDismissed,
+          optIntoAnalyticsWarning: originalOptIntoAnalyticsWarning));
       when(settingsService.saveUserSettings(UserSettings(
               retirementDate: originalRetirementDate,
-              targetIncome: newTargetValue)))
+              targetIncome: newTargetValue,
+              optIntoAnalyticsWarning: originalOptIntoAnalyticsWarning)))
           .thenAnswer((_) async => true);
+      final mockAnalyticsHelper = MockAnalyticsHelper();
+      when(mockAnalyticsHelper.enableAnalytics(false))
+          .thenAnswer((_) async => {});
 
-      await tester.pumpWidget(
-          createSettingsScreen(settingsService, createMockDatabaseService()));
+      await tester.pumpWidget(createSettingsScreen(
+          settingsService, createMockDatabaseService(), mockAnalyticsHelper));
       await tester.pumpAndSettle();
 
       // Enter values into the TextFormFields
-      await tester.enterText(find.byKey(SettingsScreen.settingTargetIncomeKey),
+      await tester.enterText(find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
           newTargetValue.toString());
 
       // Tap the save button
@@ -270,7 +320,8 @@ void main() {
       verify(settingsService.getAllSettings()).called(1);
       verify(settingsService.saveUserSettings(UserSettings(
               retirementDate: originalRetirementDate,
-              targetIncome: newTargetValue)))
+              targetIncome: newTargetValue,
+              optIntoAnalyticsWarning: originalOptIntoAnalyticsWarning)))
           .called(1);
     });
   });
@@ -285,14 +336,19 @@ void main() {
               targetIncome: null,
               acceptTermsAndConditions: null,
               acceptFinancialAdviceWarning: null,
-              welcomeScreenDismissed: null));
+              welcomeScreenDismissed: null,
+              optIntoAnalyticsWarning: false));
       when(settingsService.saveUserSettings(const UserSettings(
               retirementDate: null,
-              targetIncome: null)))
+              targetIncome: null,
+              optIntoAnalyticsWarning: false)))
           .thenAnswer((_) async => true);
+      final mockAnalyticsHelper = MockAnalyticsHelper();
+      when(mockAnalyticsHelper.enableAnalytics(false))
+          .thenAnswer((_) async => {});
 
-      await tester.pumpWidget(
-          createSettingsScreen(settingsService, createMockDatabaseService()));
+      await tester.pumpWidget(createSettingsScreen(
+          settingsService, createMockDatabaseService(), mockAnalyticsHelper));
       await tester.pumpAndSettle();
 
       // Tap the save button
@@ -302,7 +358,8 @@ void main() {
       verify(settingsService.getAllSettings()).called(1);
       verify(settingsService.saveUserSettings(const UserSettings(
               retirementDate: null,
-              targetIncome: null)))
+              targetIncome: null,
+              optIntoAnalyticsWarning: false)))
           .called(1);
     });
 
@@ -316,21 +373,26 @@ void main() {
           targetIncome: targetValue,
           acceptTermsAndConditions: null,
           acceptFinancialAdviceWarning: null,
-          welcomeScreenDismissed: null));
+          welcomeScreenDismissed: null,
+          optIntoAnalyticsWarning: false));
       when(settingsService.saveUserSettings(const UserSettings(
               retirementDate: null,
-              targetIncome: null)))
+              targetIncome: null,
+              optIntoAnalyticsWarning: false)))
           .thenAnswer((_) async => true);
+      final mockAnalyticsHelper = MockAnalyticsHelper();
+      when(mockAnalyticsHelper.enableAnalytics(false))
+          .thenAnswer((_) async => {});
 
-      await tester.pumpWidget(
-          createSettingsScreen(settingsService, createMockDatabaseService()));
+      await tester.pumpWidget(createSettingsScreen(
+          settingsService, createMockDatabaseService(), mockAnalyticsHelper));
       await tester.pumpAndSettle();
 
       // Set the date of the date picker
       // Currently not possible to set the data to unset / null
 
       await tester.enterText(
-          find.byKey(SettingsScreen.settingTargetIncomeKey), '');
+          find.byKey(EditSettingsWidget.editSettingTargetIncomeKey), '');
 
       // Tap the save button
       await tester.tap(find.widgetWithText(TextButton, "Save"));
@@ -339,7 +401,8 @@ void main() {
       verify(settingsService.getAllSettings()).called(1);
       verify(settingsService.saveUserSettings(const UserSettings(
               retirementDate: null,
-              targetIncome: null)))
+              targetIncome: null,
+              optIntoAnalyticsWarning: false)))
           .called(1);
     });
 
@@ -355,24 +418,29 @@ void main() {
               targetIncome: null,
               acceptTermsAndConditions: null,
               acceptFinancialAdviceWarning: null,
-              welcomeScreenDismissed: null));
+              welcomeScreenDismissed: null,
+              optIntoAnalyticsWarning: false));
       when(settingsService.saveUserSettings(UserSettings(
               retirementDate: retirementDate,
-              targetIncome: null)))
+              targetIncome: null,
+              optIntoAnalyticsWarning: false)))
           .thenAnswer((_) async => true);
+      final mockAnalyticsHelper = MockAnalyticsHelper();
+      when(mockAnalyticsHelper.enableAnalytics(false))
+          .thenAnswer((_) async => {});
 
-      await tester.pumpWidget(
-          createSettingsScreen(settingsService, createMockDatabaseService()));
+      await tester.pumpWidget(createSettingsScreen(
+          settingsService, createMockDatabaseService(), mockAnalyticsHelper));
       await tester.pumpAndSettle();
 
       // Set the date of the date picker
-      await tester.tap(find.byKey(SettingsScreen.settingRetirementDateKey));
+      await tester.tap(find.byKey(EditSettingsWidget.editSettingRetirementDateKey));
       await tester.pumpAndSettle();
       await tester.tap(find.text(retirementDate.day.toString()));
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byKey(SettingsScreen.settingTargetIncomeKey),
+      await tester.enterText(find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
           invalidTargetValue);
 
       // Tap the save button
@@ -384,7 +452,8 @@ void main() {
       verify(settingsService.getAllSettings()).called(1);
       verifyNever(settingsService.saveUserSettings(UserSettings(
           retirementDate: retirementDate,
-          targetIncome: null)));
+          targetIncome: null,
+          optIntoAnalyticsWarning: false)));
     });
   });
 
@@ -398,10 +467,14 @@ void main() {
               targetIncome: null,
               acceptTermsAndConditions: null,
               acceptFinancialAdviceWarning: null,
-              welcomeScreenDismissed: null));
+              welcomeScreenDismissed: null,
+              optIntoAnalyticsWarning: false));
+      final mockAnalyticsHelper = MockAnalyticsHelper();
+      when(mockAnalyticsHelper.enableAnalytics(false))
+          .thenAnswer((_) async => {});
 
-      await tester.pumpWidget(
-          createSettingsScreen(settingsService, createMockDatabaseService()));
+      await tester.pumpWidget(createSettingsScreen(
+          settingsService, createMockDatabaseService(), mockAnalyticsHelper));
       await tester.pumpAndSettle();
 
       // check the elements are not yet visible
@@ -426,12 +499,16 @@ void main() {
               targetIncome: null,
               acceptTermsAndConditions: null,
               acceptFinancialAdviceWarning: null,
-              welcomeScreenDismissed: null));
+              welcomeScreenDismissed: null,
+              optIntoAnalyticsWarning: false));
       final databaseService = createMockDatabaseService();
       when(databaseService.clearAllData()).thenAnswer((_) async => true);
+      final mockAnalyticsHelper = MockAnalyticsHelper();
+      when(mockAnalyticsHelper.enableAnalytics(false))
+          .thenAnswer((_) async => {});
 
-      await tester
-          .pumpWidget(createSettingsScreen(settingsService, databaseService));
+      await tester.pumpWidget(createSettingsScreen(
+          settingsService, databaseService, mockAnalyticsHelper));
       await tester.pumpAndSettle();
 
       // Tap the delete button
@@ -457,12 +534,16 @@ void main() {
               targetIncome: null,
               acceptTermsAndConditions: null,
               acceptFinancialAdviceWarning: null,
-              welcomeScreenDismissed: null));
+              welcomeScreenDismissed: null,
+              optIntoAnalyticsWarning: false));
       final databaseService = createMockDatabaseService();
       when(databaseService.clearAllData()).thenAnswer((_) async => true);
+      final mockAnalyticsHelper = MockAnalyticsHelper();
+      when(mockAnalyticsHelper.enableAnalytics(false))
+          .thenAnswer((_) async => {});
 
-      await tester
-          .pumpWidget(createSettingsScreen(settingsService, databaseService));
+      await tester.pumpWidget(createSettingsScreen(
+          settingsService, databaseService, mockAnalyticsHelper));
       await tester.pumpAndSettle();
 
       // Tap the delete button
@@ -481,6 +562,110 @@ void main() {
       expect(find.byType(HomeScreen), findsOneWidget);
 
       verify(databaseService.clearAllData()).called(1);
+    });
+  });
+
+  group('Test analytics', () {
+    testWidgets(
+        'opting into analytics enables analytics and saves the setting',
+        (tester) async {
+      DateTime retirementDate = DateHelper.getToday();
+      double targetValue = 12345.0;
+      bool optIntoAnalyticsWarning = true;
+
+      final settingsService = MockSettingsService();
+      when(settingsService.getAllSettings()).thenAnswer((_) async =>
+          const Settings(
+              retirementDate: null,
+              targetIncome: null,
+              acceptTermsAndConditions: null,
+              acceptFinancialAdviceWarning: null,
+              welcomeScreenDismissed: null,
+              optIntoAnalyticsWarning: false));
+      final databaseService = createMockDatabaseService();
+      when(databaseService.clearAllData()).thenAnswer((_) async => true);
+      final mockAnalyticsHelper = MockAnalyticsHelper();
+      when(mockAnalyticsHelper.enableAnalytics(true))
+          .thenAnswer((_) async => {});
+
+      await tester.pumpWidget(createSettingsScreen(
+          settingsService, createMockDatabaseService(), mockAnalyticsHelper));
+      await tester.pumpAndSettle();
+
+      // Set the date of the date picker
+      await tester.tap(find.byKey(EditSettingsWidget.editSettingRetirementDateKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(retirementDate.day.toString()));
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
+          targetValue.toString());
+
+      await tester.tap(find.byType(Switch));
+      await tester.pumpAndSettle();
+
+      // Tap the save button
+      await tester.tap(find.widgetWithText(TextButton, "Save"));
+
+      verify(settingsService.getAllSettings()).called(1);
+      verify(settingsService.saveUserSettings(UserSettings(
+              retirementDate: retirementDate,
+              targetIncome: targetValue,
+              optIntoAnalyticsWarning: optIntoAnalyticsWarning)))
+          .called(1);
+      verify(mockAnalyticsHelper.enableAnalytics(true)).called(1);
+    });
+
+    testWidgets(
+        'opting out of analytics disables analytics and saves the setting',
+        (tester) async {
+      DateTime retirementDate = DateHelper.getToday();
+      double targetValue = 12345.0;
+      bool optIntoAnalyticsWarning = false;
+
+      final settingsService = MockSettingsService();
+      when(settingsService.getAllSettings()).thenAnswer((_) async =>
+          const Settings(
+              retirementDate: null,
+              targetIncome: null,
+              acceptTermsAndConditions: null,
+              acceptFinancialAdviceWarning: null,
+              welcomeScreenDismissed: null,
+              optIntoAnalyticsWarning: true));
+      final databaseService = createMockDatabaseService();
+      when(databaseService.clearAllData()).thenAnswer((_) async => true);
+      final mockAnalyticsHelper = MockAnalyticsHelper();
+      when(mockAnalyticsHelper.enableAnalytics(false))
+          .thenAnswer((_) async => {});
+
+      await tester.pumpWidget(createSettingsScreen(
+          settingsService, createMockDatabaseService(), mockAnalyticsHelper));
+      await tester.pumpAndSettle();
+
+      // Set the date of the date picker
+      await tester.tap(find.byKey(EditSettingsWidget.editSettingRetirementDateKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(retirementDate.day.toString()));
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
+          targetValue.toString());
+
+      await tester.tap(find.byType(Switch));
+      await tester.pumpAndSettle();
+
+      // Tap the save button
+      await tester.tap(find.widgetWithText(TextButton, "Save"));
+
+      verify(settingsService.getAllSettings()).called(1);
+      verify(settingsService.saveUserSettings(UserSettings(
+              retirementDate: retirementDate,
+              targetIncome: targetValue,
+              optIntoAnalyticsWarning: optIntoAnalyticsWarning)))
+          .called(1);
+      verify(mockAnalyticsHelper.enableAnalytics(false)).called(1);
     });
   });
 }

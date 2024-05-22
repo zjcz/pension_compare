@@ -46,7 +46,8 @@ void main() {
           targetIncome: 9000,
           acceptTermsAndConditions: true,
           acceptFinancialAdviceWarning: true,
-          welcomeScreenDismissed: true));
+          welcomeScreenDismissed: true,
+          optIntoAnalyticsWarning: true));
 
       final fileHandler = MockFileHandler();
 
@@ -94,6 +95,7 @@ void main() {
       bool acceptTermsAndConditions = true;
       bool acceptFinancialAdviceWarning = true;
       bool welcomeScreenDismissed = true;
+      bool optIntoAnalyticsWarning = true;
 
       MockDatabaseService databaseService = MockDatabaseService();
       when(databaseService.clearAllData()).thenAnswer((_) async {});
@@ -124,7 +126,8 @@ void main() {
               targetIncome: targetIncome,
               acceptTermsAndConditions: acceptTermsAndConditions,
               acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
-              welcomeScreenDismissed: welcomeScreenDismissed)))
+              welcomeScreenDismissed: welcomeScreenDismissed,
+              optIntoAnalyticsWarning: optIntoAnalyticsWarning)))
           .thenAnswer((_) async => {});
 
       // create the data to import
@@ -149,7 +152,8 @@ void main() {
           targetIncome: targetIncome,
           acceptTermsAndConditions: acceptTermsAndConditions,
           acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
-          welcomeScreenDismissed: welcomeScreenDismissed);
+          welcomeScreenDismissed: welcomeScreenDismissed,
+          optIntoAnalyticsWarning: optIntoAnalyticsWarning);
       TransferDataModel dataModel = TransferDataModel(
         transferOtherIncomeModelList: [transferOtherIncome],
         transferPensionModelList: [transferPension],
@@ -185,7 +189,8 @@ void main() {
               targetIncome: targetIncome,
               acceptTermsAndConditions: acceptTermsAndConditions,
               acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
-              welcomeScreenDismissed: welcomeScreenDismissed)))
+              welcomeScreenDismissed: welcomeScreenDismissed,
+              optIntoAnalyticsWarning: optIntoAnalyticsWarning)))
           .called(1);
     });
   });

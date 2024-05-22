@@ -16,6 +16,7 @@ class Settings with _$Settings {
     required bool? acceptTermsAndConditions,
     required bool? acceptFinancialAdviceWarning,
     required bool? welcomeScreenDismissed,
+    required bool optIntoAnalyticsWarning,
   }) = _Settings;
 
   factory Settings.fromJson(Map<String, Object?> json) =>
