@@ -35,8 +35,7 @@ Widget createSettingsScreen(SettingsService settingsService,
 
 DatabaseService createMockDatabaseService() {
   DatabaseService ds = MockDatabaseService();
-  when(ds.getAllPensionsWithLatestStatement())
-      .thenAnswer((_) => Stream.value([]));
+  // setup any mocks required by all tests
   return ds;
 }
 

@@ -10,10 +10,9 @@ import 'android_connection.dart';
 import 'linux_connection.dart';
 import 'windows_connection.dart';
 
-const _encryptionPassword = 'drift.example.unsafe_password';
 
 abstract class Connection {
-  LazyDatabase openConnection() {
+  LazyDatabase openConnection(String encryptionPassword) {
     // the LazyDatabase util lets us find the right location for the file async.
     return LazyDatabase(() async {
       setupSqlCipher();
@@ -47,7 +46,7 @@ abstract class Connection {
           // Then, apply the key to encrypt the database. Unfortunately, this
           // pragma doesn't seem to support prepared statements so we inline the
           // key.
-          final escapedKey = _encryptionPassword.replaceAll("'", "''");
+          final escapedKey = (encryptionPassword).replaceAll("'", "''");
           db.execute("pragma key = '$escapedKey'");
 
           // Test that the key is correct by selecting from a table
@@ -64,9 +63,9 @@ abstract class Connection {
   // allows implementing classes to setup SQLCipher for their platform
   Future<void> setupSqlCipher() async {}
 
-  static LazyDatabase getDatabaseConnection() {
+  static LazyDatabase getDatabaseConnection(String encryptionPassword) {
     Connection c = _getPlatformConnection();
-    return c.openConnection();
+    return c.openConnection(encryptionPassword);
   }
 
   static Connection _getPlatformConnection() {

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pension_compare/app/home/views/loading_screen.dart';
+import 'package:pension_compare/app/passcode/views/change_passcode.dart';
+import 'package:pension_compare/app/passcode/views/enter_passcode.dart';
+import 'package:pension_compare/app/passcode/views/set_passcode.dart';
 import 'package:pension_compare/app/pension/models/pension_model.dart';
 import 'package:pension_compare/app/pension/views/edit_pension_screen.dart';
 import 'package:pension_compare/app/otherIncome/views/edit_state_pension_screen.dart';
@@ -11,24 +14,35 @@ import 'package:pension_compare/app/settings/views/settings_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pension_compare/app/home/views/policy_viewer_screen.dart';
 import 'package:pension_compare/app/home/views/welcome_screen.dart';
+import 'package:pension_compare/data/database/database_service.dart';
 
 class RouteDefs {
-  static const String home = '/';
+  static const String home = '/home';
   static const String welcome = '/welcome';
-  static const String pensionOverview = '/pension_overview';
-  static const String editPension = '/edit_pension';
-  static const String editStatement = '/edit_statement';
-  static const String editStatePension = '/edit_state_pension';
-  static const String editSettings = '/edit_settings';
-  static const String loading = '/loading';
+  static const String pensionOverview = '/home/pension_overview';
+  static const String editPension = '/home/edit_pension';
+  static const String editStatement = '/home/edit_statement';
+  static const String editStatePension = '/home/edit_state_pension';
+  static const String editSettings = '/home/edit_settings';
+  static const String loading = '/';
   static const String policyViewer = '/policy_view';
+  static const String passcodeSet = '/setpasscode';
+  static const String passcodeEnter = '/enterpasscode';
+  static const String passcodeChange = '/home/changepasscode';
+
+  static String getPageName(String pageName, {String? parentPage}) {
+    return pageName.replaceAll(parentPage ?? '', '').substring(1);
+  }
 }
 
 // The route configuration.
-GoRouter setupRouter({String? initialLocation, Object? initialExtra, List<NavigatorObserver>? observers}) {
+GoRouter setupRouter(
+    {String? initialLocation,
+    Object? initialExtra,
+    List<NavigatorObserver>? observers}) {
   return GoRouter(
-    initialLocation: initialLocation ?? RouteDefs.home,
-    initialExtra: initialExtra,    
+    initialLocation: initialLocation ?? RouteDefs.loading,
+    initialExtra: initialExtra,
     observers: observers,
     routes: <RouteBase>[
       GoRoute(
@@ -39,16 +53,8 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra, List<Naviga
           },
           routes: <RouteBase>[
             GoRoute(
-              path: RouteDefs.welcome.substring(1), //strip leading /
-              name: 'welcome',
-              builder: (BuildContext context, GoRouterState state) {
-
-                return const WelcomeScreen();
-              },
-            ),
-            GoRoute(
               path:
-                  '${RouteDefs.pensionOverview.substring(1)}/:pensionId', //strip leading /
+                  '${RouteDefs.getPageName(RouteDefs.pensionOverview, parentPage: RouteDefs.home)}/:pensionId',
               name: 'pensionOverview',
               builder: (BuildContext context, GoRouterState state) {
                 return PensionOverviewScreen(
@@ -56,7 +62,8 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra, List<Naviga
               },
             ),
             GoRoute(
-              path: RouteDefs.editPension.substring(1), //strip leading /
+              path: RouteDefs.getPageName(RouteDefs.editPension,
+                  parentPage: RouteDefs.home),
               name: 'editPension',
               builder: (BuildContext context, GoRouterState state) {
                 PensionModel? p;
@@ -67,7 +74,8 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra, List<Naviga
               },
             ),
             GoRoute(
-              path: RouteDefs.editStatement.substring(1), //strip leading /
+              path: RouteDefs.getPageName(RouteDefs.editStatement,
+                  parentPage: RouteDefs.home),
               name: 'editStatement',
               builder: (BuildContext context, GoRouterState state) {
                 PensionModel? p;
@@ -87,28 +95,50 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra, List<Naviga
               },
             ),
             GoRoute(
-              path: RouteDefs.editStatePension.substring(1), //strip leading /
+              path: RouteDefs.getPageName(RouteDefs.editStatePension,
+                  parentPage: RouteDefs.home),
               name: 'editStatePension',
               builder: (BuildContext context, GoRouterState state) {
                 return const EditStatePensionScreen();
               },
             ),
             GoRoute(
-              path: RouteDefs.editSettings.substring(1), //strip leading /
+              path: RouteDefs.getPageName(RouteDefs.editSettings,
+                  parentPage: RouteDefs.home),
               name: 'editSettings',
               builder: (BuildContext context, GoRouterState state) {
                 return const SettingsScreen();
               },
             ),
             GoRoute(
-              path: RouteDefs.loading.substring(1), //strip leading /
-              name: 'loading',
+              path: RouteDefs.getPageName(RouteDefs.passcodeChange,
+                  parentPage: RouteDefs.home),
+              name: 'changePasscode',
               builder: (BuildContext context, GoRouterState state) {
-                return const LoadingScreen();
+                DatabaseService? databaseService;
+                if (state.extra != null) {
+                  databaseService = state.extra! as DatabaseService;
+                }
+                return ChangePasscodeScreen(databaseService: databaseService!);
+              },
+            ),
+          ]),
+      GoRoute(
+          path: RouteDefs.loading,
+          name: 'loading',
+          builder: (BuildContext context, GoRouterState state) {
+            return const LoadingScreen();
+          },
+          routes: <RouteBase>[
+            GoRoute(
+              path: RouteDefs.getPageName(RouteDefs.welcome),
+              name: 'welcome',
+              builder: (BuildContext context, GoRouterState state) {
+                return const WelcomeScreen();
               },
             ),
             GoRoute(
-              path: RouteDefs.policyViewer.substring(1), //strip leading /
+              path: RouteDefs.getPageName(RouteDefs.policyViewer),
               name: 'policyViewer',
               builder: (BuildContext context, GoRouterState state) {
                 PolicyType? policyType;
@@ -119,7 +149,21 @@ GoRouter setupRouter({String? initialLocation, Object? initialExtra, List<Naviga
                     policyType: policyType ?? PolicyType.termsAndConditions);
               },
             ),
+            GoRoute(
+              path: RouteDefs.getPageName(RouteDefs.passcodeSet),
+              name: 'setPasscode',
+              builder: (BuildContext context, GoRouterState state) {
+                return const SetPasscodeScreen();
+              },
+            ),
           ]),
+      GoRoute(
+        path: RouteDefs.passcodeEnter,
+        name: 'enterPasscode',
+        builder: (BuildContext context, GoRouterState state) {
+          return const EnterPasscodeScreen();
+        },
+      ),
     ],
   );
 }

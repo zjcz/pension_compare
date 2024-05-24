@@ -25,11 +25,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
       getIt<AnalyticsHelper>().enableAnalytics(true);
     }
 
-    // now load the welcome of the main home page.
-    // We use pushReplacement so the user doesn't return to this screen when exiting the app
+    // now load the welcome page or the enter passcode page.
     if (!mounted) return;
     if (welcomeScreenDismissed) {
-      context.go(RouteDefs.home);
+      context.go(RouteDefs.passcodeEnter);
     } else {
       context.go(RouteDefs.welcome);
     }

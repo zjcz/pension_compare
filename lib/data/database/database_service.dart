@@ -1,4 +1,6 @@
 import 'package:drift/drift.dart';
+import 'package:pension_compare/app/passcode/controller/passcode_service.dart';
+import 'package:pension_compare/service_locator.dart';
 import 'connection/connection.dart' as dbconn;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -18,8 +20,9 @@ class DatabaseService extends _$DatabaseService {
   DatabaseService(super.connection);
 
   // Create a new database service with the default connection
-  factory DatabaseService.withDefaultConnection() {
-    return DatabaseService(dbconn.Connection.getDatabaseConnection());
+  factory DatabaseService.withDefaultConnection(String encryptionPassword) {
+    return DatabaseService(
+        dbconn.Connection.getDatabaseConnection(encryptionPassword));
   }
 
   @override
@@ -39,6 +42,21 @@ class DatabaseService extends _$DatabaseService {
         }
       },
     );
+  }
+
+  void setNewEncryptedPassword(String newEncryptionPassword) {
+    final escapedKey = (newEncryptionPassword).replaceAll("'", "''");
+    customStatement("PRAGMA rekey = '$escapedKey'");
+  }
+
+  Future<bool> testConnection() async {
+    try {
+      await customStatement("SELECT count(*) FROM sqlite_master");
+    } catch (e) {
+      return false;
+    }
+
+    return true;
   }
 
   // List all the pensions in the database
@@ -265,7 +283,8 @@ class DatabaseService extends _$DatabaseService {
   // reinitialised after a backup / restore) we would need to declare this as a
   // StateProvider instead.
   static final Provider<DatabaseService> provider = Provider((ref) {
-    final database = DatabaseService.withDefaultConnection();
+    String encryptionPassword = getIt<PasscodeService>().getEncryptedPasscode();
+    final database = DatabaseService.withDefaultConnection(encryptionPassword);
     ref.onDispose(database.close);
 
     return database;

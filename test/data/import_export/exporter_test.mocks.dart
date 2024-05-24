@@ -412,6 +412,15 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
       ) as _i2.DatabaseConnectionUser);
 
   @override
+  void setNewPasscode(String? newPasscode) => super.noSuchMethod(
+        Invocation.method(
+          #setNewPasscode,
+          [newPasscode],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
   _i5.Stream<List<_i3.Pension>> getAllPensions() => (super.noSuchMethod(
         Invocation.method(
           #getAllPensions,

@@ -5,9 +5,9 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pension_compare/app/home/views/home_screen.dart';
 import 'package:pension_compare/app/home/views/welcome_screen.dart';
+import 'package:pension_compare/app/passcode/views/set_passcode.dart';
 import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
-import 'package:pension_compare/app/settings/views/widgets/restore_password_bottomsheet.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/helpers/analytics_helper.dart';
 import 'package:pension_compare/route_config.dart';
@@ -42,6 +42,16 @@ void main() {
   setUp(() {
     mockSettingsService = MockSettingsService();
     mockAnalyticsHelper = MockAnalyticsHelper();
+
+    when(mockSettingsService.getAllSettings())
+        .thenAnswer((_) async => const Settings(
+              retirementDate: null,
+              targetIncome: null,
+              acceptTermsAndConditions: false,
+              acceptFinancialAdviceWarning: false,
+              welcomeScreenDismissed: false,
+              optIntoAnalyticsWarning: false,
+            ));
   });
 
   setUp(() async {
@@ -159,7 +169,7 @@ void main() {
     });
 
     testWidgets(
-        'tapping continue button after accepting terms and conditions and financial advice warning saves data and navigates to home screen',
+        'tapping continue button after accepting terms and conditions and financial advice warning saves data and navigates to set passcode screen',
         (WidgetTester tester) async {
       const saveSettings = Settings(
         retirementDate: null,
@@ -198,7 +208,7 @@ void main() {
       verify(mockSettingsService.saveAllSettings(saveSettings)).called(1);
       verifyNever(mockAnalyticsHelper
           .enableAnalytics(true)); // not set so shouldn't call
-      expect(find.byType(HomeScreen), findsOneWidget);
+      expect(find.byType(SetPasscodeScreen), findsOneWidget);
       expect(find.byType(WelcomeScreen), findsNothing);
     });
 
@@ -248,25 +258,8 @@ void main() {
       // Verify what happens
       verify(mockSettingsService.saveAllSettings(saveSettings)).called(1);
       verify(mockAnalyticsHelper.enableAnalytics(true)).called(1);
-      expect(find.byType(HomeScreen), findsOneWidget);
+      expect(find.byType(SetPasscodeScreen), findsOneWidget);
       expect(find.byType(WelcomeScreen), findsNothing);
-    });
-
-    testWidgets('tapping restore button shows restore password bottom sheet',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(createScreen(
-          MockDatabaseService(), mockSettingsService, mockAnalyticsHelper));
-
-      // Tap the restore button
-      final buttonFinder = find.byKey(WelcomeScreen.welcomeRestoreKey);
-      final scrollableFinder = find.byType(Scrollable).last;
-      await tester.scrollUntilVisible(buttonFinder, 10,
-          scrollable: scrollableFinder);
-      await tester.tap(find.byKey(WelcomeScreen.welcomeRestoreKey));
-      await tester.pumpAndSettle();
-
-      // Verify that the restore password bottom sheet is shown
-      expect(find.byType(RestorePasswordBottomsheet), findsOneWidget);
     });
   });
 }
