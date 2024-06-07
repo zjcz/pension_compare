@@ -5,7 +5,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pension_compare/app/home/views/home_screen.dart';
 import 'package:pension_compare/app/home/views/welcome_screen.dart';
-import 'package:pension_compare/app/passcode/views/set_passcode.dart';
+import 'package:pension_compare/app/passcode/views/set_passcode_screen.dart';
 import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/data/database/database_service.dart';

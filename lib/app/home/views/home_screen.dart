@@ -82,6 +82,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ]),
         body: SafeArea(
+          minimum: const EdgeInsets.all(10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

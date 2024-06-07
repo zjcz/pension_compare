@@ -41,7 +41,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return Scaffold(
         body: SafeArea(
             top: true,
-            minimum: const EdgeInsets.all(20.0),
+            minimum: const EdgeInsets.all(10.0),
             child: Container(
                 margin: MediaQuery.of(context).padding,
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),

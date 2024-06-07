@@ -18,14 +18,15 @@ class PasscodeService {
     return encryptPasscode(_passcode ?? '');
   }
 
-  void setPasscode(String newPasscode, {DatabaseService? databaseService}) {
+  bool setPasscode(String newPasscode, {DatabaseService? databaseService}) {
     if (!_validatePasscode(newPasscode)) {
-      return;
+      return false;
     }
     if (databaseService != null) {
       databaseService.setNewEncryptedPassword(encryptPasscode(newPasscode));
     }
     _passcode = newPasscode;
+    return true;
   }
 
   bool _validatePasscode(String passcode) {

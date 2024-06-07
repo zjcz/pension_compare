@@ -56,73 +56,80 @@ class _EditStatePensionScreenState
             },
           ),
         ]),
-        body: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Form(
-            canPop: !_unsavedChanges,
-            onPopInvoked: (bool didPop) {
-              if (didPop) {
-                return;
-              }
-              _showSaveChangesDialog();
-            },
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  FutureBuilder<OtherIncomeModel?>(
-                      future: controller.getStatePension(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return Center(
-                              child: Text(
-                                  'Error loading data: ${snapshot.error}'));
-                        } else if (!snapshot.hasData || snapshot.data == null) {
-                          return const Center(child: Text('Not found'));
-                        } else {
-                          final OtherIncomeModel statePension = snapshot.data!;
-                          yearlyValueController.text =
-                              CurrencyHelper.formatCurrency(
-                                  statePension.annualAmount);
-                          return TextFormField(
-                            key: EditStatePensionScreen.yearlyValueKey,
-                            controller: yearlyValueController,
-                            keyboardType: const TextInputType.numberWithOptions(
-                                decimal: true),
-                            decoration: const InputDecoration(
-                                labelText: "Yearly Value"),
-                            validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  CurrencyHelper.parseCurrency(value) == null) {
-                                return "Please enter a value, or 0 if unknown";
-                              }
-                              return null;
-                            },
-                            onChanged: (val) {
-                              _unsavedChanges = true;
-                            },
-                          );
-                        }
-                      }),
-                  CustomStyles.spacerBox,
-                  const Text(
-                      "This is the yearly value you will receive from your state pension.  If you don't know this you can find the amount here:",
-                      style: CustomStyles.infoTextStyle),
-                  CustomStyles.spacerBox,
-                  ElevatedButton(
-                    onPressed: () =>
-                        _launchInBrowser(govUkStatePensionWebSiteUrl),
-                    child: const Text('gov.uk/check-state-pension'),
-                  ),
-                ],
+        body: SafeArea(
+          minimum: const EdgeInsets.all(10.0),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Form(
+              canPop: !_unsavedChanges,
+              onPopInvoked: (bool didPop) {
+                if (didPop) {
+                  return;
+                }
+                _showSaveChangesDialog();
+              },
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    FutureBuilder<OtherIncomeModel?>(
+                        future: controller.getStatePension(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(
+                                child: Text(
+                                    'Error loading data: ${snapshot.error}'));
+                          } else if (!snapshot.hasData ||
+                              snapshot.data == null) {
+                            return const Center(child: Text('Not found'));
+                          } else {
+                            final OtherIncomeModel statePension =
+                                snapshot.data!;
+                            yearlyValueController.text =
+                                CurrencyHelper.formatCurrency(
+                                    statePension.annualAmount);
+                            return TextFormField(
+                              key: EditStatePensionScreen.yearlyValueKey,
+                              controller: yearlyValueController,
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                      decimal: true),
+                              decoration: const InputDecoration(
+                                  labelText: "Yearly Value"),
+                              validator: (value) {
+                                if (value == null ||
+                                    value.isEmpty ||
+                                    CurrencyHelper.parseCurrency(value) ==
+                                        null) {
+                                  return "Please enter a value, or 0 if unknown";
+                                }
+                                return null;
+                              },
+                              onChanged: (val) {
+                                _unsavedChanges = true;
+                              },
+                            );
+                          }
+                        }),
+                    CustomStyles.spacerBox,
+                    const Text(
+                        "This is the yearly value you will receive from your state pension.  If you don't know this you can find the amount here:",
+                        style: CustomStyles.infoTextStyle),
+                    CustomStyles.spacerBox,
+                    ElevatedButton(
+                      onPressed: () =>
+                          _launchInBrowser(govUkStatePensionWebSiteUrl),
+                      child: const Text('gov.uk/check-state-pension'),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

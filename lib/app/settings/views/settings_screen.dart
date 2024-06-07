@@ -70,6 +70,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         ]),
         body: SafeArea(
+          minimum: const EdgeInsets.all(10.0),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: Form(
@@ -135,7 +136,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     child: TextButton(
                         key: SettingsScreen.settingChangePasscodeKey,
                         onPressed: () async {
-                          context.go(RouteDefs.passcodeChange,
+                          context.push(RouteDefs.passcodeChange,
                               extra: ref.read(DatabaseService.provider));
                         },
                         style: TextButton.styleFrom(

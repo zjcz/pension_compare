@@ -23,6 +23,7 @@ class PolicyViewerScreen extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(title: Text(appBarTitle)),
         body: SafeArea(
+            minimum: const EdgeInsets.all(10.0),
             child: SingleChildScrollView(
                 padding: const EdgeInsets.all(10.0),
                 child: Column(

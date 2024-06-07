@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pension_compare/app/home/views/loading_screen.dart';
-import 'package:pension_compare/app/passcode/views/change_passcode.dart';
-import 'package:pension_compare/app/passcode/views/enter_passcode.dart';
-import 'package:pension_compare/app/passcode/views/set_passcode.dart';
+import 'package:pension_compare/app/passcode/views/change_passcode_screen.dart';
+import 'package:pension_compare/app/passcode/views/enter_passcode_screen.dart';
+import 'package:pension_compare/app/passcode/views/set_passcode_screen.dart';
 import 'package:pension_compare/app/pension/models/pension_model.dart';
 import 'package:pension_compare/app/pension/views/edit_pension_screen.dart';
 import 'package:pension_compare/app/otherIncome/views/edit_state_pension_screen.dart';
@@ -39,7 +39,8 @@ class RouteDefs {
 GoRouter setupRouter(
     {String? initialLocation,
     Object? initialExtra,
-    List<NavigatorObserver>? observers}) {
+    List<NavigatorObserver>? observers,
+    bool testing = false}) {
   return GoRouter(
     initialLocation: initialLocation ?? RouteDefs.loading,
     initialExtra: initialExtra,
@@ -127,7 +128,7 @@ GoRouter setupRouter(
           path: RouteDefs.loading,
           name: 'loading',
           builder: (BuildContext context, GoRouterState state) {
-            return const LoadingScreen();
+            return LoadingScreen(testing: testing);
           },
           routes: <RouteBase>[
             GoRoute(
