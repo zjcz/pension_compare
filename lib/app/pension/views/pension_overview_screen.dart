@@ -64,6 +64,7 @@ class _PensionOverviewScreenState extends ConsumerState<PensionOverviewScreen> {
               ),
             ]),
             body: SafeArea(
+              minimum: const EdgeInsets.all(10.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

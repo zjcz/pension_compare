@@ -74,87 +74,90 @@ class _EditPensionScreenState extends ConsumerState<EditPensionScreen> {
                 },
               ),
             ]),
-        body: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Form(
-            canPop: !_unsavedChanges,
-            onPopInvoked: (bool didPop) {
-              if (didPop) {
-                return;
-              }
-              _showSaveChangesDialog();
-            },
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextFormField(
-                    key: EditPensionScreen.pensionNameKey,
-                    controller: nameController,
-                    decoration: InputDecoration(
-                        labelText: "Name",
-                        errorText: _pensionNameValidationError),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please enter some text";
-                      }
-                      return null;
-                    },
-                    onChanged: (val) {
-                      setState(() {
-                        _pensionNameValidationError = null;
-                      });
-                      _unsavedChanges = true;
-                    },
-                  ),
-                  CustomStyles.spacerBox,
-                  const Text(
-                      'This is a unique name you use to identify a pension policy.  It could be the name of the pension provider or the name of the workplace associated with the pension.  The choice is yours.',
-                      style: CustomStyles.infoTextStyle),
-                  CustomStyles.spacerBox,
-                  DateField(
-                    key: EditPensionScreen.pensionMaturityDateKey,
-                    initialDate: _maturityDate,
-                    labelText: 'Planned Retirement Date',
-                    onDateSelected: (DateTime? value) {
-                      _maturityDate = value;
-                      _unsavedChanges = true;
-                    },
-                    onValidate: (DateTime? value) {
-                      if (value == null) {
-                        return 'Please select a date';
-                      }
-                      return null;
-                    },
-                  ),
-                  CustomStyles.spacerBox,
-                  const Text(
-                      'This is the date you have set on this pension to retire.  You can have different dates for different pensions',
-                      style: CustomStyles.infoTextStyle),
-                  // only show the delete button and spacer if the pension has been saved
-                  if (widget.pension != null) ...[
+        body: SafeArea(
+          minimum: const EdgeInsets.all(10.0),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Form(
+              canPop: !_unsavedChanges,
+              onPopInvoked: (bool didPop) {
+                if (didPop) {
+                  return;
+                }
+                _showSaveChangesDialog();
+              },
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextFormField(
+                      key: EditPensionScreen.pensionNameKey,
+                      controller: nameController,
+                      decoration: InputDecoration(
+                          labelText: "Name",
+                          errorText: _pensionNameValidationError),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Please enter some text";
+                        }
+                        return null;
+                      },
+                      onChanged: (val) {
+                        setState(() {
+                          _pensionNameValidationError = null;
+                        });
+                        _unsavedChanges = true;
+                      },
+                    ),
                     CustomStyles.spacerBox,
-                    SizedBox(
-                      width: double.infinity,
-                      child: TextButton(
-                          key: EditPensionScreen.pensionDeleteKey,
-                          onPressed: () async {
-                            await _showDeleteDialog();
-                          },
-                          style: TextButton.styleFrom(
-                              side: const BorderSide(color: Colors.red),
-                              shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.zero)),
-                          child: const Text(
-                            'Delete',
-                            style: TextStyle(color: Colors.red),
-                          )),
-                    )
+                    const Text(
+                        'This is a unique name you use to identify a pension policy.  It could be the name of the pension provider or the name of the workplace associated with the pension.  The choice is yours.',
+                        style: CustomStyles.infoTextStyle),
+                    CustomStyles.spacerBox,
+                    DateField(
+                      key: EditPensionScreen.pensionMaturityDateKey,
+                      initialDate: _maturityDate,
+                      labelText: 'Planned Retirement Date',
+                      onDateSelected: (DateTime? value) {
+                        _maturityDate = value;
+                        _unsavedChanges = true;
+                      },
+                      onValidate: (DateTime? value) {
+                        if (value == null) {
+                          return 'Please select a date';
+                        }
+                        return null;
+                      },
+                    ),
+                    CustomStyles.spacerBox,
+                    const Text(
+                        'This is the date you have set on this pension to retire.  You can have different dates for different pensions',
+                        style: CustomStyles.infoTextStyle),
+                    // only show the delete button and spacer if the pension has been saved
+                    if (widget.pension != null) ...[
+                      CustomStyles.spacerBox,
+                      SizedBox(
+                        width: double.infinity,
+                        child: TextButton(
+                            key: EditPensionScreen.pensionDeleteKey,
+                            onPressed: () async {
+                              await _showDeleteDialog();
+                            },
+                            style: TextButton.styleFrom(
+                                side: const BorderSide(color: Colors.red),
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.zero)),
+                            child: const Text(
+                              'Delete',
+                              style: TextStyle(color: Colors.red),
+                            )),
+                      )
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),

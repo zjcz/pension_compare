@@ -1,21 +1,17 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pension_compare/app/home/views/policy_viewer_screen.dart';
 import 'package:pension_compare/app/home/views/widgets/terms_of_use_widget.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
-import 'package:pension_compare/app/settings/views/widgets/restore_password_bottomsheet.dart';
-import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/extensions/material_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/helpers/analytics_helper.dart';
-import 'package:pension_compare/helpers/backup_restore_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pension_compare/route_config.dart';
 import 'package:pension_compare/service_locator.dart';
 import 'package:pension_compare/widgets/analytics_opt_in.dart';
 
-class WelcomeScreen extends ConsumerStatefulWidget {
+class WelcomeScreen extends StatefulWidget {
   static const welcomeAcceptTermsAndConditionsKey =
       Key('acceptTermsAndConditions');
   static const welcomeAcceptFinanicalAdviceWarningKey =
@@ -27,10 +23,10 @@ class WelcomeScreen extends ConsumerStatefulWidget {
   const WelcomeScreen({super.key});
 
   @override
-  ConsumerState<WelcomeScreen> createState() => _WelcomeScreenState();
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
+class _WelcomeScreenState extends State<WelcomeScreen> {
   bool acceptTermsAndConditions = false;
   bool acceptFinancialAdviceWarning = false;
   bool optIntoAnalyticsWarning = false;
@@ -45,7 +41,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
     return Scaffold(
         body: SafeArea(
             top: true,
-            minimum: const EdgeInsets.all(20.0),
+            minimum: const EdgeInsets.all(10.0),
             child: Container(
                 margin: MediaQuery.of(context).padding,
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -137,15 +133,6 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                                     borderRadius: BorderRadius.zero)),
                             child: const Text('Continue'))),
                     CustomStyles.spacerBox,
-                    SizedBox(
-                        width: double.infinity,
-                        child: TextButton(
-                            key: WelcomeScreen.welcomeRestoreKey,
-                            onPressed: () async {
-                              await restoreData();
-                            },
-                            child: const Text('Restore from backup'))),
-                    CustomStyles.spacerBox,
                   ],
                 )))));
   }
@@ -168,44 +155,9 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
     }
 
     // redirect the user to the home screen
-    context.go(RouteDefs.home);
+    //context.go(RouteDefs.home);
+    context.go(RouteDefs.passcodeSet);
 
     return true;
-  }
-
-  Future<void> restoreData() async {
-    final databaseService = ref.read(DatabaseService.provider);
-
-    showModalBottomSheet<void>(
-      isScrollControlled: true,
-      context: context,
-      builder: (BuildContext context) {
-        return RestorePasswordBottomsheet(onConfirm: (String password) async {
-          final response = await BackupRestoreHelper.importData(
-              databaseService, getIt<SettingsService>(), password);
-
-          if (!response.userCancelled) {
-            if (response.message != null) {
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(response.message!),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            }
-
-            if (response.success) {
-              // force the screen to refresh with the new setting data
-              setState(() => {});
-
-              if (!context.mounted) return;
-              // redirect the user to the home screen
-              context.go(RouteDefs.home);
-            }
-          }
-        });
-      },
-    );
   }
 }

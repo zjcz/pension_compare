@@ -18,6 +18,7 @@ import 'package:pension_compare/route_config.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   static const settingDeleteAllKey = Key('deleteAllButton');
+  static const settingChangePasscodeKey = Key('changePasscodeButton');
   static const settingBackupKey = Key('backupButton');
   static const settingRestoreKey = Key('restoreButton');
 
@@ -69,6 +70,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         ]),
         body: SafeArea(
+          minimum: const EdgeInsets.all(10.0),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: Form(
@@ -127,6 +129,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           'Delete All',
                           style: TextStyle(color: Colors.red),
                         )),
+                  ),
+                  CustomStyles.spacerBox,
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton(
+                        key: SettingsScreen.settingChangePasscodeKey,
+                        onPressed: () async {
+                          context.push(RouteDefs.passcodeChange,
+                              extra: ref.read(DatabaseService.provider));
+                        },
+                        style: TextButton.styleFrom(
+                            side: BorderSide(color: context.primary),
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero)),
+                        child: const Text('Change Passcode')),
                   ),
                   CustomStyles.spacerBox,
                   SizedBox(

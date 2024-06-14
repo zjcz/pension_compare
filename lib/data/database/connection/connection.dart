@@ -10,10 +10,9 @@ import 'android_connection.dart';
 import 'linux_connection.dart';
 import 'windows_connection.dart';
 
-const _encryptionPassword = 'drift.example.unsafe_password';
-
 abstract class Connection {
-  LazyDatabase openConnection() {
+  LazyDatabase openConnection(String encryptionPassword,
+      {bool createInIsolate = true}) {
     // the LazyDatabase util lets us find the right location for the file async.
     return LazyDatabase(() async {
       setupSqlCipher();
@@ -30,43 +29,53 @@ abstract class Connection {
       // Explicitly tell it about the correct temporary directory.
       sqlite3.tempDirectory = cachebase;
 
-      return NativeDatabase.createInBackground(
-        file,
-        isolateSetup: setupSqlCipher,
-        setup: (db) {
-          // Check that we're actually running with SQLCipher by quering the
-          // cipher_version pragma.
-          final result = db.select('pragma cipher_version');
-          if (result.isEmpty) {
-            throw UnsupportedError(
-              'This database needs to run with SQLCipher, but that library is '
-              'not available!',
-            );
-          }
+      setup(db) {
+        // Check that we're actually running with SQLCipher by quering the
+        // cipher_version pragma.
+        final result = db.select('pragma cipher_version');
+        if (result.isEmpty) {
+          throw UnsupportedError(
+            'This database needs to run with SQLCipher, but that library is '
+            'not available!',
+          );
+        }
 
-          // Then, apply the key to encrypt the database. Unfortunately, this
-          // pragma doesn't seem to support prepared statements so we inline the
-          // key.
-          final escapedKey = _encryptionPassword.replaceAll("'", "''");
-          db.execute("pragma key = '$escapedKey'");
+        // Then, apply the key to encrypt the database. Unfortunately, this
+        // pragma doesn't seem to support prepared statements so we inline the
+        // key.
+        final escapedKey = (encryptionPassword).replaceAll("'", "''");
+        db.execute("pragma key = '$escapedKey'");
 
-          // Test that the key is correct by selecting from a table
-          try {
-            db.execute('select count(*) from sqlite_master');
-          } catch (e) {
-            throw Exception('Unable to open secure database');
-          }
-        },
-      );
+        // Test that the key is correct by selecting from a table
+        try {
+          db.execute('select count(*) from sqlite_master');
+        } catch (e) {
+          throw Exception('Unable to open secure database');
+        }
+      }
+
+      if (createInIsolate) {
+        return NativeDatabase.createInBackground(
+          file,
+          isolateSetup: setupSqlCipher,
+          setup: setup,
+        );
+      } else {
+        return NativeDatabase(file,
+//        isolateSetup: setupSqlCipher,
+            setup: setup);
+      }
     });
   }
 
   // allows implementing classes to setup SQLCipher for their platform
   Future<void> setupSqlCipher() async {}
 
-  static LazyDatabase getDatabaseConnection() {
+  static LazyDatabase getDatabaseConnection(String encryptionPassword,
+      {bool createInIsolate = true}) {
     Connection c = _getPlatformConnection();
-    return c.openConnection();
+    return c.openConnection(encryptionPassword,
+        createInIsolate: createInIsolate);
   }
 
   static Connection _getPlatformConnection() {

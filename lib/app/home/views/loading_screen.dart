@@ -7,7 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:pension_compare/service_locator.dart';
 
 class LoadingScreen extends StatefulWidget {
-  const LoadingScreen({super.key});
+  final bool testing;
+  const LoadingScreen({super.key, required this.testing});
 
   @override
   State<LoadingScreen> createState() => _LoadingScreenState();
@@ -25,11 +26,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
       getIt<AnalyticsHelper>().enableAnalytics(true);
     }
 
-    // now load the welcome of the main home page.
-    // We use pushReplacement so the user doesn't return to this screen when exiting the app
+    // now load the welcome page or the enter passcode page.
+    if (widget.testing) return;
     if (!mounted) return;
     if (welcomeScreenDismissed) {
-      context.go(RouteDefs.home);
+      context.go(RouteDefs.passcodeEnter);
     } else {
       context.go(RouteDefs.welcome);
     }

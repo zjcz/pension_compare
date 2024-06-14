@@ -51,3 +51,9 @@ To run the tests, use the following command:
 ```bash
 flutter test
 ```
+
+## Database Security
+
+The database is encrypted by Drift using the sqlcipher_flutter_libs packaged, as document [here](https://drift.simonbinder.eu/docs/platforms/encryption/#encrypted-version-of-a-nativedatabase).
+
+The password for the database is entered by the user in for form of a passcode, which is then encrypted using the [Crypt](https://pub.dev/packages/crypt) package. The hash of this is used as thr password for the database. See also [SqlCipher Documentation](https://www.zetetic.net/sqlcipher/sqlcipher-api/#Changing_Key)

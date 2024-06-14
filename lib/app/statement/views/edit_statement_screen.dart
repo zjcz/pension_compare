@@ -103,160 +103,164 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
                 },
               ),
             ]),
-        body: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Form(
-            canPop: !_unsavedChanges,
-            onPopInvoked: (bool didPop) {
-              if (didPop) {
-                return;
-              }
-              _showSaveChangesDialog();
-            },
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  PensionDropdown(
-                      key: EditStatementScreen.pensionKey,
-                      pensionId: _pensionId,
-                      onChanged: (value) {
-                        setState(() {
-                          _pensionId = value;
-                        });
+        body: SafeArea(
+          minimum: const EdgeInsets.all(10.0),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Form(
+              canPop: !_unsavedChanges,
+              onPopInvoked: (bool didPop) {
+                if (didPop) {
+                  return;
+                }
+                _showSaveChangesDialog();
+              },
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    PensionDropdown(
+                        key: EditStatementScreen.pensionKey,
+                        pensionId: _pensionId,
+                        onChanged: (value) {
+                          setState(() {
+                            _pensionId = value;
+                          });
+                          _unsavedChanges = true;
+                        },
+                        onValidate: (value) {
+                          if (value == null) {
+                            return "Please select a valid pension";
+                          }
+                          return null;
+                        }),
+                    CustomStyles.spacerBox,
+                    const Text(
+                        'Enter the following values found on your annual statement:',
+                        style: CustomStyles.infoTextStyle),
+                    CustomStyles.spacerBox,
+                    DateField(
+                      key: EditStatementScreen.statementDateKey,
+                      initialDate: _statementDate,
+                      labelText: 'Statement Date',
+                      errorText: _statementDateValidationError,
+                      onDateSelected: (DateTime? value) {
+                        _statementDateValidationError = null;
+                        _statementDate = value;
                         _unsavedChanges = true;
                       },
-                      onValidate: (value) {
+                      onValidate: (DateTime? value) {
                         if (value == null) {
-                          return "Please select a valid pension";
+                          return 'Please select a date';
                         }
                         return null;
-                      }),
-                  CustomStyles.spacerBox,
-                  const Text(
-                      'Enter the following values found on your annual statement:',
-                      style: CustomStyles.infoTextStyle),
-                  CustomStyles.spacerBox,
-                  DateField(
-                    key: EditStatementScreen.statementDateKey,
-                    initialDate: _statementDate,
-                    labelText: 'Statement Date',
-                    errorText: _statementDateValidationError,
-                    onDateSelected: (DateTime? value) {
-                      _statementDateValidationError = null;
-                      _statementDate = value;
-                      _unsavedChanges = true;
-                    },
-                    onValidate: (DateTime? value) {
-                      if (value == null) {
-                        return 'Please select a date';
-                      }
-                      return null;
-                    },
-                  ),
-                  CustomStyles.spacerBox,
-                  TextFormField(
-                    key: EditStatementScreen.planValueKey,
-                    controller: planValueController,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(labelText: "Plan Value"),
-                    validator: (value) {
-                      if (value == null ||
-                          value.isEmpty ||
-                          CurrencyHelper.parseCurrency(value) == null) {
-                        return "Please enter a value, or 0 if unknown";
-                      }
-                      return null;
-                    },
-                    onChanged: (val) {
-                      _unsavedChanges = true;
-                    },
-                  ),
-                  CustomStyles.spacerBox,
-                  TextFormField(
-                    key: EditStatementScreen.projectedAnnualAmountKey,
-                    controller: projectedAnnualAmountController,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(
-                        labelText: "Projected Yearly Amount"),
-                    validator: (value) {
-                      if (value == null ||
-                          value.isEmpty ||
-                          CurrencyHelper.parseCurrency(value) == null) {
-                        return "Please enter a value, or 0 if unknown";
-                      }
-                      return null;
-                    },
-                    onChanged: (val) {
-                      _unsavedChanges = true;
-                    },
-                  ),
-                  CustomStyles.spacerBox,
-                  TextFormField(
-                    key: EditStatementScreen.yearlyChargesKey,
-                    controller: yearlyChargesController,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    decoration:
-                        const InputDecoration(labelText: "Yearly Charges"),
-                    validator: (value) {
-                      if (value != null && value.isNotEmpty) {
-                        if (CurrencyHelper.parseCurrency(value) == null) {
-                          return "Please enter a valid number";
-                        }
-                      }
-                      return null;
-                    },
-                    onChanged: (val) {
-                      _unsavedChanges = true;
-                    },
-                  ),
-                  CustomStyles.spacerBox,
-                  TextFormField(
-                    key: EditStatementScreen.transferValueKey,
-                    controller: transferValueController,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    decoration:
-                        const InputDecoration(labelText: "Transfer Value"),
-                    validator: (value) {
-                      if (value != null && value.isNotEmpty) {
-                        if (CurrencyHelper.parseCurrency(value) == null) {
-                          return "Please enter a valid number";
-                        }
-                      }
-                      return null;
-                    },
-                    onChanged: (val) {
-                      _unsavedChanges = true;
-                    },
-                  ),
-                  // only show the delete button and spacer if the statement has been saved
-                  if (widget.statement != null) ...[
+                      },
+                    ),
                     CustomStyles.spacerBox,
-                    SizedBox(
-                      width: double.infinity,
-                      child: TextButton(
-                          key: EditStatementScreen.statementDeleteKey,
-                          onPressed: () async {
-                            await _showDeleteDialog();
-                          },
-                          style: TextButton.styleFrom(
-                              side: const BorderSide(color: Colors.red),
-                              shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.zero)),
-                          child: const Text(
-                            'Delete',
-                            style: TextStyle(color: Colors.red),
-                          )),
-                    )
+                    TextFormField(
+                      key: EditStatementScreen.planValueKey,
+                      controller: planValueController,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      decoration:
+                          const InputDecoration(labelText: "Plan Value"),
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            CurrencyHelper.parseCurrency(value) == null) {
+                          return "Please enter a value, or 0 if unknown";
+                        }
+                        return null;
+                      },
+                      onChanged: (val) {
+                        _unsavedChanges = true;
+                      },
+                    ),
+                    CustomStyles.spacerBox,
+                    TextFormField(
+                      key: EditStatementScreen.projectedAnnualAmountKey,
+                      controller: projectedAnnualAmountController,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      decoration: const InputDecoration(
+                          labelText: "Projected Yearly Amount"),
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            CurrencyHelper.parseCurrency(value) == null) {
+                          return "Please enter a value, or 0 if unknown";
+                        }
+                        return null;
+                      },
+                      onChanged: (val) {
+                        _unsavedChanges = true;
+                      },
+                    ),
+                    CustomStyles.spacerBox,
+                    TextFormField(
+                      key: EditStatementScreen.yearlyChargesKey,
+                      controller: yearlyChargesController,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      decoration:
+                          const InputDecoration(labelText: "Yearly Charges"),
+                      validator: (value) {
+                        if (value != null && value.isNotEmpty) {
+                          if (CurrencyHelper.parseCurrency(value) == null) {
+                            return "Please enter a valid number";
+                          }
+                        }
+                        return null;
+                      },
+                      onChanged: (val) {
+                        _unsavedChanges = true;
+                      },
+                    ),
+                    CustomStyles.spacerBox,
+                    TextFormField(
+                      key: EditStatementScreen.transferValueKey,
+                      controller: transferValueController,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      decoration:
+                          const InputDecoration(labelText: "Transfer Value"),
+                      validator: (value) {
+                        if (value != null && value.isNotEmpty) {
+                          if (CurrencyHelper.parseCurrency(value) == null) {
+                            return "Please enter a valid number";
+                          }
+                        }
+                        return null;
+                      },
+                      onChanged: (val) {
+                        _unsavedChanges = true;
+                      },
+                    ),
+                    // only show the delete button and spacer if the statement has been saved
+                    if (widget.statement != null) ...[
+                      CustomStyles.spacerBox,
+                      SizedBox(
+                        width: double.infinity,
+                        child: TextButton(
+                            key: EditStatementScreen.statementDeleteKey,
+                            onPressed: () async {
+                              await _showDeleteDialog();
+                            },
+                            style: TextButton.styleFrom(
+                                side: const BorderSide(color: Colors.red),
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.zero)),
+                            child: const Text(
+                              'Delete',
+                              style: TextStyle(color: Colors.red),
+                            )),
+                      )
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),
