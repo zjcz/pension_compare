@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pension_compare/app/passcode/controller/passcode_service.dart';
+import 'package:pension_compare/app/passcode/views/widgets/passcode_field.dart';
 import 'package:pension_compare/extensions/material_colors.dart';
 import 'package:pension_compare/route_config.dart';
 import 'package:pension_compare/service_locator.dart';
@@ -18,15 +19,17 @@ class _EnterPasscodeScreenState extends State<EnterPasscodeScreen> {
   final _formKey = GlobalKey<FormState>();
 
   Future<void> _submitPasscode() async {
-    final PasscodeService passcodeService = getIt<PasscodeService>();
-    if (await passcodeService.validatePasscode(passcodeController.text)) {
-      passcodeService.setPasscode(passcodeController.text);
-      if (!mounted) return;
-      context.go(RouteDefs.home);
-    } else {
-      setState(() {
-        _isPasscodeInvalid = true;
-      });
+    if (_formKey.currentState!.validate()) {
+      final PasscodeService passcodeService = getIt<PasscodeService>();
+      if (await passcodeService.testPasscode(passcodeController.text)) {
+        passcodeService.setPasscode(passcodeController.text);
+        if (!mounted) return;
+        context.go(RouteDefs.home);
+      } else {
+        setState(() {
+          _isPasscodeInvalid = true;
+        });
+      }
     }
   }
 
@@ -41,7 +44,6 @@ class _EnterPasscodeScreenState extends State<EnterPasscodeScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Form(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
             key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -50,22 +52,16 @@ class _EnterPasscodeScreenState extends State<EnterPasscodeScreen> {
                   const Text('Passcode incorrect. Please try again.',
                       style: TextStyle(color: Colors.red)),
                 const Text(
-                  'Enter your 6-digit passcode:',
+                  'Enter your passcode:',
                   style: TextStyle(fontSize: 18),
                 ),
                 const SizedBox(height: 16),
-                Container(
+                SizedBox(
                   width: 200,
-                  child: TextFormField(
-                    autofocus: true,
-                    controller: passcodeController,
-                    keyboardType: TextInputType.number,
-                    maxLength: 6,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      counterText: '',
-                    ),
+                  child: PasscodeField(
+                    passcodeController: passcodeController,
+                    autoFocus: true,
+                    passcodeInvalidMessage: 'Passcode is invalid',
                     onChanged: (_) {
                       if (_isPasscodeInvalid) {
                         setState(() {

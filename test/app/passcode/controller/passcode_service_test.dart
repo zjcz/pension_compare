@@ -84,5 +84,83 @@ void main() {
     });
   });
 
+  group('Validate passcode', () {
+    test('Given a valid passcode, when validating it then return true',
+        () async {
+      // Given
+      final passcodeService = PasscodeService();
+      const passcode = '1234';
+      // When
+      final isValid = passcodeService.validatePasscode(passcode);
+      // Then
+      expect(isValid, isTrue);
+    });
+
+    test('Given a passcode, when too short then return false', () async {
+      // Given
+      final passcodeService = PasscodeService();
+      const passcode = '123';
+      // When
+      final isValid = passcodeService.validatePasscode(passcode);
+      // Then
+      expect(isValid, isFalse);
+    });
+
+    test('Given a passcode, when too long then return false', () async {
+      // Given
+      final passcodeService = PasscodeService();
+      const passcode = '12345678901';
+      // When
+      final isValid = passcodeService.validatePasscode(passcode);
+      // Then
+      expect(isValid, isFalse);
+    });
+
+    test('Given a passcode, when it contains letters then return false',
+        () async {
+      // Given
+      final passcodeService = PasscodeService();
+      const passcode = '1234a';
+      // When
+      final isValid = passcodeService.validatePasscode(passcode);
+      // Then
+      expect(isValid, isFalse);
+    });
+
+    test('Given a passcode, when it contains characters then return false',
+        () async {
+      // Given
+      final passcodeService = PasscodeService();
+      const passcode = '1234@';
+      // When
+      final isValid = passcodeService.validatePasscode(passcode);
+      // Then
+      expect(isValid, isFalse);
+    });
+
+    test('Given a passcode, when it contains decimal point then return false',
+        () async {
+      // Given
+      final passcodeService = PasscodeService();
+      const passcode = '1234.56';
+      // When
+      final isValid = passcodeService.validatePasscode(passcode);
+      // Then
+      expect(isValid, isFalse);
+    });
+
+    test(
+        'Given a passcode, when it contains large valid number then return true',
+        () async {
+      // Given
+      final passcodeService = PasscodeService();
+      const passcode = '9999999999';
+      // When
+      final isValid = passcodeService.validatePasscode(passcode);
+      // Then
+      expect(isValid, isTrue);
+    });
+  });
+
   // TODO need to test validation.  Need to change signature to dependency injection?
 }

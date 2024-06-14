@@ -14,8 +14,8 @@ import 'package:pension_compare/service_locator.dart';
 
 import 'change_passcode_screen_test.mocks.dart';
 
-Widget createChangePasscodeScreen(
-    SettingsService mockSettingsService, PasscodeService mockPasscodeService, DatabaseService mockDatabaseService) {
+Widget createChangePasscodeScreen(SettingsService mockSettingsService,
+    PasscodeService mockPasscodeService, DatabaseService mockDatabaseService) {
   getIt.registerSingleton<SettingsService>(mockSettingsService);
   getIt.registerSingleton<PasscodeService>(mockPasscodeService);
 
@@ -59,16 +59,16 @@ void main() {
     testWidgets('given new screen when loading screen then expect widgets',
         (WidgetTester tester) async {
       // Build the SetPasscode widget
-      await tester.pumpWidget(
-          createChangePasscodeScreen(mockSettingsService, mockPasscodeService, mockDatabaseService));
+      await tester.pumpWidget(createChangePasscodeScreen(
+          mockSettingsService, mockPasscodeService, mockDatabaseService));
 
       // Verify that the SetPasscode widget renders correctly
       expect(find.byType(ChangePasscodeScreen), findsOneWidget);
       expect(find.text('Change Passcode'), findsOneWidget);
+      expect(find.text('Enter your existing passcode:'), findsOneWidget);
       expect(
-          find.text('Enter your existing 6-digit passcode:'), findsOneWidget);
-      expect(find.text('Enter your new 6-digit passcode:'), findsOneWidget);
-      expect(find.text('Repeat your new 6-digit passcode:'), findsOneWidget);
+          find.text('Enter your new 4 to 10 digit passcode:'), findsOneWidget);
+      expect(find.text('Repeat your new passcode:'), findsOneWidget);
       expect(find.byType(TextField), findsExactly(3));
       expect(find.byKey(ChangePasscodeScreen.existingPasscodeTextField),
           findsOneWidget);
@@ -85,12 +85,63 @@ void main() {
       String existingPasscode = '1234';
       String newPasscode = '5678';
       when(mockPasscodeService.validatePasscode(existingPasscode))
+          .thenAnswer((_) => true);
+      when(mockPasscodeService.validatePasscode(newPasscode))
+          .thenAnswer((_) => true);
+      when(mockPasscodeService.testPasscode(existingPasscode))
           .thenAnswer((_) async => true);
-      when(mockPasscodeService.setPasscode(newPasscode, databaseService: mockDatabaseService)).thenReturn(true);
+      when(mockPasscodeService.changePasscode(newPasscode, mockDatabaseService))
+          .thenReturn(true);
 
       // Build the SetPasscode widget
-      await tester.pumpWidget(
-          createChangePasscodeScreen(mockSettingsService, mockPasscodeService, mockDatabaseService));
+      await tester.pumpWidget(createChangePasscodeScreen(
+          mockSettingsService, mockPasscodeService, mockDatabaseService));
+
+      // Enter passcodes
+      await tester.enterText(
+          find.byKey(ChangePasscodeScreen.existingPasscodeTextField),
+          existingPasscode);
+      await tester.enterText(
+          find.byKey(ChangePasscodeScreen.newPasscodeTextField), newPasscode);
+      await tester.enterText(
+          find.byKey(ChangePasscodeScreen.repeatPasscodeTextField),
+          newPasscode);
+      await tester.pumpAndSettle();
+
+      // Tap the submit button
+      await tester.tap(find.widgetWithText(TextButton, "Continue"));
+      await tester.pumpAndSettle();
+
+      // Verify that the passcode is set correctly
+      verify(mockPasscodeService.validatePasscode(existingPasscode));
+      verify(mockPasscodeService.validatePasscode(newPasscode));
+      verify(mockPasscodeService.testPasscode(existingPasscode)).called(1);
+      verify(mockPasscodeService.changePasscode(
+              newPasscode, mockDatabaseService))
+          .called(1);
+      expect(find.byType(ChangePasscodeScreen), findsNothing);
+      expect(find.byType(HomeScreen), findsOneWidget);
+    });
+
+    testWidgets(
+        'given passcode screen when entering incorrect existing passcodes then show warning',
+        (WidgetTester tester) async {
+      String existingPasscode = '1234';
+      String newPasscode = '5678';
+      when(mockPasscodeService.validatePasscode(existingPasscode))
+          .thenAnswer((_) => true);
+      when(mockPasscodeService.validatePasscode(newPasscode))
+          .thenAnswer((_) => true);
+      when(mockPasscodeService.validatePasscode(newPasscode))
+          .thenAnswer((_) => true);
+      when(mockPasscodeService.testPasscode(existingPasscode))
+          .thenAnswer((_) async => false);
+      when(mockPasscodeService.changePasscode(newPasscode, mockDatabaseService))
+          .thenAnswer((_) => false);
+
+      // Build the SetPasscode widget
+      await tester.pumpWidget(createChangePasscodeScreen(
+          mockSettingsService, mockPasscodeService, mockDatabaseService));
 
       // Enter passcodes
       await tester.enterText(
@@ -107,48 +158,15 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify that the passcode is set correctly
-      verify(mockPasscodeService.validatePasscode(existingPasscode)).called(1);
-      verify(mockPasscodeService.setPasscode(newPasscode, databaseService: mockDatabaseService)).called(1);
-      expect(find.byType(ChangePasscodeScreen), findsNothing);
-      expect(find.byType(HomeScreen), findsOneWidget);
-    });
-
-
-    testWidgets(
-        'given passcode screen when entering invalid existing passcodes then show warning',
-        (WidgetTester tester) async {
-      String existingPasscode = '1234';
-      String newPasscode = '5678';
-      String repeatPasscode = '5678';
-      when(mockPasscodeService.validatePasscode(existingPasscode))
-          .thenAnswer((_) async => false);
-      when(mockPasscodeService.setPasscode(newPasscode, databaseService: mockDatabaseService))
-          .thenAnswer((_) => false);
-
-      // Build the SetPasscode widget
-      await tester.pumpWidget(
-          createChangePasscodeScreen(mockSettingsService, mockPasscodeService, mockDatabaseService));
-
-      // Enter passcodes
-      await tester.enterText(
-          find.byKey(ChangePasscodeScreen.existingPasscodeTextField),
-          existingPasscode);
-      await tester.enterText(
-          find.byKey(ChangePasscodeScreen.newPasscodeTextField), newPasscode);
-      await tester.enterText(
-          find.byKey(ChangePasscodeScreen.repeatPasscodeTextField),
-          repeatPasscode);
-
-      // Tap the submit button
-      await tester.tap(find.widgetWithText(TextButton, "Continue"));
-      await tester.pumpAndSettle();
-
-      // Verify that the passcode is set correctly
-      verify(mockPasscodeService.validatePasscode(existingPasscode)).called(1);
-      verifyNever(mockPasscodeService.setPasscode(newPasscode, databaseService: mockDatabaseService));
+      verify(mockPasscodeService.validatePasscode(existingPasscode));
+      verify(mockPasscodeService.validatePasscode(newPasscode));
+      verify(mockPasscodeService.testPasscode(existingPasscode)).called(1);
+      verifyNever(
+          mockPasscodeService.changePasscode(newPasscode, mockDatabaseService));
       expect(find.byType(ChangePasscodeScreen), findsOneWidget);
       expect(find.byType(HomeScreen), findsNothing);
-      expect(find.text('Existing passcode incorrect. Please try again.'), findsOneWidget);
+      expect(find.text('Existing passcode incorrect. Please try again.'),
+          findsOneWidget);
     });
 
     testWidgets(
@@ -158,13 +176,20 @@ void main() {
       String newPasscode = '1111';
       String repeatPasscode = '2222';
       when(mockPasscodeService.validatePasscode(existingPasscode))
+          .thenAnswer((_) => true);
+      when(mockPasscodeService.validatePasscode(newPasscode))
+          .thenAnswer((_) => true);
+      when(mockPasscodeService.validatePasscode(repeatPasscode))
+          .thenAnswer((_) => true);
+      when(mockPasscodeService.testPasscode(existingPasscode))
           .thenAnswer((_) async => true);
-      when(mockPasscodeService.setPasscode(newPasscode, databaseService: mockDatabaseService))
+      when(mockPasscodeService.changePasscode(newPasscode,
+              mockDatabaseService))
           .thenAnswer((_) => false);
 
       // Build the SetPasscode widget
-      await tester.pumpWidget(
-          createChangePasscodeScreen(mockSettingsService, mockPasscodeService, mockDatabaseService));
+      await tester.pumpWidget(createChangePasscodeScreen(
+          mockSettingsService, mockPasscodeService, mockDatabaseService));
 
       // Enter passcodes
       await tester.enterText(
@@ -181,8 +206,12 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify that the passcode is set correctly
-      verifyNever(mockPasscodeService.validatePasscode(existingPasscode));
-      verifyNever(mockPasscodeService.setPasscode(newPasscode, databaseService: mockDatabaseService));
+      verify(mockPasscodeService.validatePasscode(existingPasscode));
+      verify(mockPasscodeService.validatePasscode(newPasscode));
+      verify(mockPasscodeService.validatePasscode(repeatPasscode));
+      verifyNever(mockPasscodeService.testPasscode(existingPasscode));
+      verifyNever(mockPasscodeService.changePasscode(newPasscode,
+          mockDatabaseService));
       expect(find.byType(ChangePasscodeScreen), findsOneWidget);
       expect(find.byType(HomeScreen), findsNothing);
       expect(find.text('New passcodes do not match'), findsOneWidget);
@@ -194,13 +223,18 @@ void main() {
       String existingPasscode = '1234';
       String invalidPasscode = '1'; // min length is 4
       when(mockPasscodeService.validatePasscode(existingPasscode))
+          .thenAnswer((_) => true);
+      when(mockPasscodeService.validatePasscode(invalidPasscode))
+          .thenAnswer((_) => false);
+      when(mockPasscodeService.testPasscode(existingPasscode))
           .thenAnswer((_) async => true);
-      when(mockPasscodeService.setPasscode(invalidPasscode, databaseService: mockDatabaseService))
+      when(mockPasscodeService.changePasscode(invalidPasscode,
+              mockDatabaseService))
           .thenAnswer((_) => false);
 
       // Build the SetPasscode widget
-      await tester.pumpWidget(
-          createChangePasscodeScreen(mockSettingsService, mockPasscodeService, mockDatabaseService));
+      await tester.pumpWidget(createChangePasscodeScreen(
+          mockSettingsService, mockPasscodeService, mockDatabaseService));
 
       // Enter passcodes
       await tester.enterText(
@@ -218,12 +252,154 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify that the passcode is set correctly
-      verify(mockPasscodeService.validatePasscode(existingPasscode)).called(1);
-      verify(mockPasscodeService.setPasscode(invalidPasscode, databaseService: mockDatabaseService)).called(1);
+      verify(mockPasscodeService.validatePasscode(existingPasscode));
+      verify(mockPasscodeService.validatePasscode(invalidPasscode));
+      verifyNever(mockPasscodeService.testPasscode(existingPasscode));
+      verifyNever(mockPasscodeService.changePasscode(invalidPasscode,
+          mockDatabaseService));
       expect(find.byType(ChangePasscodeScreen), findsOneWidget);
       expect(find.byType(HomeScreen), findsNothing);
-      expect(
-          find.text('New passcode incorrect. Please try again.'), findsOneWidget);
+      expect(find.text('New passcode is invalid'), findsOneWidget);
+    });
+  });
+
+  group('Change Passcode Screen - Invalid character handling', () {
+    testWidgets(
+        'given change passcode screen when entering invalid characters in existing passcode field then expect warning message',
+        (WidgetTester tester) async {
+      String existingPasscode = '123a';
+      String newPasscode = '1111';
+      String repeatPasscode = '1111';
+      when(mockPasscodeService.validatePasscode(existingPasscode))
+          .thenAnswer((_) => false);
+      when(mockPasscodeService.validatePasscode(newPasscode))
+          .thenAnswer((_) => true);
+      when(mockPasscodeService.changePasscode(newPasscode,
+              mockDatabaseService))
+          .thenAnswer((_) => false);
+
+      // Build the SetPasscode widget
+      await tester.pumpWidget(createChangePasscodeScreen(
+          mockSettingsService, mockPasscodeService, mockDatabaseService));
+
+      // Enter passcodes
+      await tester.enterText(
+          find.byKey(ChangePasscodeScreen.existingPasscodeTextField),
+          existingPasscode);
+      await tester.enterText(
+          find.byKey(ChangePasscodeScreen.newPasscodeTextField), newPasscode);
+      await tester.enterText(
+          find.byKey(ChangePasscodeScreen.repeatPasscodeTextField),
+          repeatPasscode);
+
+      // Tap the submit button
+      await tester.tap(find.widgetWithText(TextButton, "Continue"));
+      await tester.pumpAndSettle();
+
+      // Verify that the passcode is set correctly
+      verify(mockPasscodeService.validatePasscode(existingPasscode));
+      verify(mockPasscodeService.validatePasscode(newPasscode));
+      verifyNever(mockPasscodeService.changePasscode(newPasscode,
+           mockDatabaseService));
+      expect(find.byType(ChangePasscodeScreen), findsOneWidget);
+      expect(find.byType(HomeScreen), findsNothing);
+      expect(find.text('Existing passcode is invalid'), findsOneWidget);
+    });
+
+    testWidgets(
+        'given change passcode screen when entering invalid characters in new passcode field then expect warning message',
+        (WidgetTester tester) async {
+      String existingPasscode = '1234';
+      String newPasscode = '111a';
+      String repeatPasscode = '1111';
+      when(mockPasscodeService.validatePasscode(existingPasscode))
+          .thenAnswer((_) => true);
+      when(mockPasscodeService.validatePasscode(newPasscode))
+          .thenAnswer((_) => false);
+      when(mockPasscodeService.validatePasscode(repeatPasscode))
+          .thenAnswer((_) => true);
+      when(mockPasscodeService.testPasscode(existingPasscode))
+          .thenAnswer((_) async => false);
+      when(mockPasscodeService.changePasscode(newPasscode,
+              mockDatabaseService))
+          .thenAnswer((_) => false);
+
+      // Build the SetPasscode widget
+      await tester.pumpWidget(createChangePasscodeScreen(
+          mockSettingsService, mockPasscodeService, mockDatabaseService));
+
+      // Enter passcodes
+      await tester.enterText(
+          find.byKey(ChangePasscodeScreen.existingPasscodeTextField),
+          existingPasscode);
+      await tester.enterText(
+          find.byKey(ChangePasscodeScreen.newPasscodeTextField), newPasscode);
+      await tester.enterText(
+          find.byKey(ChangePasscodeScreen.repeatPasscodeTextField),
+          repeatPasscode);
+
+      // Tap the submit button
+      await tester.tap(find.widgetWithText(TextButton, "Continue"));
+      await tester.pumpAndSettle();
+
+      // Verify that the passcode is set correctly
+      verify(mockPasscodeService.validatePasscode(existingPasscode));
+      verify(mockPasscodeService.validatePasscode(newPasscode));
+      //verify(mockPasscodeService.validatePasscode(repeatPasscode));
+      verifyNever(mockPasscodeService.testPasscode(existingPasscode));
+      verifyNever(mockPasscodeService.changePasscode(newPasscode,
+          mockDatabaseService));
+      expect(find.byType(ChangePasscodeScreen), findsOneWidget);
+      expect(find.byType(HomeScreen), findsNothing);
+      expect(find.text('New passcode is invalid'), findsOneWidget);
+    });
+
+    testWidgets(
+        'given change passcode screen when entering invalid characters in repeat passcode field then expect warning message',
+        (WidgetTester tester) async {
+      // Note - verify on the repeat field is only triggered if it matches the new passcode field
+      String existingPasscode = '1234';
+      String newPasscode = '111a';
+      String repeatPasscode = '111a';
+      when(mockPasscodeService.validatePasscode(existingPasscode))
+          .thenAnswer((_) => true);
+      when(mockPasscodeService.validatePasscode(newPasscode))
+          .thenAnswer((_) => false);
+      when(mockPasscodeService.validatePasscode(repeatPasscode))
+          .thenAnswer((_) => false);
+      when(mockPasscodeService.testPasscode(existingPasscode))
+          .thenAnswer((_) async => false);
+      when(mockPasscodeService.changePasscode(newPasscode,
+              mockDatabaseService))
+          .thenAnswer((_) => false);
+
+      // Build the SetPasscode widget
+      await tester.pumpWidget(createChangePasscodeScreen(
+          mockSettingsService, mockPasscodeService, mockDatabaseService));
+
+      // Enter passcodes
+      await tester.enterText(
+          find.byKey(ChangePasscodeScreen.existingPasscodeTextField),
+          existingPasscode);
+      await tester.enterText(
+          find.byKey(ChangePasscodeScreen.newPasscodeTextField), newPasscode);
+      await tester.enterText(
+          find.byKey(ChangePasscodeScreen.repeatPasscodeTextField),
+          repeatPasscode);
+
+      // Tap the submit button
+      await tester.tap(find.widgetWithText(TextButton, "Continue"));
+      await tester.pumpAndSettle();
+
+      // Verify that the passcode is set correctly
+      verify(mockPasscodeService.validatePasscode(existingPasscode));
+      verify(mockPasscodeService.validatePasscode(newPasscode));
+      verifyNever(mockPasscodeService.testPasscode(existingPasscode));
+      verifyNever(mockPasscodeService.changePasscode(newPasscode,
+          mockDatabaseService));
+      expect(find.byType(ChangePasscodeScreen), findsOneWidget);
+      expect(find.byType(HomeScreen), findsNothing);
+      expect(find.text('Repeat passcode is invalid'), findsOneWidget);
     });
   });
 }

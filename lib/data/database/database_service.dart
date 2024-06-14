@@ -19,10 +19,12 @@ part 'database_service.g.dart';
 class DatabaseService extends _$DatabaseService {
   DatabaseService(super.connection);
 
-  // Create a new database service with the default connection
-  factory DatabaseService.withDefaultConnection(String encryptionPassword) {
+  /// Create a new database service with the default connection
+  /// encryptionPassword: The password to use to decrypt the database
+  /// createInIsolate: If false, create connection in the same thread.  If true, create connection in an isolate
+  factory DatabaseService.withDefaultConnection(String encryptionPassword, {bool createInIsolate = true}) {
     return DatabaseService(
-        dbconn.Connection.getDatabaseConnection(encryptionPassword));
+        dbconn.Connection.getDatabaseConnection(encryptionPassword, createInIsolate: createInIsolate));
   }
 
   @override

@@ -354,23 +354,43 @@ class MockPasscodeService extends _i1.Mock implements _i10.PasscodeService {
       ) as String);
 
   @override
-  bool setPasscode(
-    String? newPasscode, {
-    _i4.DatabaseService? databaseService,
-  }) =>
-      (super.noSuchMethod(
+  bool setPasscode(String? newPasscode) => (super.noSuchMethod(
         Invocation.method(
           #setPasscode,
           [newPasscode],
-          {#databaseService: databaseService},
         ),
         returnValue: false,
       ) as bool);
 
   @override
-  _i6.Future<bool> validatePasscode(String? passcode) => (super.noSuchMethod(
+  bool changePasscode(
+    String? newPasscode,
+    _i4.DatabaseService? databaseService,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #changePasscode,
+          [
+            newPasscode,
+            databaseService,
+          ],
+        ),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  bool validatePasscode(String? passcode) => (super.noSuchMethod(
         Invocation.method(
           #validatePasscode,
+          [passcode],
+        ),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  _i6.Future<bool> testPasscode(String? passcode) => (super.noSuchMethod(
+        Invocation.method(
+          #testPasscode,
           [passcode],
         ),
         returnValue: _i6.Future<bool>.value(false),

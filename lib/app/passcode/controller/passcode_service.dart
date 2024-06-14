@@ -18,33 +18,46 @@ class PasscodeService {
     return encryptPasscode(_passcode ?? '');
   }
 
-  bool setPasscode(String newPasscode, {DatabaseService? databaseService}) {
-    if (!_validatePasscode(newPasscode)) {
+  /// Set the passcode to use when accessing the database
+  bool setPasscode(String newPasscode) {
+    if (!validatePasscode(newPasscode)) {
       return false;
-    }
-    if (databaseService != null) {
-      databaseService.setNewEncryptedPassword(encryptPasscode(newPasscode));
     }
     _passcode = newPasscode;
     return true;
   }
 
-  bool _validatePasscode(String passcode) {
-    return passcode.length >= minPasscodeLength &&
-        passcode.length <= maxPasscodeLength;
+  /// Change the passcode to use when accessing the database
+  bool changePasscode(String newPasscode, DatabaseService databaseService) {
+    if (!validatePasscode(newPasscode)) {
+      return false;
+    }
+    databaseService.setNewEncryptedPassword(encryptPasscode(newPasscode));
+    _passcode = newPasscode;
+    return true;
   }
 
-  Future<bool> validatePasscode(String passcode) async {
-    bool isValid = _validatePasscode(passcode);
+  bool validatePasscode(String passcode) {
+    return passcode.length >= minPasscodeLength &&
+        passcode.length <= maxPasscodeLength &&
+        (int.tryParse(passcode) != null);
+  }
+
+  /// Test the passcode by opening a database connection
+  Future<bool> testPasscode(String passcode) async {
+    bool isValid = validatePasscode(passcode);
 
     if (isValid) {
-      DatabaseService ds =
-          DatabaseService.withDefaultConnection(encryptPasscode(passcode));
+      DatabaseService ds = DatabaseService.withDefaultConnection(
+          encryptPasscode(passcode),
+          createInIsolate: false);
 
       try {
         isValid = await ds.testConnection();
+      } catch (e) {
+        isValid = false;
       } finally {
-        ds.close();
+        await ds.close();
       }
     }
     return isValid;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pension_compare/app/passcode/controller/passcode_service.dart';
+import 'package:pension_compare/app/passcode/views/widgets/passcode_field.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/extensions/material_colors.dart';
 import 'package:pension_compare/service_locator.dart';
@@ -28,10 +29,9 @@ class _ChangePasscodeScreenState extends State<ChangePasscodeScreen> {
   Future<void> _submitPasscode() async {
     if (_formKey.currentState!.validate()) {
       final PasscodeService passcodeService = getIt<PasscodeService>();
-      if (await passcodeService
-          .validatePasscode(existingPasscodeController.text)) {
-        if (passcodeService.setPasscode(newPasscodeController.text,
-            databaseService: widget.databaseService)) {
+      if (await passcodeService.testPasscode(existingPasscodeController.text)) {
+        if (passcodeService.changePasscode(
+            newPasscodeController.text, widget.databaseService)) {
           if (!mounted) return;
           context.pop();
         } else {
@@ -58,7 +58,6 @@ class _ChangePasscodeScreenState extends State<ChangePasscodeScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Form(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
             key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -67,70 +66,54 @@ class _ChangePasscodeScreenState extends State<ChangePasscodeScreen> {
                   const Text('Existing passcode incorrect. Please try again.',
                       style: TextStyle(color: Colors.red)),
                 const Text(
-                  'Enter your existing 6-digit passcode:',
+                  'Enter your existing passcode:',
                   style: TextStyle(fontSize: 18),
                 ),
                 const SizedBox(height: 16),
-                Container(
-                  width: 200,
-                  child: TextFormField(
-                    key: ChangePasscodeScreen.existingPasscodeTextField,
-                    controller: existingPasscodeController,
-                    keyboardType: TextInputType.number,
-                    maxLength: 6,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      counterText: '',
-                    ),
-                  ),
-                ),
+                SizedBox(
+                    width: 200,
+                    child: PasscodeField(
+                      key: ChangePasscodeScreen.existingPasscodeTextField,
+                      passcodeController: existingPasscodeController,
+                      autoFocus: true,
+                      passcodeInvalidMessage: 'Existing passcode is invalid',
+                    )),
                 const SizedBox(height: 16),
                 if (_isNewPasscodeInvalid)
                   const Text('New passcode incorrect. Please try again.',
                       style: TextStyle(color: Colors.red)),
                 const Text(
-                  'Enter your new 6-digit passcode:',
+                  'Enter your new 4 to 10 digit passcode:',
                   style: TextStyle(fontSize: 18),
                 ),
                 const SizedBox(height: 16),
-                Container(
-                  width: 200,
-                  child: TextFormField(
-                    key: ChangePasscodeScreen.newPasscodeTextField,
-                    controller: newPasscodeController,
-                    keyboardType: TextInputType.number,
-                    maxLength: 6,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      counterText: '',
-                    ),
-                  ),
-                ),
+                SizedBox(
+                    width: 200,
+                    child: PasscodeField(
+                      key: ChangePasscodeScreen.newPasscodeTextField,
+                      passcodeController: newPasscodeController,
+                      passcodeInvalidMessage: 'New passcode is invalid',
+                    )),
                 const SizedBox(height: 16),
                 const Text(
-                  'Repeat your new 6-digit passcode:',
+                  'Repeat your new passcode:',
                   style: TextStyle(fontSize: 18),
                 ),
                 const SizedBox(height: 16),
-                Container(
-                  width: 200,
-                  child: TextFormField(
-                    key: ChangePasscodeScreen.repeatPasscodeTextField,
-                    controller: repeatPasscodeController,
-                    keyboardType: TextInputType.number,
-                    maxLength: 6,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      counterText: '',
-                    ),
-                    validator: (value) => value != newPasscodeController.text
-                        ? 'New passcodes do not match'
-                        : null,
-                  ),
-                ),
+                SizedBox(
+                    width: 200,
+                    child: PasscodeField(
+                      key: ChangePasscodeScreen.repeatPasscodeTextField,
+                      passcodeController: repeatPasscodeController,
+                      passcodeInvalidMessage: 'Repeat passcode is invalid',
+                      validator: (passcode) {
+                        if (passcode != newPasscodeController.text) {
+                          return 'New passcodes do not match';
+                        } else {
+                          return null;
+                        }
+                      },
+                    )),
                 const SizedBox(height: 16),
                 SizedBox(
                     width: double.infinity,
