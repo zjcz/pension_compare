@@ -36,5 +36,12 @@ class CustomStyles {
     fontWeight: FontWeight.bold,
   );
 
+  static const smallestSpacerBox = SizedBox(height: 4);
   static const spacerBox = SizedBox(height: 20);
+
+  static const gapW8 = SizedBox(width: 8);
+  static const gapW16 = SizedBox(width: 16);
+//  static const gapW24 = SizedBox(width: 24);
+
 }
+

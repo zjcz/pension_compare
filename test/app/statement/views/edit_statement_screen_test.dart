@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mockito/annotations.dart';
+import 'package:pension_compare/app/settings/controllers/settings_service.dart';
+import 'package:pension_compare/app/settings/models/settings.dart';
+import 'package:pension_compare/app/statement/models/statement_model.dart';
 import 'package:pension_compare/app/statement/views/edit_statement_screen.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/data/mapper/statement_mapper.dart';
@@ -9,23 +12,44 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pension_compare/app/pension/views/pension_overview_screen.dart';
 import 'package:pension_compare/route_config.dart';
+import 'package:pension_compare/service_locator.dart';
 
 import 'edit_statement_screen_test.mocks.dart';
 
-Widget createEditScreen(Statement? statementRecord, DatabaseService db) {
-  return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
+late MockSettingsService mockSettingsService;
+
+Widget createEditScreen(Statement? statementRecord, DatabaseService db,
+    [bool withRouting = false]) {
+  if (withRouting) {
+        getIt.registerSingleton<SettingsService>(mockSettingsService);
+        
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+      return ProviderScope(
+          overrides: [
+            DatabaseService.provider.overrideWithValue(db),
+          ],
+          child: MaterialApp.router(
+            routerConfig: setupRouter(
+                initialLocation: RouteDefs.editStatement,
+                initialExtra: statementRecord == null
+                    ? null
+                    : StatementMapper.mapToModel(statementRecord)),
+          ));
+    });
+  } else {
+    StatementModel? statementModel = statementRecord == null
+        ? null
+        : StatementMapper.mapToModel(statementRecord);
+
     return ProviderScope(
         overrides: [
           DatabaseService.provider.overrideWithValue(db),
         ],
-        child: MaterialApp.router(
-          routerConfig: setupRouter(
-              initialLocation: RouteDefs.editStatement,
-              initialExtra: statementRecord == null
-                  ? null
-                  : StatementMapper.mapToModel(statementRecord)),
+        child: MaterialApp(
+          home: EditStatementScreen(statement: statementModel),
         ));
-  });
+  }
 }
 
 DatabaseService createMockDatabaseService() {
@@ -34,8 +58,25 @@ DatabaseService createMockDatabaseService() {
   return ds;
 }
 
-@GenerateMocks([DatabaseService])
+@GenerateMocks([DatabaseService, SettingsService])
 void main() {
+    setUp(() async {
+    mockSettingsService = MockSettingsService();
+
+    when(mockSettingsService.getAllSettings())
+        .thenAnswer((_) async => const Settings(
+              retirementDate: null,
+              targetIncome: null,
+              acceptTermsAndConditions: false,
+              acceptFinancialAdviceWarning: false,
+              welcomeScreenDismissed: true,
+              optIntoAnalyticsWarning: false,
+            ));
+
+    // reset before each test to prevent errors with duplicate objects
+    await getIt.reset();
+  });
+  
   group('Test adding / editing of statement record', () {
     testWidgets('show the add screen with no statement record', (tester) async {
       final databaseService = createMockDatabaseService();
@@ -147,7 +188,7 @@ void main() {
               null, pensionId, statementDate))
           .thenAnswer((_) async => false);
 
-      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpWidget(createEditScreen(null, databaseService, true));
       await tester.pumpAndSettle();
 
       // select the pension from the DropDownButtonFormField
@@ -225,7 +266,7 @@ void main() {
               projectedAnnualAmount: originalProjectedAnnualAmount,
               yearlyCharges: originalYearlyCharges,
               transferValue: originalTransferValue),
-          databaseService));
+          databaseService, true));
 
       // Set the date of the date picker
       await tester.tap(find.byKey(EditStatementScreen.statementDateKey));
@@ -300,7 +341,7 @@ void main() {
               null, pensionId, statementDate))
           .thenAnswer((_) async => false);
 
-      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpWidget(createEditScreen(null, databaseService, true));
       await tester.pumpAndSettle();
 
       // select the pension from the DropDownButtonFormField
@@ -379,7 +420,7 @@ void main() {
               projectedAnnualAmount: originalProjectedAnnualAmount,
               yearlyCharges: originalYearlyCharges,
               transferValue: originalTransferValue),
-          databaseService));
+          databaseService, true));
 
       // Set the date of the date picker
       await tester.tap(find.byKey(EditStatementScreen.statementDateKey));
@@ -583,7 +624,7 @@ void main() {
               null, pensionId, newStatementDate))
           .thenAnswer((_) async => false);
 
-      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpWidget(createEditScreen(null, databaseService, true));
       await tester.pumpAndSettle();
 
       // select the pension from the DropDownButtonFormField
@@ -806,7 +847,7 @@ void main() {
           projectedAnnualAmount: projectedAnnualAmount,
           yearlyCharges: yearlyCharges,
           transferValue: transferValue);
-      await tester.pumpWidget(createEditScreen(statement, databaseService));
+      await tester.pumpWidget(createEditScreen(statement, databaseService, true));
       await tester.pumpAndSettle();
 
       // Tap the delete button (scroll to it first as it may be off screen)

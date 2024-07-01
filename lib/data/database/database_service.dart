@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:pension_compare/app/passcode/controller/passcode_service.dart';
+import 'package:pension_compare/data/database/tables/yearly_pension_statement.dart';
 import 'package:pension_compare/service_locator.dart';
 import 'connection/connection.dart' as dbconn;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pension_compare/data/database/tables/pension.dart';
 import 'package:pension_compare/data/database/tables/statement.dart';
 import 'package:pension_compare/data/database/tables/other_income.dart';
-import 'package:pension_compare/data/database/tables/pensions_with_latest_statement.dart';
+import 'package:pension_compare/data/database/tables/pensions_with_statement.dart';
 import 'package:pension_compare/constants/defaults.dart' as defaults;
 import 'package:pension_compare/helpers/date_helper.dart';
 
@@ -22,9 +23,11 @@ class DatabaseService extends _$DatabaseService {
   /// Create a new database service with the default connection
   /// encryptionPassword: The password to use to decrypt the database
   /// createInIsolate: If false, create connection in the same thread.  If true, create connection in an isolate
-  factory DatabaseService.withDefaultConnection(String encryptionPassword, {bool createInIsolate = true}) {
-    return DatabaseService(
-        dbconn.Connection.getDatabaseConnection(encryptionPassword, createInIsolate: createInIsolate));
+  factory DatabaseService.withDefaultConnection(String encryptionPassword,
+      {bool createInIsolate = true}) {
+    return DatabaseService(dbconn.Connection.getDatabaseConnection(
+        encryptionPassword,
+        createInIsolate: createInIsolate));
   }
 
   @override
@@ -205,7 +208,7 @@ class DatabaseService extends _$DatabaseService {
   }
 
   // List all the pensions in the database
-  Stream<List<PensionWithLatestStatement>> getAllPensionsWithLatestStatement() {
+  Stream<List<PensionWithStatement>> getAllPensionsWithLatestStatement() {
     // list all the pensions, joined with the latest statement for each pension.
     // we get this by finding the latest statement date for each pension, and then
     // joining this with the statements table to get the latest statement data
@@ -220,13 +223,51 @@ class DatabaseService extends _$DatabaseService {
         readsFrom: {pensions, statements});
 
     return query
-        .map((row) => PensionWithLatestStatement(
+        .map((row) => PensionWithStatement(
               pensions.map(row.data),
               row.data["statement_id"] == null
                   ? null
                   : statements.map(row.data),
             ))
         .watch();
+  }
+
+  /// List all the pensions in the database, joined with the latest statement for each pension, grouped by year
+  Stream<List<YearlyPensionStatement>> getYearlyPensionSummary() {
+    final query = customSelect(
+        "SELECT strftime('%Y', statements.statement_date, 'unixepoch') AS year, pensions.*, statements.* "
+        "FROM pensions INNER JOIN "
+        "   (statements INNER JOIN (SELECT pension, MAX(statement_id) AS latest_statement_id, MAX(statement_date) AS latest_statement_date "
+        "                           FROM statements GROUP BY pension, strftime('%Y', statement_date, 'unixepoch')) AS latest_statements ON statements.pension = latest_statements.pension "
+        "                                                                AND statements.statement_id = latest_statements.latest_statement_id "
+        "                                                                AND statements.statement_date = latest_statements.latest_statement_date)"
+        "           ON pensions.pension_id = statements.pension "
+        "ORDER BY pensions.name",
+        readsFrom: {pensions, statements});
+
+    return query.watch().map((rows) {
+      final Map<int, List<PensionWithStatement>> yearlyPensions = {};
+      for (final row in rows) {
+        final year = int.tryParse(row.data["year"]);
+        if (year != null) {
+          final pension = PensionWithStatement(
+            pensions.map(row.data),
+            statements.map(row.data),
+          );
+
+          if (!yearlyPensions.containsKey(year)) {
+            yearlyPensions[year] = [];
+          }
+
+          yearlyPensions[year]!.add(pension);
+        }
+      }
+      final List<YearlyPensionStatement> result = [];
+      yearlyPensions.forEach((year, pensions) {
+        result.add(YearlyPensionStatement(year, pensions));
+      });
+      return result;
+    });
   }
 
   // Populate the database with some test data

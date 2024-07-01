@@ -82,4 +82,84 @@ void main() {
       expect(parsedDate.microsecond, 0);
     });
   });
+
+  group('Test formatDifference method', () {
+    test(
+        'Given 2 dates, When the difference is over 1 year, Then display difference in years',
+        () {
+      // Arrange
+      DateTime startDate = DateTime(2023, 1, 1);
+      DateTime endDate = DateTime(2024, 1, 1);
+
+      // Act
+      String results = DateHelper.formatDifference(startDate, endDate);
+
+      expect(results, '1 Year');
+    });
+
+    test(
+        'Given 2 dates, When the difference is over 2 year, Then display difference in years',
+        () {
+      // Arrange
+      DateTime startDate = DateTime(2022, 1, 1);
+      DateTime endDate = DateTime(2024, 1, 1);
+
+      // Act
+      String results = DateHelper.formatDifference(startDate, endDate);
+
+      expect(results, '2 Years');
+    });
+
+    test(
+        'Given 2 dates, When the difference is 6 months, Then display difference in months',
+        () {
+      // Arrange
+      DateTime startDate = DateTime(2024, 1, 1);
+      DateTime endDate = DateTime(2024, 7, 1);
+
+      // Act
+      String results = DateHelper.formatDifference(startDate, endDate);
+
+      expect(results, '6 Months');
+    });
+
+    test(
+        'Given 2 dates, When the difference is less than 30 days, Then display difference in days',
+        () {
+      // Arrange
+      DateTime startDate = DateTime(2024, 1, 1);
+      DateTime endDate = DateTime(2024, 1, 21);
+
+      // Act
+      String results = DateHelper.formatDifference(startDate, endDate);
+
+      expect(results, '20 Days');
+    });
+
+    test(
+        'Given 2 dates, When the dates are the same, Then display 0 days',
+        () {
+      // Arrange
+      DateTime startDate = DateTime(2024, 1, 1);
+      DateTime endDate = DateTime(2024, 1, 1);
+
+      // Act
+      String results = DateHelper.formatDifference(startDate, endDate);
+
+      expect(results, '0 Days');
+    });
+
+    test(
+        'Given 2 dates, When the end date is before the start date, Then display 0 days',
+        () {
+      // Arrange
+      DateTime startDate = DateTime(2024, 1, 1);
+      DateTime endDate = DateTime(2023, 1, 1);
+
+      // Act
+      String results = DateHelper.formatDifference(startDate, endDate);
+
+      expect(results, '0 Days');
+    });
+  });
 }

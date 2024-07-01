@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pension_compare/app/home/controllers/home_controller.dart';
 import 'package:pension_compare/app/settings/views/widgets/backup_password_bottomsheet.dart';
 import 'package:pension_compare/app/settings/views/widgets/edit_settings_widget.dart';
 import 'package:pension_compare/app/settings/views/widgets/restore_password_bottomsheet.dart';
@@ -250,8 +249,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
 
     if (shouldDelete ?? false) {
-      final homeController = ref.read(homeControllerProvider.notifier);
-      await homeController.clearAllData();
+      final databaseService = ref.read(DatabaseService.provider);      
+      await databaseService.clearAllData();
 
       if (!mounted) return;
 

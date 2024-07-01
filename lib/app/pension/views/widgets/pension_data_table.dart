@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:pension_compare/app/home/models/pension_with_latest_statement_model.dart';
+import 'package:pension_compare/app/home/models/pension_with_statement_model.dart';
 import 'package:pension_compare/app/pension/models/pension_model.dart';
+import 'package:pension_compare/constants/chart_color_constants.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
+import 'package:pension_compare/constants/defaults.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
+import 'package:pension_compare/service_locator.dart';
 
 class PensionDataTable extends StatefulWidget {
-  final List<PensionWithLatestStatementModel> pensionDataList;
+  final List<PensionWithStatementModel> pensionDataList;
   final Function(PensionModel) onTap;
 
   const PensionDataTable(
@@ -18,6 +21,8 @@ class PensionDataTable extends StatefulWidget {
 class _PensionDataTableState extends State<PensionDataTable> {
   @override
   Widget build(BuildContext context) {
+    ChartColorConstants chartColorConstants = getIt<ChartColorConstants>();
+
     if (widget.pensionDataList.isEmpty) {
       return const Center(
           child: Text('No pensions found.  Click + to add one'));
@@ -62,22 +67,37 @@ class _PensionDataTableState extends State<PensionDataTable> {
         ],
         rows:
             List<DataRow>.generate(widget.pensionDataList.length, (int index) {
-          PensionWithLatestStatementModel pensionData =
-              widget.pensionDataList[index];
+          PensionWithStatementModel pensionData = widget.pensionDataList[index];
           return DataRow(
             onSelectChanged: (bool? selected) =>
                 widget.onTap(pensionData.pension),
             cells: <DataCell>[
-              DataCell(Text(pensionData.pension.name),
+              DataCell(
+                  Row(
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: chartColorConstants.getColorForPension(
+                              pensionData.pension.pensionId ?? 0),
+                          borderRadius: const BorderRadius.all(
+                              Radius.circular(AppDefaults.borderRadius / 3)),
+                        ),
+                      ),
+                      CustomStyles.gapW8,
+                      Text(pensionData.pension.name)
+                    ],
+                  ),
                   onTap: () => widget.onTap(pensionData.pension)),
               DataCell(Text(CurrencyHelper.formatCurrency(
-                  pensionData.latestStatement?.planValue ?? 0))),
+                  pensionData.statement?.planValue ?? 0))),
               DataCell(Text(CurrencyHelper.formatCurrency(
-                  pensionData.latestStatement?.projectedAnnualAmount ?? 0))),
+                  pensionData.statement?.projectedAnnualAmount ?? 0))),
               DataCell(Text(CurrencyHelper.formatCurrency(
-                  pensionData.latestStatement?.yearlyCharges ?? 0))),
+                  pensionData.statement?.yearlyCharges ?? 0))),
               DataCell(Text(CurrencyHelper.formatCurrency(
-                  pensionData.latestStatement?.transferValue ?? 0)))
+                  pensionData.statement?.transferValue ?? 0)))
             ],
           );
         }),

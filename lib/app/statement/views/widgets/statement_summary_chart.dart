@@ -1,9 +1,11 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/app/statement/models/statement_model.dart';
+import 'package:pension_compare/constants/chart_color_constants.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
 import 'package:pension_compare/helpers/date_helper.dart';
+import 'package:pension_compare/service_locator.dart';
 
 class StatementSummaryChart extends StatefulWidget {
   final List<StatementModel>? statementData;
@@ -17,12 +19,18 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
   PensionSummaryChartStyles _selectedStyle =
       PensionSummaryChartStyles.planValue;
   static const double barWidth = 30;
+  MaterialColor _barColor = Colors.purple;
+  final String _currencySymbol = CurrencyHelper.getCurrencySymbol();
 
   @override
   Widget build(BuildContext context) {
     if (widget.statementData == null) {
       return const Center(child: Text('No data'));
     }
+
+    ChartColorConstants chartColorConstants = getIt<ChartColorConstants>();
+    _barColor = chartColorConstants
+        .getColorForPension(widget.statementData!.first.pension);
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -83,7 +91,7 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
           ) {
             return BarTooltipItem(
               '${DateHelper.formatDate(widget.statementData![groupIndex].statementDate)}\n'
-              '${CurrencyHelper.formatCurrency(rod.toY)}',
+              '${CurrencyHelper.formatCurrency(rod.toY, _currencySymbol)}',
               const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -145,21 +153,6 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
         show: false,
       );
 
-  LinearGradient get _customBarsGradient => const LinearGradient(
-        colors: [Colors.deepPurple, Colors.purple],
-        begin: Alignment.bottomCenter,
-        end: Alignment.topCenter,
-      );
-
-  LinearGradient get _systemColorBarsGradient => LinearGradient(
-        colors: [
-          Theme.of(context).colorScheme.primary,
-          Theme.of(context).colorScheme.secondary
-        ],
-        begin: Alignment.bottomCenter,
-        end: Alignment.topCenter,
-      );
-
   List<BarChartGroupData> get planValueBarGroups => widget.statementData!
       .asMap()
       .entries
@@ -201,7 +194,11 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
     return BarChartRodData(
       width: barWidth,
       toY: value ?? 0,
-      gradient: _customBarsGradient,
+      gradient: LinearGradient(
+        colors: [_barColor, _barColor.shade900],
+        begin: Alignment.bottomCenter,
+        end: Alignment.topCenter,
+      ),
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(3),
         topRight: Radius.circular(3),

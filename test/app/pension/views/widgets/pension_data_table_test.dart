@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:pension_compare/app/home/models/pension_with_latest_statement_model.dart';
+import 'package:pension_compare/app/home/models/pension_with_statement_model.dart';
 import 'package:pension_compare/app/pension/models/pension_model.dart';
 import 'package:pension_compare/app/statement/models/statement_model.dart';
+import 'package:pension_compare/constants/chart_color_constants.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
 import 'package:pension_compare/app/pension/views/widgets/pension_data_table.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pension_compare/service_locator.dart';
 
 const String key = 'pension_data_table';
 
-Widget createDataTable(List<PensionWithLatestStatementModel> pensionData,
-    Function(PensionModel) onTap) {
+Widget createDataTable(
+    List<PensionWithStatementModel> pensionData, Function(PensionModel) onTap) {
+  getIt.registerSingleton<ChartColorConstants>(ChartColorConstants());
+
   PensionDataTable dataTable = PensionDataTable(
       key: const Key(key), pensionDataList: pensionData, onTap: onTap);
 
@@ -22,6 +26,10 @@ Widget createDataTable(List<PensionWithLatestStatementModel> pensionData,
 }
 
 void main() {
+  setUp(() async {
+    // reset before each test to prevent errors with duplicate objects
+    await getIt.reset();
+  });
   group('Test building datatable', () {
     testWidgets('show the widget with no pension record', (tester) async {
       await tester.pumpWidget(createDataTable([], (_) {}));
@@ -37,10 +45,10 @@ void main() {
       String pensionName = 'new pension';
 
       final pensionData = [
-        PensionWithLatestStatementModel(
+        PensionWithStatementModel(
             pension: PensionModel(
                 pensionId: 1, name: pensionName, maturityDate: DateTime.now()),
-            latestStatement: null)
+            statement: null)
       ];
 
       await tester.pumpWidget(createDataTable(pensionData, (_) {}));
@@ -59,10 +67,10 @@ void main() {
       double transferValue = 500;
 
       final pensionData = [
-        PensionWithLatestStatementModel(
+        PensionWithStatementModel(
             pension: PensionModel(
                 pensionId: 1, name: pensionName, maturityDate: DateTime.now()),
-            latestStatement: StatementModel(
+            statement: StatementModel(
                 statementId: 1,
                 pension: 1,
                 statementDate: DateTime.now(),
@@ -103,24 +111,24 @@ void main() {
       }
 
       final pensionData = [
-        PensionWithLatestStatementModel(
+        PensionWithStatementModel(
             pension: PensionModel(
                 pensionId: pensionId1,
                 name: pensionName1,
                 maturityDate: DateTime.now()),
-            latestStatement: null),
-        PensionWithLatestStatementModel(
+            statement: null),
+        PensionWithStatementModel(
             pension: PensionModel(
                 pensionId: pensionId2,
                 name: pensionName2,
                 maturityDate: DateTime.now()),
-            latestStatement: null),
-        PensionWithLatestStatementModel(
+            statement: null),
+        PensionWithStatementModel(
             pension: PensionModel(
                 pensionId: pensionId3,
                 name: pensionName3,
                 maturityDate: DateTime.now()),
-            latestStatement: null)
+            statement: null)
       ];
 
       await tester.pumpWidget(createDataTable(pensionData, onTap));
@@ -151,24 +159,24 @@ void main() {
       }
 
       final pensionData = [
-        PensionWithLatestStatementModel(
+        PensionWithStatementModel(
             pension: PensionModel(
                 pensionId: pensionId1,
                 name: pensionName1,
                 maturityDate: DateTime.now()),
-            latestStatement: null),
-        PensionWithLatestStatementModel(
+            statement: null),
+        PensionWithStatementModel(
             pension: PensionModel(
                 pensionId: pensionId2,
                 name: pensionName2,
                 maturityDate: DateTime.now()),
-            latestStatement: null),
-        PensionWithLatestStatementModel(
+            statement: null),
+        PensionWithStatementModel(
             pension: PensionModel(
                 pensionId: pensionId3,
                 name: pensionName3,
                 maturityDate: DateTime.now()),
-            latestStatement: null)
+            statement: null)
       ];
 
       await tester.pumpWidget(createDataTable(pensionData, onTap));

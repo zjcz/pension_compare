@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mockito/annotations.dart';
+import 'package:pension_compare/app/pension/models/pension_model.dart';
 import 'package:pension_compare/app/pension/views/edit_pension_screen.dart';
 import 'package:pension_compare/app/pension/views/pension_overview_screen.dart';
+import 'package:pension_compare/app/settings/controllers/settings_service.dart';
+import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/data/mapper/pension_mapper.dart';
 import 'package:pension_compare/helpers/date_helper.dart';
@@ -10,21 +13,40 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pension_compare/app/home/views/home_screen.dart';
 import 'package:pension_compare/route_config.dart';
+import 'package:pension_compare/service_locator.dart';
 
 import 'edit_pension_screen_test.mocks.dart';
 
-Widget createEditScreen(Pension? pensionRecord, DatabaseService db) {
-  return ProviderScope(
-      overrides: [
-        DatabaseService.provider.overrideWithValue(db),
-      ],
-      child: MaterialApp.router(
-        routerConfig: setupRouter(
-            initialLocation: RouteDefs.editPension,
-            initialExtra: pensionRecord == null
-                ? null
-                : PensionMapper.mapToModel(pensionRecord)),
-      ));
+late MockSettingsService mockSettingsService;
+
+Widget createEditScreen(Pension? pensionRecord, DatabaseService db,
+    [bool withRouting = false]) {
+  if (withRouting) {
+    getIt.registerSingleton<SettingsService>(mockSettingsService);
+
+    return ProviderScope(
+        overrides: [
+          DatabaseService.provider.overrideWithValue(db),
+        ],
+        child: MaterialApp.router(
+          routerConfig: setupRouter(
+              initialLocation: RouteDefs.editPension,
+              initialExtra: pensionRecord == null
+                  ? null
+                  : PensionMapper.mapToModel(pensionRecord)),
+        ));
+  } else {
+    PensionModel? pensionModel =
+        pensionRecord == null ? null : PensionMapper.mapToModel(pensionRecord);
+
+    return ProviderScope(
+        overrides: [
+          DatabaseService.provider.overrideWithValue(db),
+        ],
+        child: MaterialApp(
+          home: EditPensionScreen(pension: pensionModel),
+        ));
+  }
 }
 
 DatabaseService createMockDatabaseService() {
@@ -33,8 +55,24 @@ DatabaseService createMockDatabaseService() {
   return ds;
 }
 
-@GenerateMocks([DatabaseService])
+@GenerateMocks([DatabaseService, SettingsService])
 void main() {
+  setUp(() async {
+    mockSettingsService = MockSettingsService();
+
+    when(mockSettingsService.getAllSettings())
+        .thenAnswer((_) async => const Settings(
+              retirementDate: null,
+              targetIncome: null,
+              acceptTermsAndConditions: false,
+              acceptFinancialAdviceWarning: false,
+              welcomeScreenDismissed: true,
+              optIntoAnalyticsWarning: false,
+            ));
+
+    // reset before each test to prevent errors with duplicate objects
+    await getIt.reset();
+  });
   group('Test adding / editing of pension record', () {
     testWidgets('show the add screen with no pension record', (tester) async {
       await tester
@@ -119,7 +157,7 @@ void main() {
           (_) async =>
               Pension(pensionId: 1, name: name, maturityDate: maturityDate));
 
-      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpWidget(createEditScreen(null, databaseService, true));
 
       // Enter name into the TextFormField
       await tester.enterText(
@@ -158,7 +196,7 @@ void main() {
               pensionId: id,
               name: originalName,
               maturityDate: originalMaturityDate),
-          databaseService));
+          databaseService, true));
 
       // Enter name into the TextFormField
       await tester.enterText(
@@ -192,7 +230,7 @@ void main() {
           (_) async =>
               Pension(pensionId: 1, name: name, maturityDate: maturityDate));
 
-      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpWidget(createEditScreen(null, databaseService, true));
 
       // Enter name into the TextFormField
       await tester.enterText(
@@ -231,7 +269,7 @@ void main() {
       await tester.pumpWidget(createEditScreen(
           Pension(
               pensionId: id, name: originalName, maturityDate: maturityDate),
-          databaseService));
+          databaseService, true));
 
       // Enter name into the TextFormField
       await tester.enterText(
@@ -331,7 +369,7 @@ void main() {
           (_) async =>
               Pension(pensionId: 1, name: newName, maturityDate: maturityDate));
 
-      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpWidget(createEditScreen(null, databaseService, true));
       await tester.pumpAndSettle();
 
       await tester.enterText(
@@ -450,7 +488,7 @@ void main() {
       when(databaseService.deletePension(pensionId))
           .thenAnswer((_) async => pensionId);
 
-      await tester.pumpWidget(createEditScreen(pension, databaseService));
+      await tester.pumpWidget(createEditScreen(pension, databaseService, true));
       await tester.pumpAndSettle();
 
       // Tap the delete button

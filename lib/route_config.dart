@@ -6,6 +6,7 @@ import 'package:pension_compare/app/passcode/views/set_passcode_screen.dart';
 import 'package:pension_compare/app/pension/models/pension_model.dart';
 import 'package:pension_compare/app/pension/views/edit_pension_screen.dart';
 import 'package:pension_compare/app/otherIncome/views/edit_state_pension_screen.dart';
+import 'package:pension_compare/app/pension/views/pension_report_screen.dart';
 import 'package:pension_compare/app/statement/models/statement_model.dart';
 import 'package:pension_compare/app/statement/views/edit_statement_screen.dart';
 import 'package:pension_compare/app/home/views/home_screen.dart';
@@ -20,6 +21,7 @@ class RouteDefs {
   static const String home = '/home';
   static const String welcome = '/welcome';
   static const String pensionOverview = '/home/pension_overview';
+  static const String pensionProgress = '/home/pension_progress';
   static const String editPension = '/home/edit_pension';
   static const String editStatement = '/home/edit_statement';
   static const String editStatePension = '/home/edit_state_pension';
@@ -121,6 +123,14 @@ GoRouter setupRouter(
                   databaseService = state.extra! as DatabaseService;
                 }
                 return ChangePasscodeScreen(databaseService: databaseService!);
+              },
+            ),
+            GoRoute(
+              path: RouteDefs.getPageName(RouteDefs.pensionProgress,
+                  parentPage: RouteDefs.home),
+              name: 'pensionProgress',
+              builder: (BuildContext context, GoRouterState state) {
+                return const PensionReportScreen();
               },
             ),
           ]),

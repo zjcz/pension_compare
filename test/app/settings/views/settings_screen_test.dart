@@ -4,6 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:pension_compare/app/settings/models/user_settings.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/app/settings/controllers/settings_service.dart';
+import 'package:pension_compare/app/settings/views/settings_screen.dart';
 import 'package:pension_compare/app/settings/views/widgets/edit_settings_widget.dart';
 import 'package:pension_compare/helpers/analytics_helper.dart';
 import 'package:pension_compare/helpers/date_helper.dart';
@@ -18,19 +19,31 @@ import 'package:pension_compare/service_locator.dart';
 import 'settings_screen_test.mocks.dart';
 
 Widget createSettingsScreen(SettingsService settingsService,
-    DatabaseService databaseService, AnalyticsHelper mockAnalyticsHelper) {
+    DatabaseService databaseService, AnalyticsHelper mockAnalyticsHelper,
+    [bool withRouting = false]) {
   getIt.registerSingleton<SettingsService>(settingsService);
   getIt.registerSingleton<AnalyticsHelper>(mockAnalyticsHelper);
 
-  return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
+  if (withRouting) {
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+      return ProviderScope(
+          overrides: [
+            DatabaseService.provider.overrideWithValue(databaseService),
+          ],
+          child: MaterialApp.router(
+            routerConfig: setupRouter(initialLocation: RouteDefs.editSettings),
+          ));
+    });
+  } else {
     return ProviderScope(
         overrides: [
           DatabaseService.provider.overrideWithValue(databaseService),
         ],
-        child: MaterialApp.router(
-          routerConfig: setupRouter(initialLocation: RouteDefs.editSettings),
+        child: const MaterialApp(
+          home: SettingsScreen(),
         ));
-  });
+  }
 }
 
 DatabaseService createMockDatabaseService() {
@@ -77,9 +90,10 @@ void main() {
               "This is the amount you plan to receive as a monthly income when you retire.  If you are unsure you can leave this blank for now."),
           findsOneWidget);
 
-      expect(
-          find.byKey(EditSettingsWidget.editSettingRetirementDateKey), findsOneWidget);
-      expect(find.byKey(EditSettingsWidget.editSettingTargetIncomeKey), findsOneWidget);
+      expect(find.byKey(EditSettingsWidget.editSettingRetirementDateKey),
+          findsOneWidget);
+      expect(find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
+          findsOneWidget);
 
       expect(find.widgetWithText(TextButton, "Save"), findsOneWidget);
       expect(find.widgetWithText(TextButton, "Delete All"), findsOneWidget);
@@ -140,7 +154,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find the TextFormField by key
-      final fieldFinder = find.byKey(EditSettingsWidget.editSettingRetirementDateKey);
+      final fieldFinder =
+          find.byKey(EditSettingsWidget.editSettingRetirementDateKey);
 
       // Check that the TextFormField exists
       expect(fieldFinder, findsOneWidget);
@@ -194,13 +209,15 @@ void main() {
       await tester.pumpAndSettle();
 
       // Set the date of the date picker
-      await tester.tap(find.byKey(EditSettingsWidget.editSettingRetirementDateKey));
+      await tester
+          .tap(find.byKey(EditSettingsWidget.editSettingRetirementDateKey));
       await tester.pumpAndSettle();
       await tester.tap(find.text(retirementDate.day.toString()));
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
+      await tester.enterText(
+          find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
           targetValue.toString());
 
       await tester.tap(find.byType(Switch));
@@ -250,14 +267,16 @@ void main() {
       await tester.pumpAndSettle();
 
       // Set the date of the date picker
-      await tester.tap(find.byKey(EditSettingsWidget.editSettingRetirementDateKey));
+      await tester
+          .tap(find.byKey(EditSettingsWidget.editSettingRetirementDateKey));
       await tester.pumpAndSettle();
       await tester.tap(find.text(newRetirementDate.day.toString()));
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
       // Enter values into the TextFormFields
-      await tester.enterText(find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
+      await tester.enterText(
+          find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
           newTargetValue.toString());
 
       //tap the opt into analytics switch
@@ -302,11 +321,12 @@ void main() {
           .thenAnswer((_) async => {});
 
       await tester.pumpWidget(createSettingsScreen(
-          settingsService, createMockDatabaseService(), mockAnalyticsHelper));
+          settingsService, createMockDatabaseService(), mockAnalyticsHelper, true));
       await tester.pumpAndSettle();
 
       // Enter values into the TextFormFields
-      await tester.enterText(find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
+      await tester.enterText(
+          find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
           newTargetValue.toString());
 
       // Tap the save button
@@ -316,7 +336,7 @@ void main() {
       // should navigate back to home screen
       expect(find.byType(HomeScreen), findsOneWidget);
 
-      verify(settingsService.getAllSettings()).called(1);
+      verify(settingsService.getAllSettings());
       verify(settingsService.saveUserSettings(UserSettings(
               retirementDate: originalRetirementDate,
               targetIncome: newTargetValue,
@@ -433,13 +453,15 @@ void main() {
       await tester.pumpAndSettle();
 
       // Set the date of the date picker
-      await tester.tap(find.byKey(EditSettingsWidget.editSettingRetirementDateKey));
+      await tester
+          .tap(find.byKey(EditSettingsWidget.editSettingRetirementDateKey));
       await tester.pumpAndSettle();
       await tester.tap(find.text(retirementDate.day.toString()));
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
+      await tester.enterText(
+          find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
           invalidTargetValue);
 
       // Tap the save button
@@ -542,7 +564,7 @@ void main() {
           .thenAnswer((_) async => {});
 
       await tester.pumpWidget(createSettingsScreen(
-          settingsService, databaseService, mockAnalyticsHelper));
+          settingsService, databaseService, mockAnalyticsHelper, true));
       await tester.pumpAndSettle();
 
       // Tap the delete button
@@ -565,8 +587,7 @@ void main() {
   });
 
   group('Test analytics', () {
-    testWidgets(
-        'opting into analytics enables analytics and saves the setting',
+    testWidgets('opting into analytics enables analytics and saves the setting',
         (tester) async {
       DateTime retirementDate = DateHelper.getToday();
       double targetValue = 12345.0;
@@ -592,13 +613,15 @@ void main() {
       await tester.pumpAndSettle();
 
       // Set the date of the date picker
-      await tester.tap(find.byKey(EditSettingsWidget.editSettingRetirementDateKey));
+      await tester
+          .tap(find.byKey(EditSettingsWidget.editSettingRetirementDateKey));
       await tester.pumpAndSettle();
       await tester.tap(find.text(retirementDate.day.toString()));
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
+      await tester.enterText(
+          find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
           targetValue.toString());
 
       await tester.tap(find.byType(Switch));
@@ -643,13 +666,15 @@ void main() {
       await tester.pumpAndSettle();
 
       // Set the date of the date picker
-      await tester.tap(find.byKey(EditSettingsWidget.editSettingRetirementDateKey));
+      await tester
+          .tap(find.byKey(EditSettingsWidget.editSettingRetirementDateKey));
       await tester.pumpAndSettle();
       await tester.tap(find.text(retirementDate.day.toString()));
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
+      await tester.enterText(
+          find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
           targetValue.toString());
 
       await tester.tap(find.byType(Switch));

@@ -138,7 +138,7 @@ void main() {
       expect(results, match.isNotNull);
       expect(results.length, 1);
       expect(results[0].pension, match.isNotNull);
-      expect(results[0].latestStatement, match.isNull);
+      expect(results[0].statement, match.isNull);
     });
 
     test('Pension summary returns pension and latest statements', () async {
@@ -172,19 +172,120 @@ void main() {
       expect(results, match.isNotNull);
       expect(results.length, 1);
       expect(results[0].pension, match.isNotNull);
-      expect(results[0].latestStatement, match.isNotNull);
+      expect(results[0].statement, match.isNotNull);
 
       expect(results[0].pension.pensionId, pension.pensionId);
       expect(results[0].pension.name, pension.name);
       expect(results[0].pension.maturityDate, pension.maturityDate);
 
-      expect(results[0].latestStatement!.pension, pension.pensionId);
-      expect(results[0].latestStatement!.statementDate, statementDate3);
-      expect(results[0].latestStatement!.planValue, planValue3);
-      expect(results[0].latestStatement!.projectedAnnualAmount,
-          projectedAnnualAmount3);
-      expect(results[0].latestStatement!.yearlyCharges, yearlyCharges3);
-      expect(results[0].latestStatement!.transferValue, transferValue3);
+      expect(results[0].statement!.pension, pension.pensionId);
+      expect(results[0].statement!.statementDate, statementDate3);
+      expect(results[0].statement!.planValue, planValue3);
+      expect(
+          results[0].statement!.projectedAnnualAmount, projectedAnnualAmount3);
+      expect(results[0].statement!.yearlyCharges, yearlyCharges3);
+      expect(results[0].statement!.transferValue, transferValue3);
+    });
+  });
+
+group('Test yearly pension summary', () {
+    test('Given no pensions When running Yearly Pension Summary Then expect no data ', () async {
+      final results = await database.getYearlyPensionSummary().first;
+      expect(results, match.isNotNull);
+      expect(results.length, 0);
+    });
+
+    test('Given no statements When running Yearly Pension Summary Then expect no data ', () async {
+      String name = 'new pension';
+      DateTime maturityDate = DateTime(2050, 1, 1);
+
+      await database.createPension(name, maturityDate);
+
+      final results = await database.getYearlyPensionSummary().first;
+      expect(results, match.isNotNull);
+      expect(results.length, 0);
+    });
+
+    test('Given pension and statement data When running Yearly Pension Summary Then expect data ', () async {
+      String name = 'new pension';
+      DateTime maturityDate = DateTime(2050, 1, 1);
+      DateTime statementDate1 = DateTime(2024, 2, 3);
+      double planValue1 = 123.45;
+      double projectedAnnualAmount1 = 456.78;
+      double? yearlyCharges1 = 78.90;
+      double? transferValue1 = 90.12;
+      DateTime statementDate2 = DateTime(2025, 4, 5);
+      double planValue2 = 543.21;
+      double projectedAnnualAmount2 = 876.54;
+      double? yearlyCharges2 = 90.87;
+      double? transferValue2 = 21.90;
+      DateTime statementDate3 = DateTime(2026, 6, 7);
+      double planValue3 = 987.65;
+      double projectedAnnualAmount3 = 432.10;
+      double? yearlyCharges3 = 65.43;
+      double? transferValue3 = 12.34;
+
+      final pension = await database.createPension(name, maturityDate);
+      final statement1 = await database.createStatement(pension!.pensionId, statementDate1,
+          planValue1, projectedAnnualAmount1, yearlyCharges1, transferValue1);
+      final statement2 = await database.createStatement(pension.pensionId, statementDate2,
+          planValue2, projectedAnnualAmount2, yearlyCharges2, transferValue2);
+      final statement3 = await database.createStatement(pension.pensionId, statementDate3,
+          planValue3, projectedAnnualAmount3, yearlyCharges3, transferValue3);
+
+      final results = await database.getYearlyPensionSummary().first;
+      expect(results, match.isNotNull);
+      expect(results.length, 3);
+      expect(results[0].year, statementDate1.year);
+      expect(results[1].year, statementDate2.year);
+      expect(results[2].year, statementDate3.year);
+
+      expect(results[0].pensionWithStatement, match.isNotNull);
+      expect(results[0].pensionWithStatement.length, 1);
+      expect(results[0].pensionWithStatement.first.pension, pension);
+      expect(results[0].pensionWithStatement.first.statement, statement1!);
+
+      expect(results[1].pensionWithStatement, match.isNotNull);
+      expect(results[1].pensionWithStatement.length, 1);
+      expect(results[1].pensionWithStatement.first.pension, pension);
+      expect(results[1].pensionWithStatement.first.statement, statement2!);
+
+      expect(results[2].pensionWithStatement, match.isNotNull);
+      expect(results[2].pensionWithStatement.length, 1);
+      expect(results[2].pensionWithStatement.first.pension, pension);
+      expect(results[2].pensionWithStatement.first.statement, statement3!);
+    });
+
+    test('Given pension with multiple statement in the same year When running Yearly Pension Summary Then expect latest statement ', () async {
+      String name = 'new pension';
+      DateTime maturityDate = DateTime(2050, 1, 1);
+      DateTime statementDate1 = DateTime(2024, 1, 1);
+      double planValue1 = 123.45;
+      double projectedAnnualAmount1 = 456.78;
+      double? yearlyCharges1 = 78.90;
+      double? transferValue1 = 90.12;
+      DateTime statementDate2 = DateTime(2024, 2, 2);
+      double planValue2 = 543.21;
+      double projectedAnnualAmount2 = 876.54;
+      double? yearlyCharges2 = 90.87;
+      double? transferValue2 = 21.90;
+
+      final pension = await database.createPension(name, maturityDate);
+      await database.createStatement(pension!.pensionId, statementDate1,
+          planValue1, projectedAnnualAmount1, yearlyCharges1, transferValue1);
+      final statement2 = await database.createStatement(pension.pensionId, statementDate2,
+          planValue2, projectedAnnualAmount2, yearlyCharges2, transferValue2);
+
+
+      final results = await database.getYearlyPensionSummary().first;
+      expect(results, match.isNotNull);
+      expect(results.length, 1);
+      expect(results[0].year, statementDate1.year);
+
+      expect(results[0].pensionWithStatement, match.isNotNull);
+      expect(results[0].pensionWithStatement.length, 1);
+      expect(results[0].pensionWithStatement.first.pension, pension);
+      expect(results[0].pensionWithStatement.first.statement, statement2!);
     });
   });
 
