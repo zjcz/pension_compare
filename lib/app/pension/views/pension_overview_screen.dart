@@ -82,22 +82,25 @@ class _PensionOverviewScreenState extends ConsumerState<PensionOverviewScreen> {
                                   child: Text(
                                       'No statements found.  Click + to add one'));
                             } else {
-                              return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    StatementSummaryChart(
-                                        statementData: statements),
-                                    StatementDataTable(
-                                      statementDataList: statements,
-                                      onTap: (StatementModel statement) {
-                                        context.push(RouteDefs.editStatement,
-                                            extra: (
-                                              pensionData,
-                                              statement
-                                            )).then((_) => {setState(() {})});
-                                      },
-                                    )
-                                  ]);
+                              return SingleChildScrollView(
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      StatementSummaryChart(
+                                          statementData: statements),
+                                      StatementDataTable(
+                                        statementDataList: statements,
+                                        onTap: (StatementModel statement) {
+                                          context.push(RouteDefs.editStatement,
+                                              extra: (
+                                                pensionData,
+                                                statement
+                                              )).then((_) => {setState(() {})});
+                                        },
+                                      )
+                                    ]),
+                              );
                             }
                           },
                         )),

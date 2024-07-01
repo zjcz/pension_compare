@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:pension_compare/app/home/models/pension_with_latest_statement_model.dart';
+import 'package:pension_compare/app/home/controllers/pension_with_latest_statement_controller.dart';
+import 'package:pension_compare/app/home/controllers/yearly_pension_statement_controller.dart';
+import 'package:pension_compare/app/home/models/pension_with_statement_model.dart';
 import 'package:pension_compare/app/pension/models/pension_model.dart';
 import 'package:pension_compare/app/pension/views/widgets/pension_data_table.dart';
 import 'package:pension_compare/app/pension/views/widgets/pension_summary_chart.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pension_compare/app/settings/controllers/settings_service.dart';
+import 'package:pension_compare/app/settings/models/settings.dart';
+import 'package:pension_compare/constants/custom_styles.dart';
+import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/route_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pension_compare/app/home/controllers/home_controller.dart';
+import 'package:pension_compare/service_locator.dart';
+import 'package:pension_compare/widgets/dashboard/dashboard_tile.dart';
+import 'package:pension_compare/widgets/dashboard/target_vs_actual.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -16,12 +24,27 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  Future<Settings>? settings;
+
+  @override
+  void initState() {
+    super.initState();
+    settings = _loadSettings();
+  }
+
+  Future<Settings> _loadSettings() async {
+    return await getIt<SettingsService>().getAllSettings();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final pensionsSummaryData = ref.watch(homeControllerProvider);
+    final pensionsSummaryData =
+        ref.watch(pensionWithLatestStatementControllerProvider);
+    final yearlyPensionSummaryData =
+        ref.watch(yearlyPensionStatementControllerProvider);
 
     return Scaffold(
-        appBar: AppBar(title: const Text('Overview'), actions: [
+        appBar: AppBar(title: const Text('Pension Compare'), actions: [
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () async {
@@ -74,9 +97,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     .push(RouteDefs.editSettings)
                     .then((_) => {setState(() {})});
               } else if (value == 'reset_test_data') {
-                await ref
-                    .read(homeControllerProvider.notifier)
-                    .populateTestData();
+                await ref.read(DatabaseService.provider).populateTestData();
               }
             },
           ),
@@ -88,14 +109,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             children: [
               Expanded(
                 child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: pensionsSummaryData.when(
-                      loading: () =>
-                          const Center(child: CircularProgressIndicator()),
-                      error: (error, _) =>
-                          Center(child: Text('Error loading data: $error')),
-                      data: (List<PensionWithLatestStatementModel> pensions) {
-                        if (pensions.isEmpty) {
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: yearlyPensionSummaryData.when(
+                    data: (yearlySummary) => pensionsSummaryData.when(
+                      data: (List<PensionWithStatementModel> pensions) {
+                        if (pensions.isEmpty && yearlySummary.isEmpty) {
                           return const Center(
                               child: Text(
                                   'No pensions found.  Click + to add one'));
@@ -104,24 +122,98 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  PensionSummaryChart(pensionData: pensions),
-                                  PensionDataTable(
-                                    pensionDataList: pensions,
-                                    onTap: (PensionModel pension) {
-                                      context
-                                          .push(
-                                              '${RouteDefs.pensionOverview}/${pension.pensionId}')
-                                          .then((_) => {setState(() {})});
-                                    },
-                                  )
+                                  DashboardTile(
+                                      title: 'Monthly Income',
+                                      child: FutureBuilder<Settings>(
+                                          future: settings,
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const Center(
+                                                  child:
+                                                      CircularProgressIndicator());
+                                            } else if (snapshot.hasError) {
+                                              return Center(
+                                                  child: Text(
+                                                      'Error loading data: ${snapshot.error}'));
+                                            } else if (!snapshot.hasData ||
+                                                snapshot.data == null) {
+                                              return const Center(
+                                                  child: Text('Not found'));
+                                            } else {
+                                              Settings settings =
+                                                  snapshot.data!;
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  context
+                                                      .push(RouteDefs
+                                                          .pensionProgress)
+                                                      .then((_) =>
+                                                          {setState(() {})});
+                                                },
+                                                child: buildTargetVsActual(
+                                                    pensions, settings),
+                                              );
+                                            }
+                                          })),
+                                  CustomStyles.spacerBox,
+                                  DashboardTile(
+                                      title: 'Pensions',
+                                      child: PensionDataTable(
+                                        pensionDataList: pensions,
+                                        onTap: (PensionModel pension) {
+                                          context
+                                              .push(
+                                                  '${RouteDefs.pensionOverview}/${pension.pensionId}')
+                                              .then((_) => {setState(() {})});
+                                        },
+                                      )),
+                                  CustomStyles.spacerBox,
+                                  DashboardTile(
+                                      title: "Pension Summary",
+                                      child: PensionSummaryChart(
+                                          pensionData: pensions)),
+                                  // TODO - Add Other Income list, Warnings / Missing statements
                                 ]),
                           );
                         }
                       },
-                    )),
+                      loading: () => buildLoadingWidget(),
+                      error: (error, _) => buildErrorWidget(error),
+                    ),
+                    loading: () => buildLoadingWidget(),
+                    error: (error, _) => buildErrorWidget(error),
+                  ),
+                ),
               ),
             ],
           ),
         ));
+  }
+
+  Widget buildLoadingWidget() {
+    return const Center(child: CircularProgressIndicator());
+  }
+
+  Widget buildErrorWidget(Object error) {
+    return Center(child: Text('Error loading data: $error'));
+  }
+
+  TargetVsActual buildTargetVsActual(
+      List<PensionWithStatementModel> pensionData, Settings settings) {
+    double projectedMonthlyValue = 0;
+
+    for (var pensionRecord in pensionData) {
+      if (pensionRecord.statement != null) {
+        projectedMonthlyValue +=
+            pensionRecord.statement!.projectedAnnualAmount / 12;
+      }
+    }
+
+    return TargetVsActual(
+      targetValue: settings.targetIncome,
+      actualValue: projectedMonthlyValue,
+      retirementDate: settings.retirementDate,
+    );
   }
 }

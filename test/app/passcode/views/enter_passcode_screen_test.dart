@@ -5,13 +5,19 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pension_compare/app/home/views/home_screen.dart';
 import 'package:pension_compare/app/passcode/controller/passcode_service.dart';
+import 'package:pension_compare/app/settings/controllers/settings_service.dart';
+import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/route_config.dart';
 import 'package:pension_compare/service_locator.dart';
 
 import 'enter_passcode_screen_test.mocks.dart';
 
-Widget createEnterPasscodeScreen(PasscodeService mockPasscodeService) {
+Widget createEnterPasscodeScreen(PasscodeService mockPasscodeService,
+    [SettingsService? mockSettingsService]) {
   getIt.registerSingleton<PasscodeService>(mockPasscodeService);
+  if (mockSettingsService != null) {
+    getIt.registerSingleton<SettingsService>(mockSettingsService);
+  }
 
   return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
     return ProviderScope(
@@ -22,7 +28,7 @@ Widget createEnterPasscodeScreen(PasscodeService mockPasscodeService) {
   });
 }
 
-@GenerateMocks([PasscodeService])
+@GenerateMocks([PasscodeService, SettingsService])
 void main() {
   late MockPasscodeService mockPasscodeService;
 
@@ -57,8 +63,21 @@ void main() {
       when(mockPasscodeService.setPasscode(validPasscode))
           .thenAnswer((_) => true);
 
+      // required by homescreen
+      MockSettingsService mockSettingsService = MockSettingsService();
+      when(mockSettingsService.getAllSettings())
+          .thenAnswer((_) async => const Settings(
+                retirementDate: null,
+                targetIncome: null,
+                acceptTermsAndConditions: false,
+                acceptFinancialAdviceWarning: false,
+                welcomeScreenDismissed: true,
+                optIntoAnalyticsWarning: false,
+              ));
+
       // Build the EnterPasscode widget
-      await tester.pumpWidget(createEnterPasscodeScreen(mockPasscodeService));
+      await tester.pumpWidget(
+          createEnterPasscodeScreen(mockPasscodeService, mockSettingsService));
       await tester.pumpAndSettle();
 
       // Enter a passcode
@@ -131,8 +150,7 @@ void main() {
       verifyNever(mockPasscodeService.setPasscode(incorrectPasscode));
       verifyNever(mockPasscodeService.testPasscode(incorrectPasscode));
       expect(find.byType(HomeScreen), findsNothing);
-      expect(
-          find.text('Passcode is invalid'), findsOneWidget);
-    });    
+      expect(find.text('Passcode is invalid'), findsOneWidget);
+    });
   });
 }

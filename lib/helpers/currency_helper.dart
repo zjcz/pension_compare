@@ -18,4 +18,8 @@ class CurrencyHelper {
     return double.tryParse(
         value.replaceAll(currencySymbol, '').replaceAll(',', ''));
   }
+
+  static String getCurrencySymbol() {
+    return NumberFormat.simpleCurrency().currencySymbol;
+  }
 }

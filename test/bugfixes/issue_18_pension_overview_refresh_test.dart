@@ -3,18 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mockito/annotations.dart';
 import 'package:pension_compare/app/pension/views/edit_pension_screen.dart';
 import 'package:pension_compare/app/pension/views/pension_overview_screen.dart';
+import 'package:pension_compare/app/settings/controllers/settings_service.dart';
+import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pension_compare/route_config.dart';
+import 'package:pension_compare/service_locator.dart';
 
 import 'issue_18_pension_overview_refresh_test.mocks.dart';
 
 // Tests to resolve issue #18 - Editing Pension record does not update the
 // Pension Overview Screen
 // https://github.com/zjcz/pension_compare/issues/18
-@GenerateMocks([DatabaseService])
+@GenerateMocks([DatabaseService, SettingsService])
 void main() {
+    setUp(() async {
+    // reset before each test to prevent errors with duplicate DatabaseService
+    await getIt.reset();
+  });
+  
   group('Test to recreate issue 18', () {
     testWidgets(
         'pension overview screen shows changes after editing the pension',
@@ -62,6 +70,15 @@ void main() {
 }
 
 Widget createScreen(Pension pensionRecord, DatabaseService db) {
+  final settingsService = MockSettingsService();
+  when(settingsService.getAllSettings()).thenAnswer((_) async => const Settings(
+      retirementDate: null,
+      targetIncome: null,
+      acceptTermsAndConditions: null,
+      acceptFinancialAdviceWarning: null,
+      welcomeScreenDismissed: null,
+      optIntoAnalyticsWarning: false));
+  getIt.registerSingleton<SettingsService>(settingsService);
   return ProviderScope(
       overrides: [
         DatabaseService.provider.overrideWithValue(db),

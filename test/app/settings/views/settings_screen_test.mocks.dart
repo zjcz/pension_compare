@@ -14,9 +14,11 @@ import 'package:pension_compare/app/settings/controllers/settings_service.dart'
 import 'package:pension_compare/app/settings/models/settings.dart' as _i2;
 import 'package:pension_compare/app/settings/models/user_settings.dart' as _i8;
 import 'package:pension_compare/data/database/database_service.dart' as _i4;
-import 'package:pension_compare/data/database/tables/pensions_with_latest_statement.dart'
+import 'package:pension_compare/data/database/tables/pensions_with_statement.dart'
     as _i11;
-import 'package:pension_compare/helpers/analytics_helper.dart' as _i12;
+import 'package:pension_compare/data/database/tables/yearly_pension_statement.dart'
+    as _i12;
+import 'package:pension_compare/helpers/analytics_helper.dart' as _i13;
 import 'package:shared_preferences/shared_preferences.dart' as _i9;
 
 // ignore_for_file: type=lint
@@ -685,15 +687,24 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
       ) as _i6.Future<_i4.OtherIncome?>);
 
   @override
-  _i6.Stream<List<_i11.PensionWithLatestStatement>>
+  _i6.Stream<List<_i11.PensionWithStatement>>
       getAllPensionsWithLatestStatement() => (super.noSuchMethod(
             Invocation.method(
               #getAllPensionsWithLatestStatement,
               [],
             ),
-            returnValue:
-                _i6.Stream<List<_i11.PensionWithLatestStatement>>.empty(),
-          ) as _i6.Stream<List<_i11.PensionWithLatestStatement>>);
+            returnValue: _i6.Stream<List<_i11.PensionWithStatement>>.empty(),
+          ) as _i6.Stream<List<_i11.PensionWithStatement>>);
+
+  @override
+  _i6.Stream<List<_i12.YearlyPensionStatement>> getYearlyPensionSummary() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getYearlyPensionSummary,
+          [],
+        ),
+        returnValue: _i6.Stream<List<_i12.YearlyPensionStatement>>.empty(),
+      ) as _i6.Stream<List<_i12.YearlyPensionStatement>>);
 
   @override
   _i6.Future<void> populateTestData() => (super.noSuchMethod(
@@ -1202,7 +1213,7 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
 /// A class which mocks [AnalyticsHelper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAnalyticsHelper extends _i1.Mock implements _i12.AnalyticsHelper {
+class MockAnalyticsHelper extends _i1.Mock implements _i13.AnalyticsHelper {
   MockAnalyticsHelper() {
     _i1.throwOnMissingStub(this);
   }

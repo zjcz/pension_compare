@@ -3,13 +3,18 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i5;
+import 'dart:async' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i3;
+import 'package:mockito/src/dummies.dart' as _i4;
 import 'package:pension_compare/app/passcode/controller/passcode_service.dart'
-    as _i2;
-import 'package:pension_compare/data/database/database_service.dart' as _i4;
+    as _i3;
+import 'package:pension_compare/app/settings/controllers/settings_service.dart'
+    as _i7;
+import 'package:pension_compare/app/settings/models/settings.dart' as _i2;
+import 'package:pension_compare/app/settings/models/user_settings.dart' as _i8;
+import 'package:pension_compare/data/database/database_service.dart' as _i5;
+import 'package:shared_preferences/shared_preferences.dart' as _i9;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -24,10 +29,20 @@ import 'package:pension_compare/data/database/database_service.dart' as _i4;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
+class _FakeSettings_0 extends _i1.SmartFake implements _i2.Settings {
+  _FakeSettings_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [PasscodeService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockPasscodeService extends _i1.Mock implements _i2.PasscodeService {
+class MockPasscodeService extends _i1.Mock implements _i3.PasscodeService {
   MockPasscodeService() {
     _i1.throwOnMissingStub(this);
   }
@@ -47,7 +62,7 @@ class MockPasscodeService extends _i1.Mock implements _i2.PasscodeService {
           #getEncryptedPasscode,
           [],
         ),
-        returnValue: _i3.dummyValue<String>(
+        returnValue: _i4.dummyValue<String>(
           this,
           Invocation.method(
             #getEncryptedPasscode,
@@ -68,7 +83,7 @@ class MockPasscodeService extends _i1.Mock implements _i2.PasscodeService {
   @override
   bool changePasscode(
     String? newPasscode,
-    _i4.DatabaseService? databaseService,
+    _i5.DatabaseService? databaseService,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -91,13 +106,13 @@ class MockPasscodeService extends _i1.Mock implements _i2.PasscodeService {
       ) as bool);
 
   @override
-  _i5.Future<bool> testPasscode(String? passcode) => (super.noSuchMethod(
+  _i6.Future<bool> testPasscode(String? passcode) => (super.noSuchMethod(
         Invocation.method(
           #testPasscode,
           [passcode],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i6.Future<bool>.value(false),
+      ) as _i6.Future<bool>);
 
   @override
   String encryptPasscode(String? passcode) => (super.noSuchMethod(
@@ -105,7 +120,7 @@ class MockPasscodeService extends _i1.Mock implements _i2.PasscodeService {
           #encryptPasscode,
           [passcode],
         ),
-        returnValue: _i3.dummyValue<String>(
+        returnValue: _i4.dummyValue<String>(
           this,
           Invocation.method(
             #encryptPasscode,
@@ -113,4 +128,56 @@ class MockPasscodeService extends _i1.Mock implements _i2.PasscodeService {
           ),
         ),
       ) as String);
+}
+
+/// A class which mocks [SettingsService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSettingsService extends _i1.Mock implements _i7.SettingsService {
+  MockSettingsService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<_i2.Settings> getAllSettings() => (super.noSuchMethod(
+        Invocation.method(
+          #getAllSettings,
+          [],
+        ),
+        returnValue: _i6.Future<_i2.Settings>.value(_FakeSettings_0(
+          this,
+          Invocation.method(
+            #getAllSettings,
+            [],
+          ),
+        )),
+      ) as _i6.Future<_i2.Settings>);
+
+  @override
+  _i6.Future<void> saveAllSettings(_i2.Settings? settings) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveAllSettings,
+          [settings],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> saveUserSettings(
+    _i8.UserSettings? settings, [
+    _i9.SharedPreferences? sharedPreferences,
+  ]) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveUserSettings,
+          [
+            settings,
+            sharedPreferences,
+          ],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 }

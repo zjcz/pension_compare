@@ -1,12 +1,23 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:pension_compare/app/home/models/pension_with_latest_statement_model.dart';
+import 'package:pension_compare/app/home/models/pension_with_statement_model.dart';
+import 'package:pension_compare/app/pension/models/pension_model.dart';
+import 'package:pension_compare/app/pension/views/widgets/legends_list_widget.dart';
+import 'package:pension_compare/constants/chart_color_constants.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
+import 'package:pension_compare/service_locator.dart';
 
 class PensionSummaryChart extends StatefulWidget {
-  final List<PensionWithLatestStatementModel>? pensionData;
-  const PensionSummaryChart({super.key, this.pensionData});
+  final List<PensionWithStatementModel>? pensionData;
+  final PensionSummaryChartStyles? selectedStyle;
+  final bool hideTitle;
+
+  const PensionSummaryChart(
+      {super.key,
+      this.pensionData,
+      this.selectedStyle,
+      this.hideTitle = false});
 
   @override
   State<PensionSummaryChart> createState() => _PensionSummaryChartState();
@@ -16,6 +27,17 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
   PensionSummaryChartStyles _selectedStyle =
       PensionSummaryChartStyles.planValue;
   static const double barWidth = 30;
+  Map<int, Legend> legendList = {};
+  final String _currencySymbol = CurrencyHelper.getCurrencySymbol();
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.selectedStyle != null) {
+      _selectedStyle = widget.selectedStyle!;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,45 +46,55 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
     }
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text(getChartTitle(_selectedStyle),
-            style: Theme.of(context).textTheme.titleMedium),
-        PopupMenuButton(
-          icon: const Icon(Icons.arrow_drop_down_circle_outlined),
-          itemBuilder: (BuildContext bc) {
-            return const [
-              PopupMenuItem(
-                value: PensionSummaryChartStyles.planValue,
-                child: Text("Plan Value"),
-              ),
-              PopupMenuItem(
-                value: PensionSummaryChartStyles.projectedYearlyAmount,
-                child: Text("Projected Yearly Amount"),
-              ),
-              PopupMenuItem(
-                value: PensionSummaryChartStyles.yearlyCharges,
-                child: Text("Yearly Charges"),
-              ),
-              PopupMenuItem(
-                value: PensionSummaryChartStyles.transferValue,
-                child: Text("Transfer Value"),
-              ),
-            ];
-          },
-          onSelected: (value) async {
-            setState(() {
-              _selectedStyle = value;
-            });
-          },
-        ),
-      ]),
+      if (!widget.hideTitle)
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text(getChartTitle(_selectedStyle),
+              style: Theme.of(context).textTheme.titleMedium),
+          PopupMenuButton(
+            icon: const Icon(Icons.arrow_drop_down_circle_outlined),
+            itemBuilder: (BuildContext bc) {
+              return const [
+                PopupMenuItem(
+                  value: PensionSummaryChartStyles.planValue,
+                  child: Text("Plan Value"),
+                ),
+                PopupMenuItem(
+                  value: PensionSummaryChartStyles.projectedYearlyAmount,
+                  child: Text("Projected Yearly Amount"),
+                ),
+                PopupMenuItem(
+                  value: PensionSummaryChartStyles.yearlyCharges,
+                  child: Text("Yearly Charges"),
+                ),
+                PopupMenuItem(
+                  value: PensionSummaryChartStyles.transferValue,
+                  child: Text("Transfer Value"),
+                ),
+              ];
+            },
+            onSelected: (value) async {
+              setState(() {
+                _selectedStyle = value;
+              });
+            },
+          ),
+        ]),
       AspectRatio(
           aspectRatio: 1,
           child: BarChart(
             swapAnimationDuration: const Duration(milliseconds: 300),
             swapAnimationCurve: Curves.bounceIn,
             getChartData(_selectedStyle),
-          ))
+          )),
+      legendList.isEmpty
+          ? const SizedBox()
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomStyles.spacerBox,
+                LegendsListWidget(legends: legendList.values.toList())
+              ],
+            ),
     ]);
   }
 
@@ -82,7 +114,7 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
           ) {
             return BarTooltipItem(
               '${widget.pensionData![groupIndex].pension.name}\n'
-              '${CurrencyHelper.formatCurrency(rod.toY)}',
+              '${CurrencyHelper.formatCurrency(rod.toY, _currencySymbol)}',
               const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -143,27 +175,15 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
         show: false,
       );
 
-  LinearGradient get _customBarsGradient => const LinearGradient(
-        colors: [Colors.deepPurple, Colors.purple],
-        begin: Alignment.bottomCenter,
-        end: Alignment.topCenter,
-      );
-
-  LinearGradient get _systemColorBarsGradient => LinearGradient(
-        colors: [
-          Theme.of(context).colorScheme.primary,
-          Theme.of(context).colorScheme.secondary
-        ],
-        begin: Alignment.bottomCenter,
-        end: Alignment.topCenter,
-      );
-
   List<BarChartGroupData> get planValueBarGroups => widget.pensionData!
       .asMap()
       .entries
       .map((entry) => BarChartGroupData(
             x: entry.key,
-            barRods: [buildBarRodData(entry.value.latestStatement?.planValue)],
+            barRods: [
+              buildBarRodData(
+                  entry.value.pension, entry.value.statement?.planValue)
+            ],
           ))
       .toList();
 
@@ -174,8 +194,8 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
           .map((entry) => BarChartGroupData(
                 x: entry.key,
                 barRods: [
-                  buildBarRodData(
-                      entry.value.latestStatement?.projectedAnnualAmount)
+                  buildBarRodData(entry.value.pension,
+                      entry.value.statement?.projectedAnnualAmount)
                 ],
               ))
           .toList();
@@ -186,7 +206,8 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
       .map((entry) => BarChartGroupData(
             x: entry.key,
             barRods: [
-              buildBarRodData(entry.value.latestStatement?.yearlyCharges)
+              buildBarRodData(
+                  entry.value.pension, entry.value.statement?.yearlyCharges)
             ],
           ))
       .toList();
@@ -197,16 +218,31 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
       .map((entry) => BarChartGroupData(
             x: entry.key,
             barRods: [
-              buildBarRodData(entry.value.latestStatement?.transferValue)
+              buildBarRodData(
+                  entry.value.pension, entry.value.statement?.transferValue)
             ],
           ))
       .toList();
 
-  BarChartRodData buildBarRodData(double? value) {
+  BarChartRodData buildBarRodData(PensionModel pension, double? value) {
+    ChartColorConstants chartColorConstants = getIt<ChartColorConstants>();
+    MaterialColor color =
+        chartColorConstants.getColorForPension(pension.pensionId!);
+    if (legendList[pension.pensionId!] == null) {
+      legendList[pension.pensionId!] = Legend(
+        pension.name,
+        color,
+      );
+    }
     return BarChartRodData(
       width: barWidth,
       toY: value ?? 0,
-      gradient: _customBarsGradient,
+      //color: color,
+      gradient: LinearGradient(
+        colors: [color, color.shade900],
+        begin: Alignment.bottomCenter,
+        end: Alignment.topCenter,
+      ),
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(3),
         topRight: Radius.circular(3),
@@ -241,11 +277,11 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
 
   String getChartTitle(PensionSummaryChartStyles selectedStyle) {
     return switch (selectedStyle) {
-      PensionSummaryChartStyles.planValue => 'Pensions Plan Value',
+      PensionSummaryChartStyles.planValue => 'Pension Plan Value',
       PensionSummaryChartStyles.projectedYearlyAmount =>
-        'Pensions Projected Yearly Amount',
-      PensionSummaryChartStyles.yearlyCharges => 'Pensions Yearly Charges',
-      PensionSummaryChartStyles.transferValue => 'Pensions Transfer Value',
+        'Pension Projected Yearly Amount',
+      PensionSummaryChartStyles.yearlyCharges => 'Pension Yearly Charges',
+      PensionSummaryChartStyles.transferValue => 'Pension Transfer Value',
     };
   }
 }

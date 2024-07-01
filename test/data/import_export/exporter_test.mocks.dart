@@ -10,13 +10,15 @@ import 'package:drift/src/runtime/executor/stream_queries.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i7;
 import 'package:pension_compare/app/settings/controllers/settings_service.dart'
-    as _i9;
+    as _i10;
 import 'package:pension_compare/app/settings/models/settings.dart' as _i6;
-import 'package:pension_compare/app/settings/models/user_settings.dart' as _i10;
+import 'package:pension_compare/app/settings/models/user_settings.dart' as _i11;
 import 'package:pension_compare/data/database/database_service.dart' as _i3;
-import 'package:pension_compare/data/database/tables/pensions_with_latest_statement.dart'
+import 'package:pension_compare/data/database/tables/pensions_with_statement.dart'
     as _i8;
-import 'package:shared_preferences/shared_preferences.dart' as _i11;
+import 'package:pension_compare/data/database/tables/yearly_pension_statement.dart'
+    as _i9;
+import 'package:shared_preferences/shared_preferences.dart' as _i12;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -632,15 +634,24 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
       ) as _i5.Future<_i3.OtherIncome?>);
 
   @override
-  _i5.Stream<List<_i8.PensionWithLatestStatement>>
+  _i5.Stream<List<_i8.PensionWithStatement>>
       getAllPensionsWithLatestStatement() => (super.noSuchMethod(
             Invocation.method(
               #getAllPensionsWithLatestStatement,
               [],
             ),
-            returnValue:
-                _i5.Stream<List<_i8.PensionWithLatestStatement>>.empty(),
-          ) as _i5.Stream<List<_i8.PensionWithLatestStatement>>);
+            returnValue: _i5.Stream<List<_i8.PensionWithStatement>>.empty(),
+          ) as _i5.Stream<List<_i8.PensionWithStatement>>);
+
+  @override
+  _i5.Stream<List<_i9.YearlyPensionStatement>> getYearlyPensionSummary() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getYearlyPensionSummary,
+          [],
+        ),
+        returnValue: _i5.Stream<List<_i9.YearlyPensionStatement>>.empty(),
+      ) as _i5.Stream<List<_i9.YearlyPensionStatement>>);
 
   @override
   _i5.Future<void> populateTestData() => (super.noSuchMethod(
@@ -1149,7 +1160,7 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
 /// A class which mocks [SettingsService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSettingsService extends _i1.Mock implements _i9.SettingsService {
+class MockSettingsService extends _i1.Mock implements _i10.SettingsService {
   MockSettingsService() {
     _i1.throwOnMissingStub(this);
   }
@@ -1182,8 +1193,8 @@ class MockSettingsService extends _i1.Mock implements _i9.SettingsService {
 
   @override
   _i5.Future<void> saveUserSettings(
-    _i10.UserSettings? settings, [
-    _i11.SharedPreferences? sharedPreferences,
+    _i11.UserSettings? settings, [
+    _i12.SharedPreferences? sharedPreferences,
   ]) =>
       (super.noSuchMethod(
         Invocation.method(
