@@ -13,6 +13,8 @@ void main() {
       double projectedAnnualAmount = 678.90;
       double yearlyCharges = 987.65;
       double transferValue = 432.10;
+      double amountPaidIn = 123.21;
+
       Statement statement = Statement(
           statementId: statementId,
           pension: pensionId,
@@ -20,7 +22,8 @@ void main() {
           planValue: planValue,
           projectedAnnualAmount: projectedAnnualAmount,
           yearlyCharges: yearlyCharges,
-          transferValue: transferValue);
+          transferValue: transferValue,
+          amountPaidIn: amountPaidIn);
 
       StatementModel statementModel = StatementMapper.mapToModel(statement);
 
@@ -32,6 +35,7 @@ void main() {
       expect(statementModel.projectedAnnualAmount, projectedAnnualAmount);
       expect(statementModel.yearlyCharges, yearlyCharges);
       expect(statementModel.transferValue, transferValue);
+      expect(statementModel.amountPaidIn, amountPaidIn);
     });
 
     testWidgets('map single object preserves nulls', (tester) async {
@@ -42,6 +46,7 @@ void main() {
       double projectedAnnualAmount = 678.90;
       double? yearlyCharges;
       double? transferValue;
+      double? amountPaidIn;
 
       Statement statement = Statement(
           statementId: statementId,
@@ -50,7 +55,8 @@ void main() {
           planValue: planValue,
           projectedAnnualAmount: projectedAnnualAmount,
           yearlyCharges: yearlyCharges,
-          transferValue: transferValue);
+          transferValue: transferValue,
+          amountPaidIn: amountPaidIn);
 
       StatementModel statementModel = StatementMapper.mapToModel(statement);
 
@@ -62,6 +68,7 @@ void main() {
       expect(statementModel.projectedAnnualAmount, projectedAnnualAmount);
       expect(statementModel.yearlyCharges, isNull);
       expect(statementModel.transferValue, isNull);
+      expect(statementModel.amountPaidIn, isNull);
     });
 
     testWidgets('map list object object', (tester) async {
@@ -72,6 +79,8 @@ void main() {
       double projectedAnnualAmount = 678.90;
       double yearlyCharges = 987.65;
       double transferValue = 432.10;
+      double amountPaidIn = 123.21;
+
       Statement statement = Statement(
           statementId: statementId,
           pension: pensionId,
@@ -79,9 +88,11 @@ void main() {
           planValue: planValue,
           projectedAnnualAmount: projectedAnnualAmount,
           yearlyCharges: yearlyCharges,
-          transferValue: transferValue);
+          transferValue: transferValue,
+          amountPaidIn: amountPaidIn);
 
-      List<StatementModel> statementModel = StatementMapper.mapToModelList([statement]);
+      List<StatementModel> statementModel =
+          StatementMapper.mapToModelList([statement]);
 
       expect(statementModel, isNotNull);
       expect(statementModel.length, 1);
@@ -92,6 +103,7 @@ void main() {
       expect(statementModel[0].projectedAnnualAmount, projectedAnnualAmount);
       expect(statementModel[0].yearlyCharges, yearlyCharges);
       expect(statementModel[0].transferValue, transferValue);
+      expect(statementModel[0].amountPaidIn, amountPaidIn);
     });
   });
 }

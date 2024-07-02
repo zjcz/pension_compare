@@ -64,6 +64,12 @@ class _PensionDataTableState extends State<PensionDataTable> {
               style: CustomStyles.dataTableHeaderTextStyle,
             ),
           ),
+          DataColumn(
+            label: Text(
+              'Paid In',
+              style: CustomStyles.dataTableHeaderTextStyle,
+            ),
+          ),
         ],
         rows:
             List<DataRow>.generate(widget.pensionDataList.length, (int index) {
@@ -97,7 +103,9 @@ class _PensionDataTableState extends State<PensionDataTable> {
               DataCell(Text(CurrencyHelper.formatCurrency(
                   pensionData.statement?.yearlyCharges ?? 0))),
               DataCell(Text(CurrencyHelper.formatCurrency(
-                  pensionData.statement?.transferValue ?? 0)))
+                  pensionData.statement?.transferValue ?? 0))),
+              DataCell(Text(CurrencyHelper.formatCurrency(
+                  pensionData.statement?.amountPaidIn ?? 0)))
             ],
           );
         }),

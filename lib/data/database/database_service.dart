@@ -132,14 +132,16 @@ class DatabaseService extends _$DatabaseService {
       double planValue,
       double projectedAnnualAmount,
       double? yearlyCharges,
-      double? transferValue) {
+      double? transferValue,
+      double? amountPaidIn) {
     return into(statements).insertReturningOrNull(StatementsCompanion.insert(
         pension: pensionId,
         statementDate: DateHelper.removeTime(statementDate),
         planValue: planValue,
         projectedAnnualAmount: projectedAnnualAmount,
         yearlyCharges: Value(yearlyCharges),
-        transferValue: Value(transferValue)));
+        transferValue: Value(transferValue),
+        amountPaidIn: Value(amountPaidIn)));
   }
 
   // Update an existing statement record, return true if successful
@@ -150,7 +152,8 @@ class DatabaseService extends _$DatabaseService {
       double planValue,
       double projectedAnnualAmount,
       double? yearlyCharges,
-      double? transferValue) {
+      double? transferValue,
+      double? amountPaidIn) {
     return update(statements).replace(Statement(
         statementId: id,
         pension: pensionId,
@@ -158,7 +161,8 @@ class DatabaseService extends _$DatabaseService {
         planValue: planValue,
         projectedAnnualAmount: projectedAnnualAmount,
         yearlyCharges: yearlyCharges,
-        transferValue: transferValue));
+        transferValue: transferValue,
+        amountPaidIn: amountPaidIn));
   }
 
   // Delete a statement record by its id and return the number of records deleted
@@ -283,29 +287,29 @@ class DatabaseService extends _$DatabaseService {
 
     // create some test statements
     await createStatement(
-        p1!.pensionId, DateTime(2020, 1, 1), 1000, 100, 10, 1000);
+        p1!.pensionId, DateTime(2020, 1, 1), 1000, 100, 10, 1000, 900);
     await createStatement(
-        p1.pensionId, DateTime(2021, 1, 1), 2000, 200, 20, 2000);
+        p1.pensionId, DateTime(2021, 1, 1), 2000, 200, 20, 2000, 1000);
     await createStatement(
-        p1.pensionId, DateTime(2022, 1, 1), 3000, 300, 30, 3000);
+        p1.pensionId, DateTime(2022, 1, 1), 3000, 300, 30, 3000, 2000);
     await createStatement(
-        p1.pensionId, DateTime(2023, 1, 1), 4000, 500, 60, 7000);
+        p1.pensionId, DateTime(2023, 1, 1), 4000, 500, 60, 7000, 3000);
     await createStatement(
-        p2!.pensionId, DateTime(2020, 1, 1), 2000, 200, 20, 2000);
+        p2!.pensionId, DateTime(2020, 1, 1), 2000, 200, 20, 2000, 1000);
     await createStatement(
-        p2.pensionId, DateTime(2021, 1, 1), 3000, 300, 30, 3000);
+        p2.pensionId, DateTime(2021, 1, 1), 3000, 300, 30, 3000, 2000);
     await createStatement(
-        p2.pensionId, DateTime(2022, 1, 1), 4000, 400, 40, 4000);
+        p2.pensionId, DateTime(2022, 1, 1), 4000, 400, 40, 4000, 3000);
     await createStatement(
-        p2.pensionId, DateTime(2023, 1, 1), 5000, 400, 30, 2000);
+        p2.pensionId, DateTime(2023, 1, 1), 5000, 400, 30, 2000, 4000);
     await createStatement(
-        p4!.pensionId, DateTime(2020, 1, 1), 1500, 150, 15, 1500);
+        p4!.pensionId, DateTime(2020, 1, 1), 1500, 150, 15, 1500, 1300);
     await createStatement(
-        p4.pensionId, DateTime(2021, 1, 1), 2500, 250, 25, 2500);
+        p4.pensionId, DateTime(2021, 1, 1), 2500, 250, 25, 2500, 2300);
     await createStatement(
-        p4.pensionId, DateTime(2022, 1, 1), 3500, 350, 35, 3500);
+        p4.pensionId, DateTime(2022, 1, 1), 3500, 350, 35, 3500, 3300);
     await createStatement(
-        p4.pensionId, DateTime(2023, 1, 1), 4500, 450, 45, 4500);
+        p4.pensionId, DateTime(2023, 1, 1), 4500, 450, 45, 4500, 4300);
 
     // create a state pension record
     await saveStatePension(1000);

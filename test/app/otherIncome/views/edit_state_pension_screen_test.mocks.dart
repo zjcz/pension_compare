@@ -530,6 +530,7 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
     double? projectedAnnualAmount,
     double? yearlyCharges,
     double? transferValue,
+    double? amountPaidIn,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -541,6 +542,7 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
             projectedAnnualAmount,
             yearlyCharges,
             transferValue,
+            amountPaidIn,
           ],
         ),
         returnValue: _i5.Future<_i3.Statement?>.value(),
@@ -555,6 +557,7 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
     double? projectedAnnualAmount,
     double? yearlyCharges,
     double? transferValue,
+    double? amountPaidIn,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -567,6 +570,7 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
             projectedAnnualAmount,
             yearlyCharges,
             transferValue,
+            amountPaidIn,
           ],
         ),
         returnValue: _i5.Future<bool>.value(false),

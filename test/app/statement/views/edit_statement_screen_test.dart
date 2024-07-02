@@ -21,8 +21,8 @@ late MockSettingsService mockSettingsService;
 Widget createEditScreen(Statement? statementRecord, DatabaseService db,
     [bool withRouting = false]) {
   if (withRouting) {
-        getIt.registerSingleton<SettingsService>(mockSettingsService);
-        
+    getIt.registerSingleton<SettingsService>(mockSettingsService);
+
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
       return ProviderScope(
@@ -60,7 +60,7 @@ DatabaseService createMockDatabaseService() {
 
 @GenerateMocks([DatabaseService, SettingsService])
 void main() {
-    setUp(() async {
+  setUp(() async {
     mockSettingsService = MockSettingsService();
 
     when(mockSettingsService.getAllSettings())
@@ -76,7 +76,7 @@ void main() {
     // reset before each test to prevent errors with duplicate objects
     await getIt.reset();
   });
-  
+
   group('Test adding / editing of statement record', () {
     testWidgets('show the add screen with no statement record', (tester) async {
       final databaseService = createMockDatabaseService();
@@ -95,6 +95,7 @@ void main() {
       expect(find.bySemanticsLabel('Projected Yearly Amount'), findsOneWidget);
       expect(find.bySemanticsLabel('Yearly Charges'), findsOneWidget);
       expect(find.bySemanticsLabel('Transfer Value'), findsOneWidget);
+      expect(find.bySemanticsLabel('Amount Paid In'), findsOneWidget);
 
       expect(
           find.text(
@@ -102,7 +103,7 @@ void main() {
           findsOneWidget);
 
       expect(find.byType(DropdownButtonFormField<int>), findsOneWidget);
-      expect(find.byType(TextFormField), findsNWidgets(5));
+      expect(find.byType(TextFormField), findsNWidgets(6));
       expect(find.byKey(EditStatementScreen.pensionKey), findsOneWidget);
       expect(find.byKey(EditStatementScreen.statementDateKey), findsOneWidget);
       expect(find.byKey(EditStatementScreen.planValueKey), findsOneWidget);
@@ -110,6 +111,7 @@ void main() {
           findsOneWidget);
       expect(find.byKey(EditStatementScreen.yearlyChargesKey), findsOneWidget);
       expect(find.byKey(EditStatementScreen.transferValueKey), findsOneWidget);
+      expect(find.byKey(EditStatementScreen.paidInValueKey), findsOneWidget);
 
       expect(find.byType(TextButton), findsOneWidget);
     });
@@ -168,6 +170,7 @@ void main() {
       double projectedAnnualAmount = 1234;
       double yearlyCharges = 100;
       double transferValue = 12345;
+      double paidInValue = 123456;
 
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
@@ -175,7 +178,7 @@ void main() {
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
           ]));
       when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue))
+              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue))
           .thenAnswer((_) async => Statement(
               statementId: 1,
               pension: pensionId,
@@ -183,7 +186,8 @@ void main() {
               planValue: planValue,
               projectedAnnualAmount: projectedAnnualAmount,
               yearlyCharges: yearlyCharges,
-              transferValue: transferValue));
+              transferValue: transferValue,
+              amountPaidIn: paidInValue));
       when(databaseService.doesStatementDateExist(
               null, pensionId, statementDate))
           .thenAnswer((_) async => false);
@@ -213,13 +217,20 @@ void main() {
           yearlyCharges.toString());
       await tester.enterText(find.byKey(EditStatementScreen.transferValueKey),
           transferValue.toString());
-
+      await tester.enterText(find.byKey(EditStatementScreen.paidInValueKey),
+          paidInValue.toString());
       // Tap the save button
       await tester.tap(find.byType(TextButton));
 
       verify(databaseService.getAllPensions()).called(1);
-      verify(databaseService.createStatement(pensionId, statementDate,
-              planValue, projectedAnnualAmount, yearlyCharges, transferValue))
+      verify(databaseService.createStatement(
+              pensionId,
+              statementDate,
+              planValue,
+              projectedAnnualAmount,
+              yearlyCharges,
+              transferValue,
+              paidInValue))
           .called(1);
     });
 
@@ -233,11 +244,13 @@ void main() {
       double originalProjectedAnnualAmount = 1234;
       double originalYearlyCharges = 100;
       double originalTransferValue = 12345;
+      double originalPaidInValue = 123456;
       DateTime newStatementDate = DateTime(2024, 1, 20);
       double newPlanValue = 54321.0;
       double newProjectedAnnualAmount = 9876;
       double newYearlyCharges = 500;
       double newTransferValue = 98765;
+      double newPaidInValue = 987654;
 
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
@@ -251,7 +264,8 @@ void main() {
               newPlanValue,
               newProjectedAnnualAmount,
               newYearlyCharges,
-              newTransferValue))
+              newTransferValue,
+              newPaidInValue))
           .thenAnswer((_) async => true);
       when(databaseService.doesStatementDateExist(
               statementId, pensionId, newStatementDate))
@@ -265,8 +279,10 @@ void main() {
               planValue: originalPlanValue,
               projectedAnnualAmount: originalProjectedAnnualAmount,
               yearlyCharges: originalYearlyCharges,
-              transferValue: originalTransferValue),
-          databaseService, true));
+              transferValue: originalTransferValue,
+              amountPaidIn: originalPaidInValue),
+          databaseService,
+          true));
 
       // Set the date of the date picker
       await tester.tap(find.byKey(EditStatementScreen.statementDateKey));
@@ -285,6 +301,8 @@ void main() {
           newYearlyCharges.toString());
       await tester.enterText(find.byKey(EditStatementScreen.transferValueKey),
           newTransferValue.toString());
+      await tester.enterText(find.byKey(EditStatementScreen.paidInValueKey),
+          newPaidInValue.toString());
 
       // Tap the save button
       await tester.tap(find.widgetWithText(TextButton, 'Save'));
@@ -296,7 +314,8 @@ void main() {
           newPlanValue,
           newProjectedAnnualAmount,
           newYearlyCharges,
-          newTransferValue));
+          newTransferValue,
+          newPaidInValue));
       verify(databaseService.updateStatement(
               statementId,
               pensionId,
@@ -304,7 +323,8 @@ void main() {
               newPlanValue,
               newProjectedAnnualAmount,
               newYearlyCharges,
-              newTransferValue))
+              newTransferValue,
+              newPaidInValue))
           .called(1);
     });
   });
@@ -321,6 +341,7 @@ void main() {
       double projectedAnnualAmount = 1234;
       double yearlyCharges = 100;
       double transferValue = 12345;
+      double paidInValue = 12345.0;
 
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
@@ -328,7 +349,7 @@ void main() {
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
           ]));
       when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue))
+              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue))
           .thenAnswer((_) async => Statement(
               statementId: 1,
               pension: pensionId,
@@ -336,7 +357,8 @@ void main() {
               planValue: planValue,
               projectedAnnualAmount: projectedAnnualAmount,
               yearlyCharges: yearlyCharges,
-              transferValue: transferValue));
+              transferValue: transferValue,
+              amountPaidIn: paidInValue));
       when(databaseService.doesStatementDateExist(
               null, pensionId, statementDate))
           .thenAnswer((_) async => false);
@@ -366,6 +388,8 @@ void main() {
           yearlyCharges.toString());
       await tester.enterText(find.byKey(EditStatementScreen.transferValueKey),
           transferValue.toString());
+      await tester.enterText(find.byKey(EditStatementScreen.paidInValueKey),
+          paidInValue.toString());
 
       // Tap the save button
       await tester.tap(find.widgetWithText(TextButton, "Save"));
@@ -387,11 +411,13 @@ void main() {
       double originalProjectedAnnualAmount = 1234;
       double originalYearlyCharges = 100;
       double originalTransferValue = 12345;
+      double originalPaidInValue = 123456;
       DateTime newStatementDate = DateTime(2024, 1, 20);
       double newPlanValue = 54321.0;
       double newProjectedAnnualAmount = 9876;
       double newYearlyCharges = 500;
       double newTransferValue = 98765;
+      double newPaidInValue = 987654;
 
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
@@ -405,7 +431,8 @@ void main() {
               newPlanValue,
               newProjectedAnnualAmount,
               newYearlyCharges,
-              newTransferValue))
+              newTransferValue,
+              newPaidInValue))
           .thenAnswer((_) async => true);
       when(databaseService.doesStatementDateExist(
               statementId, pensionId, newStatementDate))
@@ -419,8 +446,10 @@ void main() {
               planValue: originalPlanValue,
               projectedAnnualAmount: originalProjectedAnnualAmount,
               yearlyCharges: originalYearlyCharges,
-              transferValue: originalTransferValue),
-          databaseService, true));
+              transferValue: originalTransferValue,
+              amountPaidIn: originalPaidInValue),
+          databaseService,
+          true));
 
       // Set the date of the date picker
       await tester.tap(find.byKey(EditStatementScreen.statementDateKey));
@@ -439,6 +468,8 @@ void main() {
           newYearlyCharges.toString());
       await tester.enterText(find.byKey(EditStatementScreen.transferValueKey),
           newTransferValue.toString());
+      await tester.enterText(find.byKey(EditStatementScreen.paidInValueKey),
+          newPaidInValue.toString());
 
       // Tap the save button
       await tester.tap(find.widgetWithText(TextButton, "Save"));
@@ -459,6 +490,7 @@ void main() {
       double projectedAnnualAmount = 1234;
       double yearlyCharges = 100;
       double transferValue = 12345;
+      double paidInValue = 123456;
 
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
@@ -466,7 +498,7 @@ void main() {
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
           ]));
       when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue))
+              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue))
           .thenAnswer((_) async => Statement(
               statementId: 1,
               pension: pensionId,
@@ -474,7 +506,8 @@ void main() {
               planValue: planValue,
               projectedAnnualAmount: projectedAnnualAmount,
               yearlyCharges: yearlyCharges,
-              transferValue: transferValue));
+              transferValue: transferValue,
+              amountPaidIn: paidInValue));
       when(databaseService.doesStatementDateExist(
               null, pensionId, statementDate))
           .thenAnswer((_) async => false);
@@ -504,7 +537,8 @@ void main() {
           find.byKey(EditStatementScreen.yearlyChargesKey), "invalid number");
       await tester.enterText(
           find.byKey(EditStatementScreen.transferValueKey), "invalid number");
-
+      await tester.enterText(
+          find.byKey(EditStatementScreen.paidInValueKey), "invalid number");
       // Tap the save button
       await tester.tap(find.widgetWithText(TextButton, 'Save'));
 
@@ -512,8 +546,14 @@ void main() {
           find.text("Please enter a value, or 0 if unknown"), findsNWidgets(2));
 
       verify(databaseService.getAllPensions()).called(1);
-      verifyNever(databaseService.createStatement(pensionId, statementDate,
-          planValue, projectedAnnualAmount, yearlyCharges, transferValue));
+      verifyNever(databaseService.createStatement(
+          pensionId,
+          statementDate,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue,
+          paidInValue));
     });
 
     testWidgets('validation should warn of duplicate statement date',
@@ -526,6 +566,7 @@ void main() {
       double projectedAnnualAmount = 1234;
       double yearlyCharges = 100;
       double transferValue = 12345;
+      double paidInValue = 123456;
 
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
@@ -533,7 +574,7 @@ void main() {
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
           ]));
       when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue))
+              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue))
           .thenAnswer((_) async => Statement(
               statementId: 1,
               pension: pensionId,
@@ -541,7 +582,8 @@ void main() {
               planValue: planValue,
               projectedAnnualAmount: projectedAnnualAmount,
               yearlyCharges: yearlyCharges,
-              transferValue: transferValue));
+              transferValue: transferValue,
+              amountPaidIn: paidInValue));
       when(databaseService.doesStatementDateExist(
               null, pensionId, statementDate))
           .thenAnswer((_) async => true);
@@ -571,6 +613,8 @@ void main() {
           yearlyCharges.toString());
       await tester.enterText(find.byKey(EditStatementScreen.transferValueKey),
           transferValue.toString());
+      await tester.enterText(find.byKey(EditStatementScreen.paidInValueKey),
+          paidInValue.toString());
 
       // Tap the save button
       await tester.tap(find.widgetWithText(TextButton, 'Save'));
@@ -583,8 +627,14 @@ void main() {
       verify(databaseService.doesStatementDateExist(
               null, pensionId, statementDate))
           .called(1);
-      verifyNever(databaseService.createStatement(pensionId, statementDate,
-          planValue, projectedAnnualAmount, yearlyCharges, transferValue));
+      verifyNever(databaseService.createStatement(
+          pensionId,
+          statementDate,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue,
+          paidInValue));
     });
 
     testWidgets('validation should clear after duplicate pension name',
@@ -601,14 +651,21 @@ void main() {
       double projectedAnnualAmount = 1234;
       double yearlyCharges = 100;
       double transferValue = 12345;
+      double paidInValue = 123456;
 
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
             Pension(
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
           ]));
-      when(databaseService.createStatement(pensionId, newStatementDate,
-              planValue, projectedAnnualAmount, yearlyCharges, transferValue))
+      when(databaseService.createStatement(
+              pensionId,
+              newStatementDate,
+              planValue,
+              projectedAnnualAmount,
+              yearlyCharges,
+              transferValue,
+              paidInValue))
           .thenAnswer((_) async => Statement(
               statementId: 1,
               pension: pensionId,
@@ -616,7 +673,8 @@ void main() {
               planValue: planValue,
               projectedAnnualAmount: projectedAnnualAmount,
               yearlyCharges: yearlyCharges,
-              transferValue: transferValue));
+              transferValue: transferValue,
+              amountPaidIn: paidInValue));
       when(databaseService.doesStatementDateExist(
               null, pensionId, statementDate))
           .thenAnswer((_) async => true);
@@ -649,6 +707,8 @@ void main() {
           yearlyCharges.toString());
       await tester.enterText(find.byKey(EditStatementScreen.transferValueKey),
           transferValue.toString());
+      await tester.enterText(find.byKey(EditStatementScreen.paidInValueKey),
+          paidInValue.toString());
 
       // Tap the save button
       await tester.tap(find.widgetWithText(TextButton, 'Save'));
@@ -700,6 +760,7 @@ void main() {
       double projectedAnnualAmount = 1234;
       double yearlyCharges = 100;
       double transferValue = 12345;
+      double paidInValue = 123456;
 
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
@@ -713,7 +774,9 @@ void main() {
           planValue: planValue,
           projectedAnnualAmount: projectedAnnualAmount,
           yearlyCharges: yearlyCharges,
-          transferValue: transferValue);
+          transferValue: transferValue,
+          amountPaidIn: paidInValue);
+
       await tester.pumpWidget(createEditScreen(statement, databaseService));
       await tester.pumpAndSettle();
 
@@ -731,6 +794,7 @@ void main() {
       double projectedAnnualAmount = 1234;
       double yearlyCharges = 100;
       double transferValue = 12345;
+      double paidInValue = 123456;
 
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
@@ -744,7 +808,8 @@ void main() {
           planValue: planValue,
           projectedAnnualAmount: projectedAnnualAmount,
           yearlyCharges: yearlyCharges,
-          transferValue: transferValue);
+          transferValue: transferValue,
+          amountPaidIn: paidInValue);
       await tester.pumpWidget(createEditScreen(statement, databaseService));
       await tester.pumpAndSettle();
 
@@ -776,6 +841,7 @@ void main() {
       double projectedAnnualAmount = 1234;
       double yearlyCharges = 100;
       double transferValue = 12345;
+      double paidInValue = 123456;
 
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
@@ -792,7 +858,8 @@ void main() {
           planValue: planValue,
           projectedAnnualAmount: projectedAnnualAmount,
           yearlyCharges: yearlyCharges,
-          transferValue: transferValue);
+          transferValue: transferValue,
+          amountPaidIn: paidInValue);
       await tester.pumpWidget(createEditScreen(statement, databaseService));
       await tester.pumpAndSettle();
 
@@ -825,6 +892,7 @@ void main() {
       double projectedAnnualAmount = 1234;
       double yearlyCharges = 100;
       double transferValue = 12345;
+      double paidInValue = 123456;
 
       final databaseService = createMockDatabaseService();
       Pension p =
@@ -846,8 +914,10 @@ void main() {
           planValue: planValue,
           projectedAnnualAmount: projectedAnnualAmount,
           yearlyCharges: yearlyCharges,
-          transferValue: transferValue);
-      await tester.pumpWidget(createEditScreen(statement, databaseService, true));
+          transferValue: transferValue,
+          amountPaidIn: paidInValue);
+      await tester
+          .pumpWidget(createEditScreen(statement, databaseService, true));
       await tester.pumpAndSettle();
 
       // Tap the delete button (scroll to it first as it may be off screen)

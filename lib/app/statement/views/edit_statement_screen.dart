@@ -18,6 +18,7 @@ class EditStatementScreen extends ConsumerStatefulWidget {
   static const projectedAnnualAmountKey = Key('projectedAnnualAmount');
   static const yearlyChargesKey = Key('yearlyCharges');
   static const transferValueKey = Key('transferValue');
+  static const paidInValueKey = Key('paidInValue');
   static const statementDeleteKey = Key('deleteButton');
 
   // If editing, this is the statement record we are editing.
@@ -38,6 +39,7 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
       TextEditingController();
   TextEditingController yearlyChargesController = TextEditingController();
   TextEditingController transferValueController = TextEditingController();
+  TextEditingController paidInValueController = TextEditingController();
   DateTime? _statementDate;
   int? _pensionId;
   String? _statementDateValidationError;
@@ -61,6 +63,8 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
           CurrencyHelper.formatCurrency(widget.statement!.yearlyCharges);
       transferValueController.text =
           CurrencyHelper.formatCurrency(widget.statement!.transferValue);
+      paidInValueController.text =
+          CurrencyHelper.formatCurrency(widget.statement!.amountPaidIn);
     } else if (widget.parentPension != null) {
       _pensionId = widget.parentPension!.pensionId;
     }
@@ -239,6 +243,29 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
                         _unsavedChanges = true;
                       },
                     ),
+                    CustomStyles.spacerBox,
+                    TextFormField(
+                      key: EditStatementScreen.paidInValueKey,
+                      controller: paidInValueController,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      decoration:
+                          const InputDecoration(labelText: "Amount Paid In"),
+                      validator: (value) {
+                        if (value != null && value.isNotEmpty) {
+                          if (CurrencyHelper.parseCurrency(value) == null) {
+                            return "Please enter a valid number";
+                          }
+                        }
+                        return null;
+                      },
+                      onChanged: (val) {
+                        _unsavedChanges = true;
+                      },
+                    ),
+                    const Text(
+                        'This is the amount paid in during the statement period, not the total amount paid into the pension.',
+                        style: CustomStyles.infoTextStyle),
                     // only show the delete button and spacer if the statement has been saved
                     if (widget.statement != null) ...[
                       CustomStyles.spacerBox,
@@ -297,7 +324,8 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
           CurrencyHelper.parseCurrency(planValueController.text)!,
           CurrencyHelper.parseCurrency(projectedAnnualAmountController.text)!,
           CurrencyHelper.parseCurrency(yearlyChargesController.text),
-          CurrencyHelper.parseCurrency(transferValueController.text));
+          CurrencyHelper.parseCurrency(transferValueController.text),
+          CurrencyHelper.parseCurrency(paidInValueController.text));
     } else {
       await controller.updateStatement(
           widget.statement!.statementId!,
@@ -306,7 +334,8 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
           CurrencyHelper.parseCurrency(planValueController.text)!,
           CurrencyHelper.parseCurrency(projectedAnnualAmountController.text)!,
           CurrencyHelper.parseCurrency(yearlyChargesController.text),
-          CurrencyHelper.parseCurrency(transferValueController.text));
+          CurrencyHelper.parseCurrency(transferValueController.text),
+          CurrencyHelper.parseCurrency(paidInValueController.text));
     }
 
     return true;

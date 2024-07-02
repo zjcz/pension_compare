@@ -55,13 +55,15 @@ void main() {
       double projectedAnnualAmount = 678.90;
       double yearlyCharges = 987.65;
       double transferValue = 432.10;
+      double amountPaidIn = 1928.37;
       TransferStatementModel transferStatement = TransferStatementModel(
           statementId: statementId,
           statementDate: statementDate,
           planValue: planValue,
           projectedAnnualAmount: projectedAnnualAmount,
           yearlyCharges: yearlyCharges,
-          transferValue: transferValue);
+          transferValue: transferValue,
+          amountPaidIn: amountPaidIn);
       TransferPensionModel transferPension = TransferPensionModel(
           pensionId: pensionId,
           name: pensionName,
@@ -86,13 +88,16 @@ void main() {
       double projectedAnnualAmount = 678.90;
       double yearlyCharges = 987.65;
       double transferValue = 432.10;
+      double amountPaidIn = 1928.37;
+
       TransferStatementModel transferStatement = TransferStatementModel(
           statementId: statementId,
           statementDate: statementDate,
           planValue: planValue,
           projectedAnnualAmount: projectedAnnualAmount,
           yearlyCharges: yearlyCharges,
-          transferValue: transferValue);
+          transferValue: transferValue,
+          amountPaidIn: amountPaidIn);
       TransferPensionModel transferPension = TransferPensionModel(
           pensionId: pensionId,
           name: pensionName,
@@ -110,6 +115,7 @@ void main() {
       expect(statements[0].projectedAnnualAmount, projectedAnnualAmount);
       expect(statements[0].yearlyCharges, yearlyCharges);
       expect(statements[0].transferValue, transferValue);
+      expect(statements[0].amountPaidIn, amountPaidIn);
     });
 
     testWidgets('map to transfer and back again', (tester) async {
@@ -122,6 +128,8 @@ void main() {
       double projectedAnnualAmount = 678.90;
       double yearlyCharges = 987.65;
       double transferValue = 432.10;
+      double amountPaidIn = 1928.37;
+
       Pension pension = Pension(
           pensionId: pensionId, name: pensionName, maturityDate: maturityDate);
       Statement statement = Statement(
@@ -131,7 +139,8 @@ void main() {
           planValue: planValue,
           projectedAnnualAmount: projectedAnnualAmount,
           yearlyCharges: yearlyCharges,
-          transferValue: transferValue);
+          transferValue: transferValue,
+          amountPaidIn: amountPaidIn);
 
       TransferPensionModel pensionModel =
           PensionMapper.toTransfer(pension, [statement]);
@@ -152,6 +161,7 @@ void main() {
           statement.projectedAnnualAmount);
       expect(resultStatements[0].yearlyCharges, statement.yearlyCharges);
       expect(resultStatements[0].transferValue, statement.transferValue);
+      expect(resultStatements[0].amountPaidIn, statement.amountPaidIn);
     });
   });
 }
