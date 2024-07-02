@@ -104,7 +104,8 @@ class Exporter {
               statement.planValue,
               statement.projectedAnnualAmount,
               statement.yearlyCharges,
-              statement.transferValue);
+              statement.transferValue,
+              statement.amountPaidIn);
         }
       }
     }

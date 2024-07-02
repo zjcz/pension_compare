@@ -17,6 +17,7 @@ class PensionMapper {
                 projectedAnnualAmount: statement.projectedAnnualAmount,
                 yearlyCharges: statement.yearlyCharges,
                 transferValue: statement.transferValue,
+                amountPaidIn: statement.amountPaidIn,
               ))
           .toList(),
     );
@@ -38,7 +39,8 @@ class PensionMapper {
             planValue: statement.planValue,
             projectedAnnualAmount: statement.projectedAnnualAmount,
             yearlyCharges: statement.yearlyCharges,
-            transferValue: statement.transferValue))
+            transferValue: statement.transferValue,
+            amountPaidIn: statement.amountPaidIn))
         .toList();
   }
 }

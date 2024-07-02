@@ -11,6 +11,7 @@ class StatementMapper {
       projectedAnnualAmount: statement.projectedAnnualAmount,
       yearlyCharges: statement.yearlyCharges,
       transferValue: statement.transferValue,
+      amountPaidIn: statement.amountPaidIn,
     );
   }
 

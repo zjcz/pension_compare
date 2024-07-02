@@ -7,7 +7,7 @@ part of 'statement_controller.dart';
 // **************************************************************************
 
 String _$statementControllerHash() =>
-    r'2ed3620c464b3e4e256fc591ad98f7d7d3c4d703';
+    r'a238b9ccf0507aac6c0dbf9b3db550b0d354ffc1';
 
 /// Copied from Dart SDK
 class _SystemHash {

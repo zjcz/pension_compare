@@ -56,6 +56,10 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
                 value: PensionSummaryChartStyles.transferValue,
                 child: Text("Transfer Value"),
               ),
+              PopupMenuItem(
+                value: PensionSummaryChartStyles.amountPaidIn,
+                child: Text("Amount Paid In"),
+              ),
             ];
           },
           onSelected: (value) async {
@@ -190,6 +194,15 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
           ))
       .toList();
 
+  List<BarChartGroupData> get amountPaidInBarGroups => widget.statementData!
+      .asMap()
+      .entries
+      .map((entry) => BarChartGroupData(
+            x: entry.key,
+            barRods: [buildBarRodData(entry.value.amountPaidIn)],
+          ))
+      .toList();
+
   BarChartRodData buildBarRodData(double? value) {
     return BarChartRodData(
       width: barWidth,
@@ -217,6 +230,7 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
           projectedAnnualAmountBarGroups,
         PensionSummaryChartStyles.yearlyCharges => yearlyChargesBarGroups,
         PensionSummaryChartStyles.transferValue => transferValueBarGroups,
+        PensionSummaryChartStyles.amountPaidIn => amountPaidInBarGroups,
       },
       gridData: FlGridData(
         show: true,
@@ -238,6 +252,7 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
         'Pension Projected Yearly Amount',
       PensionSummaryChartStyles.yearlyCharges => 'Pension Yearly Charges',
       PensionSummaryChartStyles.transferValue => 'Pension Transfer Value',
+      PensionSummaryChartStyles.amountPaidIn => 'Pension Amount Paid In',
     };
   }
 }
@@ -246,5 +261,6 @@ enum PensionSummaryChartStyles {
   planValue,
   projectedYearlyAmount,
   yearlyCharges,
-  transferValue
+  transferValue,
+  amountPaidIn
 }

@@ -70,6 +70,10 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
                   value: PensionSummaryChartStyles.transferValue,
                   child: Text("Transfer Value"),
                 ),
+                PopupMenuItem(
+                  value: PensionSummaryChartStyles.amountPaidIn,
+                  child: Text("Amount Paid In"),
+                ),
               ];
             },
             onSelected: (value) async {
@@ -224,6 +228,18 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
           ))
       .toList();
 
+  List<BarChartGroupData> get amountPaidInBarGroups => widget.pensionData!
+      .asMap()
+      .entries
+      .map((entry) => BarChartGroupData(
+            x: entry.key,
+            barRods: [
+              buildBarRodData(
+                  entry.value.pension, entry.value.statement?.amountPaidIn)
+            ],
+          ))
+      .toList();      
+
   BarChartRodData buildBarRodData(PensionModel pension, double? value) {
     ChartColorConstants chartColorConstants = getIt<ChartColorConstants>();
     MaterialColor color =
@@ -261,6 +277,7 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
           projectedAnnualAmountBarGroups,
         PensionSummaryChartStyles.yearlyCharges => yearlyChargesBarGroups,
         PensionSummaryChartStyles.transferValue => transferValueBarGroups,
+        PensionSummaryChartStyles.amountPaidIn => amountPaidInBarGroups,
       },
       gridData: FlGridData(
         show: true,
@@ -282,6 +299,7 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
         'Pension Projected Yearly Amount',
       PensionSummaryChartStyles.yearlyCharges => 'Pension Yearly Charges',
       PensionSummaryChartStyles.transferValue => 'Pension Transfer Value',
+      PensionSummaryChartStyles.amountPaidIn => 'Pension Amount Paid In',
     };
   }
 }
@@ -290,5 +308,6 @@ enum PensionSummaryChartStyles {
   planValue,
   projectedYearlyAmount,
   yearlyCharges,
-  transferValue
+  transferValue,
+  amountPaidIn
 }

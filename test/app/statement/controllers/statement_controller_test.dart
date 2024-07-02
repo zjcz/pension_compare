@@ -21,6 +21,7 @@ void main() {
       double projectedAnnualAmount = 678.90;
       double yearlyCharges = 987.65;
       double transferValue = 432.10;
+double amountPaidIn = 1928.37;
 
       final databaseService = MockDatabaseService();
       when(databaseService.getAllStatementsForPension(pensionId))
@@ -33,6 +34,7 @@ void main() {
                   projectedAnnualAmount: projectedAnnualAmount,
                   yearlyCharges: yearlyCharges,
                   transferValue: transferValue,
+                  amountPaidIn: amountPaidIn
                 ),
               ]));
 
@@ -52,6 +54,7 @@ void main() {
       expect(statementList[0].projectedAnnualAmount, projectedAnnualAmount);
       expect(statementList[0].yearlyCharges, yearlyCharges);
       expect(statementList[0].transferValue, transferValue);
+      expect(statementList[0].amountPaidIn, amountPaidIn);
       verify(databaseService.getAllStatementsForPension(pensionId)).called(1);
 
       // Workaround to avoid the FakeTimer error
@@ -91,9 +94,11 @@ void main() {
       double projectedAnnualAmount = 678.90;
       double yearlyCharges = 987.65;
       double transferValue = 432.10;
+      double amountPaidIn = 1928.37;
+
       final databaseService = MockDatabaseService();
       when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue))
+              projectedAnnualAmount, yearlyCharges, transferValue, amountPaidIn))
           .thenAnswer(
         (_) async => Statement(
           statementId: statementId,
@@ -103,6 +108,7 @@ void main() {
           projectedAnnualAmount: projectedAnnualAmount,
           yearlyCharges: yearlyCharges,
           transferValue: transferValue,
+          amountPaidIn: amountPaidIn
         ),
       );
 
@@ -117,7 +123,7 @@ void main() {
           planValue,
           projectedAnnualAmount,
           yearlyCharges,
-          transferValue);
+          transferValue, amountPaidIn);
 
       expect(savedStatement, isNotNull);
       expect(savedStatement!.statementId, statementId);
@@ -127,8 +133,9 @@ void main() {
       expect(savedStatement.projectedAnnualAmount, projectedAnnualAmount);
       expect(savedStatement.yearlyCharges, yearlyCharges);
       expect(savedStatement.transferValue, transferValue);
+      expect(savedStatement.amountPaidIn, amountPaidIn);
       verify(databaseService.createStatement(pensionId, statementDate,
-              planValue, projectedAnnualAmount, yearlyCharges, transferValue))
+              planValue, projectedAnnualAmount, yearlyCharges, transferValue, amountPaidIn))
           .called(1);
 
       // Workaround to avoid the FakeTimer error
@@ -145,6 +152,7 @@ void main() {
       double projectedAnnualAmount = 678.90;
       double yearlyCharges = 987.65;
       double transferValue = 432.10;
+      double amountPaidIn = 1928.37;
       final databaseService = MockDatabaseService();
       when(databaseService.updateStatement(
               statementId,
@@ -153,7 +161,7 @@ void main() {
               planValue,
               projectedAnnualAmount,
               yearlyCharges,
-              transferValue))
+              transferValue, amountPaidIn))
           .thenAnswer((_) async => true);
 
       final container = createContainer(overrides: [
@@ -168,7 +176,7 @@ void main() {
           planValue,
           projectedAnnualAmount,
           yearlyCharges,
-          transferValue);
+          transferValue, amountPaidIn);
 
       expect(result, isTrue);
       verify(databaseService.updateStatement(
@@ -178,7 +186,7 @@ void main() {
               planValue,
               projectedAnnualAmount,
               yearlyCharges,
-              transferValue))
+              transferValue, amountPaidIn))
           .called(1);
 
       // Workaround to avoid the FakeTimer error

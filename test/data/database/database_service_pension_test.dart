@@ -149,24 +149,29 @@ void main() {
       double projectedAnnualAmount1 = 456.78;
       double? yearlyCharges1 = 78.90;
       double? transferValue1 = 90.12;
+      double? amountPaidIn1 = 34.56;
+
       DateTime statementDate2 = DateTime(2025, 4, 5);
       double planValue2 = 543.21;
       double projectedAnnualAmount2 = 876.54;
       double? yearlyCharges2 = 90.87;
       double? transferValue2 = 21.90;
+      double? amountPaidIn2 = 12.34;
+
       DateTime statementDate3 = DateTime(2026, 6, 7);
       double planValue3 = 987.65;
       double projectedAnnualAmount3 = 432.10;
       double? yearlyCharges3 = 65.43;
       double? transferValue3 = 12.34;
+      double? amountPaidIn3 = 56.78;
 
       final pension = await database.createPension(name, maturityDate);
       await database.createStatement(pension!.pensionId, statementDate1,
-          planValue1, projectedAnnualAmount1, yearlyCharges1, transferValue1);
+          planValue1, projectedAnnualAmount1, yearlyCharges1, transferValue1, amountPaidIn1);
       await database.createStatement(pension.pensionId, statementDate2,
-          planValue2, projectedAnnualAmount2, yearlyCharges2, transferValue2);
+          planValue2, projectedAnnualAmount2, yearlyCharges2, transferValue2, amountPaidIn2);
       await database.createStatement(pension.pensionId, statementDate3,
-          planValue3, projectedAnnualAmount3, yearlyCharges3, transferValue3);
+          planValue3, projectedAnnualAmount3, yearlyCharges3, transferValue3, amountPaidIn3);
 
       final results = await database.getAllPensionsWithLatestStatement().first;
       expect(results, match.isNotNull);
@@ -185,6 +190,7 @@ void main() {
           results[0].statement!.projectedAnnualAmount, projectedAnnualAmount3);
       expect(results[0].statement!.yearlyCharges, yearlyCharges3);
       expect(results[0].statement!.transferValue, transferValue3);
+      expect(results[0].statement!.amountPaidIn, amountPaidIn3);
     });
   });
 
@@ -214,24 +220,27 @@ group('Test yearly pension summary', () {
       double projectedAnnualAmount1 = 456.78;
       double? yearlyCharges1 = 78.90;
       double? transferValue1 = 90.12;
+      double? amountPaidIn1 = 34.56;
       DateTime statementDate2 = DateTime(2025, 4, 5);
       double planValue2 = 543.21;
       double projectedAnnualAmount2 = 876.54;
       double? yearlyCharges2 = 90.87;
       double? transferValue2 = 21.90;
+      double? amountPaidIn2 = 12.34;
       DateTime statementDate3 = DateTime(2026, 6, 7);
       double planValue3 = 987.65;
       double projectedAnnualAmount3 = 432.10;
       double? yearlyCharges3 = 65.43;
       double? transferValue3 = 12.34;
+      double? amountPaidIn3 = 56.78;
 
       final pension = await database.createPension(name, maturityDate);
       final statement1 = await database.createStatement(pension!.pensionId, statementDate1,
-          planValue1, projectedAnnualAmount1, yearlyCharges1, transferValue1);
+          planValue1, projectedAnnualAmount1, yearlyCharges1, transferValue1, amountPaidIn1);
       final statement2 = await database.createStatement(pension.pensionId, statementDate2,
-          planValue2, projectedAnnualAmount2, yearlyCharges2, transferValue2);
+          planValue2, projectedAnnualAmount2, yearlyCharges2, transferValue2, amountPaidIn2);
       final statement3 = await database.createStatement(pension.pensionId, statementDate3,
-          planValue3, projectedAnnualAmount3, yearlyCharges3, transferValue3);
+          planValue3, projectedAnnualAmount3, yearlyCharges3, transferValue3, amountPaidIn3);
 
       final results = await database.getYearlyPensionSummary().first;
       expect(results, match.isNotNull);
@@ -264,17 +273,19 @@ group('Test yearly pension summary', () {
       double projectedAnnualAmount1 = 456.78;
       double? yearlyCharges1 = 78.90;
       double? transferValue1 = 90.12;
+      double? amountPaidIn1 = 34.56;
       DateTime statementDate2 = DateTime(2024, 2, 2);
       double planValue2 = 543.21;
       double projectedAnnualAmount2 = 876.54;
       double? yearlyCharges2 = 90.87;
       double? transferValue2 = 21.90;
+      double? amountPaidIn2 = 12.34;
 
       final pension = await database.createPension(name, maturityDate);
       await database.createStatement(pension!.pensionId, statementDate1,
-          planValue1, projectedAnnualAmount1, yearlyCharges1, transferValue1);
+          planValue1, projectedAnnualAmount1, yearlyCharges1, transferValue1, amountPaidIn1);
       final statement2 = await database.createStatement(pension.pensionId, statementDate2,
-          planValue2, projectedAnnualAmount2, yearlyCharges2, transferValue2);
+          planValue2, projectedAnnualAmount2, yearlyCharges2, transferValue2, amountPaidIn2);
 
 
       final results = await database.getYearlyPensionSummary().first;

@@ -13,6 +13,7 @@ class TransferStatementModel with _$TransferStatementModel {
     required double projectedAnnualAmount,
     double? yearlyCharges,
     double? transferValue,
+    double? amountPaidIn,
   }) = _TransferStatementModel;
 
   factory TransferStatementModel.fromJson(Map<String, Object?> json) =>

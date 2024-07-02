@@ -58,6 +58,12 @@ class _StatementDataTableState extends State<StatementDataTable> {
               style: CustomStyles.dataTableHeaderTextStyle,
             ),
           ),
+          DataColumn(
+            label: Text(
+              'Paid In',
+              style: CustomStyles.dataTableHeaderTextStyle,
+            ),
+          ),
         ],
         rows: List<DataRow>.generate(widget.statementDataList.length,
             (int index) {
@@ -74,7 +80,9 @@ class _StatementDataTableState extends State<StatementDataTable> {
               DataCell(Text(CurrencyHelper.formatCurrency(
                   statementData.yearlyCharges ?? 0))),
               DataCell(Text(CurrencyHelper.formatCurrency(
-                  statementData.transferValue ?? 0)))
+                  statementData.transferValue ?? 0))),
+              DataCell(Text(CurrencyHelper.formatCurrency(
+                  statementData.amountPaidIn ?? 0)))
             ],
           );
         }),

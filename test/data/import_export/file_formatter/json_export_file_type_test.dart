@@ -236,6 +236,7 @@ TransferPensionModel buildPensionModel() {
   double projectedAnnualAmount = 678.90;
   double yearlyCharges = 987.65;
   double transferValue = 432.10;
+  double amountPaidIn = 1928.37;
 
   TransferStatementModel transferStatement = TransferStatementModel(
       statementId: statementId,
@@ -243,7 +244,8 @@ TransferPensionModel buildPensionModel() {
       planValue: planValue,
       projectedAnnualAmount: projectedAnnualAmount,
       yearlyCharges: yearlyCharges,
-      transferValue: transferValue);
+      transferValue: transferValue,
+      amountPaidIn: amountPaidIn);
   TransferPensionModel transferPension = TransferPensionModel(
       pensionId: pensionId,
       name: pensionName,

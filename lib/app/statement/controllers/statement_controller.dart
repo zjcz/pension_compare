@@ -23,14 +23,16 @@ class StatementController extends _$StatementController {
       double planValue,
       double projectedAnnualAmount,
       double? yearlyCharges,
-      double? transferValue) async {
+      double? transferValue,
+      double? amountPaidIn) async {
     Statement? newStatement = await _databaseService.createStatement(
         pensionId,
         statementDate,
         planValue,
         projectedAnnualAmount,
         yearlyCharges,
-        transferValue);
+        transferValue,
+        amountPaidIn);
     return newStatement == null
         ? null
         : StatementMapper.mapToModel(newStatement);
@@ -52,9 +54,17 @@ class StatementController extends _$StatementController {
       double planValue,
       double projectedAnnualAmount,
       double? yearlyCharges,
-      double? transferValue) {
-    return _databaseService.updateStatement(id, pensionId, statementDate,
-        planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+      double? transferValue,
+      double? amountPaidIn) {
+    return _databaseService.updateStatement(
+        id,
+        pensionId,
+        statementDate,
+        planValue,
+        projectedAnnualAmount,
+        yearlyCharges,
+        transferValue,
+        amountPaidIn);
   }
 
   Future<bool> doesStatementDateExist(

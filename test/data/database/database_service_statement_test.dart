@@ -21,6 +21,7 @@ void main() {
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
       double? transferValue = 90.12;
+      double? amountPaidIn = 34.56;
 
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
@@ -31,7 +32,8 @@ void main() {
           planValue,
           projectedAnnualAmount,
           yearlyCharges,
-          transferValue);
+          transferValue,
+          amountPaidIn);
 
       expect(entry, match.isNotNull);
       expect(entry!.pension, pension.pensionId);
@@ -40,6 +42,7 @@ void main() {
       expect(entry.projectedAnnualAmount, projectedAnnualAmount);
       expect(entry.yearlyCharges, yearlyCharges);
       expect(entry.transferValue, transferValue);
+      expect(entry.amountPaidIn, amountPaidIn);
     });
 
     test('create a new statement object fails if parent does not exist',
@@ -50,9 +53,16 @@ void main() {
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
       double? transferValue = 90.12;
+      double? amountPaidIn = 34.56;
 
-      final entry = database.createStatement(pensionId, statementDate,
-          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+      final entry = database.createStatement(
+          pensionId,
+          statementDate,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue,
+          amountPaidIn);
 
       expectLater(entry, throwsA(isException));
     });
@@ -63,6 +73,7 @@ void main() {
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
       double? transferValue = 90.12;
+      double? amountPaidIn = 34.56;
 
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
@@ -73,7 +84,8 @@ void main() {
           planValue,
           projectedAnnualAmount,
           yearlyCharges,
-          transferValue);
+          transferValue,
+          amountPaidIn);
 
       expect(entry, match.isNotNull);
       expect(entry!.pension, pension.pensionId);
@@ -82,6 +94,7 @@ void main() {
       expect(entry.projectedAnnualAmount, projectedAnnualAmount);
       expect(entry.yearlyCharges, yearlyCharges);
       expect(entry.transferValue, transferValue);
+      expect(entry.amountPaidIn, amountPaidIn);
 
       final result = await database.getStatement(entry.statementId);
       expect(result, match.isNotNull);
@@ -92,6 +105,7 @@ void main() {
       expect(result.projectedAnnualAmount, projectedAnnualAmount);
       expect(result.yearlyCharges, yearlyCharges);
       expect(result.transferValue, transferValue);
+      expect(result.amountPaidIn, amountPaidIn);
     });
 
     test(
@@ -102,6 +116,7 @@ void main() {
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
       double? transferValue = 90.12;
+      double? amountPaidIn = 34.56;
 
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
@@ -112,7 +127,8 @@ void main() {
           planValue,
           projectedAnnualAmount,
           yearlyCharges,
-          transferValue);
+          transferValue,
+          amountPaidIn);
 
       expect(entry, match.isNotNull);
       expect(entry!.statementDate.year, statementDate.year);
@@ -142,16 +158,21 @@ void main() {
       double projectedAnnualAmount1 = 456.78;
       double? yearlyCharges1 = 78.90;
       double? transferValue1 = 90.12;
+      double? amountPaidIn1 = 34.56;
+
       DateTime statementDate2 = DateTime(2025, 4, 5);
       double planValue2 = 543.21;
       double projectedAnnualAmount2 = 876.54;
       double? yearlyCharges2 = 90.87;
       double? transferValue2 = 21.90;
+      double? amountPaidIn2 = 65.43;
+
       DateTime statementDate3 = DateTime(2026, 6, 7);
       double planValue3 = 987.65;
       double projectedAnnualAmount3 = 432.10;
       double? yearlyCharges3 = 65.43;
       double? transferValue3 = 12.34;
+      double? amountPaidIn3 = 87.65;
 
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
@@ -162,21 +183,24 @@ void main() {
           planValue1,
           projectedAnnualAmount1,
           yearlyCharges1,
-          transferValue1);
+          transferValue1,
+          amountPaidIn1);
       final entry2 = await database.createStatement(
           pension.pensionId,
           statementDate2,
           planValue2,
           projectedAnnualAmount2,
           yearlyCharges2,
-          transferValue2);
+          transferValue2,
+          amountPaidIn2);
       final entry3 = await database.createStatement(
           pension.pensionId,
           statementDate3,
           planValue3,
           projectedAnnualAmount3,
           yearlyCharges3,
-          transferValue3);
+          transferValue3,
+          amountPaidIn3);
 
       final results =
           await database.getAllStatementsForPension(pension.pensionId).first;
@@ -189,6 +213,7 @@ void main() {
       expect(results[0].projectedAnnualAmount, projectedAnnualAmount1);
       expect(results[0].yearlyCharges, yearlyCharges1);
       expect(results[0].transferValue, transferValue1);
+      expect(results[0].amountPaidIn, amountPaidIn1);
       expect(results[1].statementId, entry2!.statementId);
       expect(results[1].pension, pension.pensionId);
       expect(results[1].statementDate, statementDate2);
@@ -196,6 +221,7 @@ void main() {
       expect(results[1].projectedAnnualAmount, projectedAnnualAmount2);
       expect(results[1].yearlyCharges, yearlyCharges2);
       expect(results[1].transferValue, transferValue2);
+      expect(results[1].amountPaidIn, amountPaidIn2);
       expect(results[2].statementId, entry3!.statementId);
       expect(results[2].pension, pension.pensionId);
       expect(results[2].statementDate, statementDate3);
@@ -203,6 +229,7 @@ void main() {
       expect(results[2].projectedAnnualAmount, projectedAnnualAmount3);
       expect(results[2].yearlyCharges, yearlyCharges3);
       expect(results[2].transferValue, transferValue3);
+      expect(results[2].amountPaidIn, amountPaidIn3);
     });
 
     test('update a statement object', () async {
@@ -211,11 +238,14 @@ void main() {
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
       double? transferValue = 90.12;
+      double? amountPaidIn = 34.56;
       DateTime updatedStatementDate = DateTime(2025, 4, 5);
       double updatedPlanValue = 543.21;
       double updatedProjectedAnnualAmount = 876.54;
       double? updatedYearlyCharges = 90.87;
       double? updatedTransferValue = 21.90;
+      double? updatedAmountPaidIn = 65.43;
+
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
 
@@ -225,7 +255,8 @@ void main() {
           planValue,
           projectedAnnualAmount,
           yearlyCharges,
-          transferValue);
+          transferValue,
+          amountPaidIn);
 
       bool updated = await database.updateStatement(
           newEntry!.statementId,
@@ -234,7 +265,8 @@ void main() {
           updatedPlanValue,
           updatedProjectedAnnualAmount,
           updatedYearlyCharges,
-          updatedTransferValue);
+          updatedTransferValue,
+          updatedAmountPaidIn);
       expect(updated, isTrue);
 
       final updatedEntry = await database.getStatement(newEntry.statementId);
@@ -246,6 +278,7 @@ void main() {
       expect(updatedEntry.projectedAnnualAmount, updatedProjectedAnnualAmount);
       expect(updatedEntry.yearlyCharges, updatedYearlyCharges);
       expect(updatedEntry.transferValue, updatedTransferValue);
+      expect(updatedEntry.amountPaidIn, updatedAmountPaidIn);
     });
 
     test('delete a statement object', () async {
@@ -254,6 +287,7 @@ void main() {
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
       double? transferValue = 90.12;
+      double? amountPaidIn = 34.56;
 
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
@@ -264,7 +298,8 @@ void main() {
           planValue,
           projectedAnnualAmount,
           yearlyCharges,
-          transferValue);
+          transferValue,
+          amountPaidIn);
 
       final results =
           await database.getAllStatementsForPension(pension.pensionId).first;
@@ -287,14 +322,27 @@ void main() {
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
       double? transferValue = 90.12;
+      double? amountPaidIn = 34.56;
 
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
 
-      await database.createStatement(pension!.pensionId, statementDate1,
-          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
-      await database.createStatement(pension.pensionId, statementDate2,
-          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+      await database.createStatement(
+          pension!.pensionId,
+          statementDate1,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue,
+          amountPaidIn);
+      await database.createStatement(
+          pension.pensionId,
+          statementDate2,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue,
+          amountPaidIn);
 
       final results =
           await database.getAllStatementsForPension(pension.pensionId).first;
@@ -318,15 +366,28 @@ void main() {
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
       double? transferValue = 90.12;
+      double? amountPaidIn = 34.56;
 
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
 
-      await database.createStatement(pension!.pensionId, statementDate,
-          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+      await database.createStatement(
+          pension!.pensionId,
+          statementDate,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue,
+          amountPaidIn);
       await expectLater(
-          database.createStatement(pension.pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue),
+          database.createStatement(
+              pension.pensionId,
+              statementDate,
+              planValue,
+              projectedAnnualAmount,
+              yearlyCharges,
+              transferValue,
+              amountPaidIn),
           throwsA(isException));
     });
 
@@ -337,6 +398,7 @@ void main() {
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
       double? transferValue = 90.12;
+      double? amountPaidIn = 34.56;
 
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
@@ -347,11 +409,18 @@ void main() {
           planValue,
           projectedAnnualAmount,
           yearlyCharges,
-          transferValue);
+          transferValue,
+          amountPaidIn);
       await database.deleteStatement(s1!.statementId);
       await expectLater(
-          database.createStatement(pension.pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue),
+          database.createStatement(
+              pension.pensionId,
+              statementDate,
+              planValue,
+              projectedAnnualAmount,
+              yearlyCharges,
+              transferValue,
+              amountPaidIn),
           completes);
     });
 
@@ -362,16 +431,29 @@ void main() {
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
       double? transferValue = 90.12;
+      double? amountPaidIn = 34.56;
 
       final pension1 =
           await database.createPension('pension 1', DateTime(2050, 1, 1));
       final pension2 =
           await database.createPension('pension 2', DateTime(2050, 1, 1));
-      await database.createStatement(pension1!.pensionId, statementDate,
-          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+      await database.createStatement(
+          pension1!.pensionId,
+          statementDate,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue,
+          amountPaidIn);
       await expectLater(
-          database.createStatement(pension2!.pensionId, statementDate,
-              planValue, projectedAnnualAmount, yearlyCharges, transferValue),
+          database.createStatement(
+              pension2!.pensionId,
+              statementDate,
+              planValue,
+              projectedAnnualAmount,
+              yearlyCharges,
+              transferValue,
+              amountPaidIn),
           completes);
     });
 
@@ -391,11 +473,18 @@ void main() {
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
       double? transferValue = 90.12;
+      double? amountPaidIn = 34.56;
 
       final pension1 =
           await database.createPension('pension 1', DateTime(2050, 1, 1));
-      await database.createStatement(pension1!.pensionId, statementDate,
-          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+      await database.createStatement(
+          pension1!.pensionId,
+          statementDate,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue,
+          amountPaidIn);
 
       bool response = await database.doesStatementDateExist(
           null, pension1.pensionId, statementDate);
@@ -409,6 +498,7 @@ void main() {
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
       double? transferValue = 90.12;
+      double? amountPaidIn = 34.56;
 
       final pension1 =
           await database.createPension('pension 1', DateTime(2050, 1, 1));
@@ -418,7 +508,8 @@ void main() {
           planValue,
           projectedAnnualAmount,
           yearlyCharges,
-          transferValue);
+          transferValue,
+          amountPaidIn);
 
       bool response = await database.doesStatementDateExist(
           statement1!.statementId, pension1.pensionId, statementDate);
@@ -434,18 +525,26 @@ void main() {
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
       double? transferValue = 90.12;
+      double? amountPaidIn = 34.56;
 
       Pension? pension1 =
           await database.createPension('pension 1', DateTime(2050, 1, 1));
-      await database.createStatement(pension1!.pensionId, statementDate1,
-          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+      await database.createStatement(
+          pension1!.pensionId,
+          statementDate1,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue,
+          amountPaidIn);
       final statement2 = await database.createStatement(
           pension1.pensionId,
           statementDate2,
           planValue,
           projectedAnnualAmount,
           yearlyCharges,
-          transferValue);
+          transferValue,
+          amountPaidIn);
 
       bool response = await database.doesStatementDateExist(
           statement2!.statementId, pension1.pensionId, statementDate2Updated);
@@ -460,6 +559,7 @@ void main() {
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
       double? transferValue = 90.12;
+      double? amountPaidIn = 34.56;
 
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
@@ -470,7 +570,8 @@ void main() {
           planValue,
           projectedAnnualAmount,
           yearlyCharges,
-          transferValue);
+          transferValue,
+          amountPaidIn);
       await database.deleteStatement(s1!.statementId);
 
       bool response = await database.doesStatementDateExist(
@@ -488,12 +589,19 @@ void main() {
       double projectedAnnualAmount = 456.78;
       double? yearlyCharges = 78.90;
       double? transferValue = 90.12;
+      double? amountPaidIn = 34.56;
 
       final pension =
           await database.createPension('pension', DateTime(2050, 1, 1));
 
-      await database.createStatement(pension!.pensionId, statementDate,
-          planValue, projectedAnnualAmount, yearlyCharges, transferValue);
+      await database.createStatement(
+          pension!.pensionId,
+          statementDate,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue,
+          amountPaidIn);
 
       bool response = await database.doesStatementDateExist(
           null, pension.pensionId, statementDate2);

@@ -15,6 +15,7 @@ _$StatementModelImpl _$$StatementModelImplFromJson(Map<String, dynamic> json) =>
       projectedAnnualAmount: (json['projectedAnnualAmount'] as num).toDouble(),
       yearlyCharges: (json['yearlyCharges'] as num?)?.toDouble(),
       transferValue: (json['transferValue'] as num?)?.toDouble(),
+      amountPaidIn: (json['amountPaidIn'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$$StatementModelImplToJson(
@@ -27,4 +28,5 @@ Map<String, dynamic> _$$StatementModelImplToJson(
       'projectedAnnualAmount': instance.projectedAnnualAmount,
       'yearlyCharges': instance.yearlyCharges,
       'transferValue': instance.transferValue,
+      'amountPaidIn': instance.amountPaidIn,
     };

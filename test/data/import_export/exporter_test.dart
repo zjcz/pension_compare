@@ -89,6 +89,7 @@ void main() {
       double projectedAnnualAmount = 678.90;
       double yearlyCharges = 987.65;
       double transferValue = 432.10;
+      double amountPaidIn = 1928.37;
       double statePensionAnnualAmount = 34567;
       DateTime retirementDate = DateTime(2024, 1, 1);
       double targetIncome = 87654;
@@ -105,7 +106,7 @@ void main() {
               name: pensionName,
               maturityDate: maturityDate));
       when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue))
+              projectedAnnualAmount, yearlyCharges, transferValue, amountPaidIn))
           .thenAnswer((_) async => Statement(
               statementId: statementId,
               pension: pensionId,
@@ -137,7 +138,8 @@ void main() {
           planValue: planValue,
           projectedAnnualAmount: projectedAnnualAmount,
           yearlyCharges: yearlyCharges,
-          transferValue: transferValue);
+          transferValue: transferValue, 
+          amountPaidIn: amountPaidIn);
       TransferPensionModel transferPension = TransferPensionModel(
           pensionId: pensionId,
           name: pensionName,
@@ -180,7 +182,7 @@ void main() {
       verify(databaseService.createPension(pensionName, maturityDate))
           .called(1);
       verify(databaseService.createStatement(pensionId, statementDate,
-              planValue, projectedAnnualAmount, yearlyCharges, transferValue))
+              planValue, projectedAnnualAmount, yearlyCharges, transferValue, amountPaidIn))
           .called(1);
       verify(databaseService.saveStatePension(statePensionAnnualAmount))
           .called(1);
