@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pension_compare/app/home/controllers/pension_with_latest_statement_controller.dart';
 import 'package:pension_compare/app/home/controllers/yearly_pension_statement_controller.dart';
-import 'package:pension_compare/app/home/models/pension_with_statement_model.dart';
 import 'package:pension_compare/app/pension/views/widgets/target_vs_actual_chart.dart';
 import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
@@ -35,9 +33,6 @@ class _PensionReportScreenState extends ConsumerState<PensionReportScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // TO DO - do we need this?
-    final pensionsSummaryData =
-        ref.watch(pensionWithLatestStatementControllerProvider);
     final yearlyPensionSummaryData =
         ref.watch(yearlyPensionStatementControllerProvider);
 
@@ -50,90 +45,81 @@ class _PensionReportScreenState extends ConsumerState<PensionReportScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: yearlyPensionSummaryData.when(
-                  data: (yearlySummary) => pensionsSummaryData.when(
-                    data: (List<PensionWithStatementModel> pensions) {
-                      if (pensions.isEmpty && yearlySummary.isEmpty) {
-                        return const Center(child: Text('No pensions found'));
-                      } else {
-                        return SingleChildScrollView(
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                DashboardTile(
-                                    title: 'Projected Monthly Income',
-                                    child: FutureBuilder<Settings>(
-                                        future: settings,
-                                        builder: (context, snapshot) {
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.waiting) {
-                                            return const Center(
-                                                child:
-                                                    CircularProgressIndicator());
-                                          } else if (snapshot.hasError) {
-                                            return Center(
-                                                child: Text(
-                                                    'Error loading data: ${snapshot.error}'));
-                                          } else if (!snapshot.hasData ||
-                                              snapshot.data == null) {
-                                            return const Center(
-                                                child: Text('Not found'));
-                                          } else {
-                                            Settings settings = snapshot.data!;
-                                            return TargetVsActualChart(
-                                                pensionData: yearlySummary,
-                                                retirementDate:
-                                                    showRetirementDate
-                                                        ? settings
-                                                            .retirementDate
-                                                        : null,
-                                                targetValue: showTargetLine
-                                                    ? settings.targetIncome
-                                                    : null,
-                                                hideTitle: true);
-                                          }
-                                        })),
-                              ]),
-                        );
-                      }
-                    },
-                    loading: () => buildLoadingWidget(),
-                    error: (error, _) => buildErrorWidget(error),
-                  ),
+                  data: (yearlySummary) {
+                    return FutureBuilder<Settings>(
+                        future: settings,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return buildLoadingWidget();
+                          } else if (snapshot.hasError) {
+                            return buildErrorWidget(snapshot.error!);
+                          } else if (!snapshot.hasData ||
+                              snapshot.data == null) {
+                            return const Center(child: Text('Not found'));
+                          } else {
+                            Settings settings = snapshot.data!;
+                            return SingleChildScrollView(
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    DashboardTile(
+                                        title: 'Projected Monthly Income',
+                                        child: TargetVsActualChart(
+                                            pensionData: yearlySummary,
+                                            retirementDate: showRetirementDate
+                                                ? settings.retirementDate
+                                                : null,
+                                            targetValue: showTargetLine
+                                                ? settings.targetIncome
+                                                : null,
+                                            hideTitle: true)),
+                                    CustomStyles.spacerBox,
+                                    if (settings.targetIncome != null)
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text('Show Target Line'),
+                                          Switch.adaptive(
+                                            value: showTargetLine,
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                showTargetLine = newValue;
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    CustomStyles.spacerBox,
+                                    if (settings.retirementDate != null)
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text('Show Retirement Date'),
+                                          Switch.adaptive(
+                                            value: showRetirementDate,
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                showRetirementDate = newValue;
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                  ]),
+                            );
+                          }
+                        });
+                  },
                   loading: () => buildLoadingWidget(),
                   error: (error, _) => buildErrorWidget(error),
                 ),
-              ),
-              CustomStyles.spacerBox,
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Show Target Line'),
-                  Switch.adaptive(
-                    value: showTargetLine,
-                    onChanged: (newValue) {
-                      setState(() {
-                        showTargetLine = newValue;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              CustomStyles.spacerBox,
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Show Retirement Date'),
-                  Switch.adaptive(
-                    value: showRetirementDate,
-                    onChanged: (newValue) {
-                      setState(() {
-                        showRetirementDate = newValue;
-                      });
-                    },
-                  ),
-                ],
               ),
             ])));
   }
