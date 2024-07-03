@@ -32,8 +32,13 @@ class $PensionsTable extends Pensions with TableInfo<$PensionsTable, Pension> {
   late final GeneratedColumn<DateTime> maturityDate = GeneratedColumn<DateTime>(
       'maturity_date', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
-  List<GeneratedColumn> get $columns => [pensionId, name, maturityDate];
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+      'notes', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [pensionId, name, maturityDate, notes];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -62,6 +67,10 @@ class $PensionsTable extends Pensions with TableInfo<$PensionsTable, Pension> {
     } else if (isInserting) {
       context.missing(_maturityDateMeta);
     }
+    if (data.containsKey('notes')) {
+      context.handle(
+          _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+    }
     return context;
   }
 
@@ -77,6 +86,8 @@ class $PensionsTable extends Pensions with TableInfo<$PensionsTable, Pension> {
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       maturityDate: attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime, data['${effectivePrefix}maturity_date'])!,
+      notes: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}notes']),
     );
   }
 
@@ -90,16 +101,21 @@ class Pension extends DataClass implements Insertable<Pension> {
   final int pensionId;
   final String name;
   final DateTime maturityDate;
+  final String? notes;
   const Pension(
       {required this.pensionId,
       required this.name,
-      required this.maturityDate});
+      required this.maturityDate,
+      this.notes});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['pension_id'] = Variable<int>(pensionId);
     map['name'] = Variable<String>(name);
     map['maturity_date'] = Variable<DateTime>(maturityDate);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
     return map;
   }
 
@@ -108,6 +124,8 @@ class Pension extends DataClass implements Insertable<Pension> {
       pensionId: Value(pensionId),
       name: Value(name),
       maturityDate: Value(maturityDate),
+      notes:
+          notes == null && nullToAbsent ? const Value.absent() : Value(notes),
     );
   }
 
@@ -118,6 +136,7 @@ class Pension extends DataClass implements Insertable<Pension> {
       pensionId: serializer.fromJson<int>(json['pensionId']),
       name: serializer.fromJson<String>(json['name']),
       maturityDate: serializer.fromJson<DateTime>(json['maturityDate']),
+      notes: serializer.fromJson<String?>(json['notes']),
     );
   }
   @override
@@ -127,71 +146,86 @@ class Pension extends DataClass implements Insertable<Pension> {
       'pensionId': serializer.toJson<int>(pensionId),
       'name': serializer.toJson<String>(name),
       'maturityDate': serializer.toJson<DateTime>(maturityDate),
+      'notes': serializer.toJson<String?>(notes),
     };
   }
 
-  Pension copyWith({int? pensionId, String? name, DateTime? maturityDate}) =>
+  Pension copyWith(
+          {int? pensionId,
+          String? name,
+          DateTime? maturityDate,
+          Value<String?> notes = const Value.absent()}) =>
       Pension(
         pensionId: pensionId ?? this.pensionId,
         name: name ?? this.name,
         maturityDate: maturityDate ?? this.maturityDate,
+        notes: notes.present ? notes.value : this.notes,
       );
   @override
   String toString() {
     return (StringBuffer('Pension(')
           ..write('pensionId: $pensionId, ')
           ..write('name: $name, ')
-          ..write('maturityDate: $maturityDate')
+          ..write('maturityDate: $maturityDate, ')
+          ..write('notes: $notes')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(pensionId, name, maturityDate);
+  int get hashCode => Object.hash(pensionId, name, maturityDate, notes);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Pension &&
           other.pensionId == this.pensionId &&
           other.name == this.name &&
-          other.maturityDate == this.maturityDate);
+          other.maturityDate == this.maturityDate &&
+          other.notes == this.notes);
 }
 
 class PensionsCompanion extends UpdateCompanion<Pension> {
   final Value<int> pensionId;
   final Value<String> name;
   final Value<DateTime> maturityDate;
+  final Value<String?> notes;
   const PensionsCompanion({
     this.pensionId = const Value.absent(),
     this.name = const Value.absent(),
     this.maturityDate = const Value.absent(),
+    this.notes = const Value.absent(),
   });
   PensionsCompanion.insert({
     this.pensionId = const Value.absent(),
     required String name,
     required DateTime maturityDate,
+    this.notes = const Value.absent(),
   })  : name = Value(name),
         maturityDate = Value(maturityDate);
   static Insertable<Pension> custom({
     Expression<int>? pensionId,
     Expression<String>? name,
     Expression<DateTime>? maturityDate,
+    Expression<String>? notes,
   }) {
     return RawValuesInsertable({
       if (pensionId != null) 'pension_id': pensionId,
       if (name != null) 'name': name,
       if (maturityDate != null) 'maturity_date': maturityDate,
+      if (notes != null) 'notes': notes,
     });
   }
 
   PensionsCompanion copyWith(
       {Value<int>? pensionId,
       Value<String>? name,
-      Value<DateTime>? maturityDate}) {
+      Value<DateTime>? maturityDate,
+      Value<String?>? notes}) {
     return PensionsCompanion(
       pensionId: pensionId ?? this.pensionId,
       name: name ?? this.name,
       maturityDate: maturityDate ?? this.maturityDate,
+      notes: notes ?? this.notes,
     );
   }
 
@@ -207,6 +241,9 @@ class PensionsCompanion extends UpdateCompanion<Pension> {
     if (maturityDate.present) {
       map['maturity_date'] = Variable<DateTime>(maturityDate.value);
     }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
     return map;
   }
 
@@ -215,7 +252,8 @@ class PensionsCompanion extends UpdateCompanion<Pension> {
     return (StringBuffer('PensionsCompanion(')
           ..write('pensionId: $pensionId, ')
           ..write('name: $name, ')
-          ..write('maturityDate: $maturityDate')
+          ..write('maturityDate: $maturityDate, ')
+          ..write('notes: $notes')
           ..write(')'))
         .toString();
   }
@@ -282,6 +320,12 @@ class $StatementsTable extends Statements
   late final GeneratedColumn<double> amountPaidIn = GeneratedColumn<double>(
       'amount_paid_in', aliasedName, true,
       type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _statementNotesMeta =
+      const VerificationMeta('statementNotes');
+  @override
+  late final GeneratedColumn<String> statementNotes = GeneratedColumn<String>(
+      'statement_notes', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         statementId,
@@ -291,7 +335,8 @@ class $StatementsTable extends Statements
         projectedAnnualAmount,
         yearlyCharges,
         transferValue,
-        amountPaidIn
+        amountPaidIn,
+        statementNotes
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -355,6 +400,12 @@ class $StatementsTable extends Statements
           amountPaidIn.isAcceptableOrUnknown(
               data['amount_paid_in']!, _amountPaidInMeta));
     }
+    if (data.containsKey('statement_notes')) {
+      context.handle(
+          _statementNotesMeta,
+          statementNotes.isAcceptableOrUnknown(
+              data['statement_notes']!, _statementNotesMeta));
+    }
     return context;
   }
 
@@ -385,6 +436,8 @@ class $StatementsTable extends Statements
           .read(DriftSqlType.double, data['${effectivePrefix}transfer_value']),
       amountPaidIn: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}amount_paid_in']),
+      statementNotes: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}statement_notes']),
     );
   }
 
@@ -403,6 +456,7 @@ class Statement extends DataClass implements Insertable<Statement> {
   final double? yearlyCharges;
   final double? transferValue;
   final double? amountPaidIn;
+  final String? statementNotes;
   const Statement(
       {required this.statementId,
       required this.pension,
@@ -411,7 +465,8 @@ class Statement extends DataClass implements Insertable<Statement> {
       required this.projectedAnnualAmount,
       this.yearlyCharges,
       this.transferValue,
-      this.amountPaidIn});
+      this.amountPaidIn,
+      this.statementNotes});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -428,6 +483,9 @@ class Statement extends DataClass implements Insertable<Statement> {
     }
     if (!nullToAbsent || amountPaidIn != null) {
       map['amount_paid_in'] = Variable<double>(amountPaidIn);
+    }
+    if (!nullToAbsent || statementNotes != null) {
+      map['statement_notes'] = Variable<String>(statementNotes);
     }
     return map;
   }
@@ -448,6 +506,9 @@ class Statement extends DataClass implements Insertable<Statement> {
       amountPaidIn: amountPaidIn == null && nullToAbsent
           ? const Value.absent()
           : Value(amountPaidIn),
+      statementNotes: statementNotes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(statementNotes),
     );
   }
 
@@ -464,6 +525,7 @@ class Statement extends DataClass implements Insertable<Statement> {
       yearlyCharges: serializer.fromJson<double?>(json['yearlyCharges']),
       transferValue: serializer.fromJson<double?>(json['transferValue']),
       amountPaidIn: serializer.fromJson<double?>(json['amountPaidIn']),
+      statementNotes: serializer.fromJson<String?>(json['statementNotes']),
     );
   }
   @override
@@ -478,6 +540,7 @@ class Statement extends DataClass implements Insertable<Statement> {
       'yearlyCharges': serializer.toJson<double?>(yearlyCharges),
       'transferValue': serializer.toJson<double?>(transferValue),
       'amountPaidIn': serializer.toJson<double?>(amountPaidIn),
+      'statementNotes': serializer.toJson<String?>(statementNotes),
     };
   }
 
@@ -489,7 +552,8 @@ class Statement extends DataClass implements Insertable<Statement> {
           double? projectedAnnualAmount,
           Value<double?> yearlyCharges = const Value.absent(),
           Value<double?> transferValue = const Value.absent(),
-          Value<double?> amountPaidIn = const Value.absent()}) =>
+          Value<double?> amountPaidIn = const Value.absent(),
+          Value<String?> statementNotes = const Value.absent()}) =>
       Statement(
         statementId: statementId ?? this.statementId,
         pension: pension ?? this.pension,
@@ -503,6 +567,8 @@ class Statement extends DataClass implements Insertable<Statement> {
             transferValue.present ? transferValue.value : this.transferValue,
         amountPaidIn:
             amountPaidIn.present ? amountPaidIn.value : this.amountPaidIn,
+        statementNotes:
+            statementNotes.present ? statementNotes.value : this.statementNotes,
       );
   @override
   String toString() {
@@ -514,7 +580,8 @@ class Statement extends DataClass implements Insertable<Statement> {
           ..write('projectedAnnualAmount: $projectedAnnualAmount, ')
           ..write('yearlyCharges: $yearlyCharges, ')
           ..write('transferValue: $transferValue, ')
-          ..write('amountPaidIn: $amountPaidIn')
+          ..write('amountPaidIn: $amountPaidIn, ')
+          ..write('statementNotes: $statementNotes')
           ..write(')'))
         .toString();
   }
@@ -528,7 +595,8 @@ class Statement extends DataClass implements Insertable<Statement> {
       projectedAnnualAmount,
       yearlyCharges,
       transferValue,
-      amountPaidIn);
+      amountPaidIn,
+      statementNotes);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -540,7 +608,8 @@ class Statement extends DataClass implements Insertable<Statement> {
           other.projectedAnnualAmount == this.projectedAnnualAmount &&
           other.yearlyCharges == this.yearlyCharges &&
           other.transferValue == this.transferValue &&
-          other.amountPaidIn == this.amountPaidIn);
+          other.amountPaidIn == this.amountPaidIn &&
+          other.statementNotes == this.statementNotes);
 }
 
 class StatementsCompanion extends UpdateCompanion<Statement> {
@@ -552,6 +621,7 @@ class StatementsCompanion extends UpdateCompanion<Statement> {
   final Value<double?> yearlyCharges;
   final Value<double?> transferValue;
   final Value<double?> amountPaidIn;
+  final Value<String?> statementNotes;
   const StatementsCompanion({
     this.statementId = const Value.absent(),
     this.pension = const Value.absent(),
@@ -561,6 +631,7 @@ class StatementsCompanion extends UpdateCompanion<Statement> {
     this.yearlyCharges = const Value.absent(),
     this.transferValue = const Value.absent(),
     this.amountPaidIn = const Value.absent(),
+    this.statementNotes = const Value.absent(),
   });
   StatementsCompanion.insert({
     this.statementId = const Value.absent(),
@@ -571,6 +642,7 @@ class StatementsCompanion extends UpdateCompanion<Statement> {
     this.yearlyCharges = const Value.absent(),
     this.transferValue = const Value.absent(),
     this.amountPaidIn = const Value.absent(),
+    this.statementNotes = const Value.absent(),
   })  : pension = Value(pension),
         statementDate = Value(statementDate),
         planValue = Value(planValue),
@@ -584,6 +656,7 @@ class StatementsCompanion extends UpdateCompanion<Statement> {
     Expression<double>? yearlyCharges,
     Expression<double>? transferValue,
     Expression<double>? amountPaidIn,
+    Expression<String>? statementNotes,
   }) {
     return RawValuesInsertable({
       if (statementId != null) 'statement_id': statementId,
@@ -595,6 +668,7 @@ class StatementsCompanion extends UpdateCompanion<Statement> {
       if (yearlyCharges != null) 'yearly_charges': yearlyCharges,
       if (transferValue != null) 'transfer_value': transferValue,
       if (amountPaidIn != null) 'amount_paid_in': amountPaidIn,
+      if (statementNotes != null) 'statement_notes': statementNotes,
     });
   }
 
@@ -606,7 +680,8 @@ class StatementsCompanion extends UpdateCompanion<Statement> {
       Value<double>? projectedAnnualAmount,
       Value<double?>? yearlyCharges,
       Value<double?>? transferValue,
-      Value<double?>? amountPaidIn}) {
+      Value<double?>? amountPaidIn,
+      Value<String?>? statementNotes}) {
     return StatementsCompanion(
       statementId: statementId ?? this.statementId,
       pension: pension ?? this.pension,
@@ -617,6 +692,7 @@ class StatementsCompanion extends UpdateCompanion<Statement> {
       yearlyCharges: yearlyCharges ?? this.yearlyCharges,
       transferValue: transferValue ?? this.transferValue,
       amountPaidIn: amountPaidIn ?? this.amountPaidIn,
+      statementNotes: statementNotes ?? this.statementNotes,
     );
   }
 
@@ -648,6 +724,9 @@ class StatementsCompanion extends UpdateCompanion<Statement> {
     if (amountPaidIn.present) {
       map['amount_paid_in'] = Variable<double>(amountPaidIn.value);
     }
+    if (statementNotes.present) {
+      map['statement_notes'] = Variable<String>(statementNotes.value);
+    }
     return map;
   }
 
@@ -661,7 +740,8 @@ class StatementsCompanion extends UpdateCompanion<Statement> {
           ..write('projectedAnnualAmount: $projectedAnnualAmount, ')
           ..write('yearlyCharges: $yearlyCharges, ')
           ..write('transferValue: $transferValue, ')
-          ..write('amountPaidIn: $amountPaidIn')
+          ..write('amountPaidIn: $amountPaidIn, ')
+          ..write('statementNotes: $statementNotes')
           ..write(')'))
         .toString();
   }
@@ -690,8 +770,14 @@ class $OtherIncomesTable extends OtherIncomes
   late final GeneratedColumn<double> annualAmount = GeneratedColumn<double>(
       'annual_amount', aliasedName, false,
       type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
-  List<GeneratedColumn> get $columns => [otherIncomeId, name, annualAmount];
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+      'notes', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [otherIncomeId, name, annualAmount, notes];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -722,6 +808,10 @@ class $OtherIncomesTable extends OtherIncomes
     } else if (isInserting) {
       context.missing(_annualAmountMeta);
     }
+    if (data.containsKey('notes')) {
+      context.handle(
+          _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+    }
     return context;
   }
 
@@ -737,6 +827,8 @@ class $OtherIncomesTable extends OtherIncomes
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       annualAmount: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}annual_amount'])!,
+      notes: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}notes']),
     );
   }
 
@@ -750,16 +842,21 @@ class OtherIncome extends DataClass implements Insertable<OtherIncome> {
   final int otherIncomeId;
   final String name;
   final double annualAmount;
+  final String? notes;
   const OtherIncome(
       {required this.otherIncomeId,
       required this.name,
-      required this.annualAmount});
+      required this.annualAmount,
+      this.notes});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['other_income_id'] = Variable<int>(otherIncomeId);
     map['name'] = Variable<String>(name);
     map['annual_amount'] = Variable<double>(annualAmount);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
     return map;
   }
 
@@ -768,6 +865,8 @@ class OtherIncome extends DataClass implements Insertable<OtherIncome> {
       otherIncomeId: Value(otherIncomeId),
       name: Value(name),
       annualAmount: Value(annualAmount),
+      notes:
+          notes == null && nullToAbsent ? const Value.absent() : Value(notes),
     );
   }
 
@@ -778,6 +877,7 @@ class OtherIncome extends DataClass implements Insertable<OtherIncome> {
       otherIncomeId: serializer.fromJson<int>(json['otherIncomeId']),
       name: serializer.fromJson<String>(json['name']),
       annualAmount: serializer.fromJson<double>(json['annualAmount']),
+      notes: serializer.fromJson<String?>(json['notes']),
     );
   }
   @override
@@ -787,72 +887,86 @@ class OtherIncome extends DataClass implements Insertable<OtherIncome> {
       'otherIncomeId': serializer.toJson<int>(otherIncomeId),
       'name': serializer.toJson<String>(name),
       'annualAmount': serializer.toJson<double>(annualAmount),
+      'notes': serializer.toJson<String?>(notes),
     };
   }
 
   OtherIncome copyWith(
-          {int? otherIncomeId, String? name, double? annualAmount}) =>
+          {int? otherIncomeId,
+          String? name,
+          double? annualAmount,
+          Value<String?> notes = const Value.absent()}) =>
       OtherIncome(
         otherIncomeId: otherIncomeId ?? this.otherIncomeId,
         name: name ?? this.name,
         annualAmount: annualAmount ?? this.annualAmount,
+        notes: notes.present ? notes.value : this.notes,
       );
   @override
   String toString() {
     return (StringBuffer('OtherIncome(')
           ..write('otherIncomeId: $otherIncomeId, ')
           ..write('name: $name, ')
-          ..write('annualAmount: $annualAmount')
+          ..write('annualAmount: $annualAmount, ')
+          ..write('notes: $notes')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(otherIncomeId, name, annualAmount);
+  int get hashCode => Object.hash(otherIncomeId, name, annualAmount, notes);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is OtherIncome &&
           other.otherIncomeId == this.otherIncomeId &&
           other.name == this.name &&
-          other.annualAmount == this.annualAmount);
+          other.annualAmount == this.annualAmount &&
+          other.notes == this.notes);
 }
 
 class OtherIncomesCompanion extends UpdateCompanion<OtherIncome> {
   final Value<int> otherIncomeId;
   final Value<String> name;
   final Value<double> annualAmount;
+  final Value<String?> notes;
   const OtherIncomesCompanion({
     this.otherIncomeId = const Value.absent(),
     this.name = const Value.absent(),
     this.annualAmount = const Value.absent(),
+    this.notes = const Value.absent(),
   });
   OtherIncomesCompanion.insert({
     this.otherIncomeId = const Value.absent(),
     required String name,
     required double annualAmount,
+    this.notes = const Value.absent(),
   })  : name = Value(name),
         annualAmount = Value(annualAmount);
   static Insertable<OtherIncome> custom({
     Expression<int>? otherIncomeId,
     Expression<String>? name,
     Expression<double>? annualAmount,
+    Expression<String>? notes,
   }) {
     return RawValuesInsertable({
       if (otherIncomeId != null) 'other_income_id': otherIncomeId,
       if (name != null) 'name': name,
       if (annualAmount != null) 'annual_amount': annualAmount,
+      if (notes != null) 'notes': notes,
     });
   }
 
   OtherIncomesCompanion copyWith(
       {Value<int>? otherIncomeId,
       Value<String>? name,
-      Value<double>? annualAmount}) {
+      Value<double>? annualAmount,
+      Value<String?>? notes}) {
     return OtherIncomesCompanion(
       otherIncomeId: otherIncomeId ?? this.otherIncomeId,
       name: name ?? this.name,
       annualAmount: annualAmount ?? this.annualAmount,
+      notes: notes ?? this.notes,
     );
   }
 
@@ -868,6 +982,9 @@ class OtherIncomesCompanion extends UpdateCompanion<OtherIncome> {
     if (annualAmount.present) {
       map['annual_amount'] = Variable<double>(annualAmount.value);
     }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
     return map;
   }
 
@@ -876,7 +993,8 @@ class OtherIncomesCompanion extends UpdateCompanion<OtherIncome> {
     return (StringBuffer('OtherIncomesCompanion(')
           ..write('otherIncomeId: $otherIncomeId, ')
           ..write('name: $name, ')
-          ..write('annualAmount: $annualAmount')
+          ..write('annualAmount: $annualAmount, ')
+          ..write('notes: $notes')
           ..write(')'))
         .toString();
   }

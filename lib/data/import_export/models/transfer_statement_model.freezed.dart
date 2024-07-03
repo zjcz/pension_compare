@@ -28,6 +28,7 @@ mixin _$TransferStatementModel {
   double? get yearlyCharges => throw _privateConstructorUsedError;
   double? get transferValue => throw _privateConstructorUsedError;
   double? get amountPaidIn => throw _privateConstructorUsedError;
+  String? get notes => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -48,7 +49,8 @@ abstract class $TransferStatementModelCopyWith<$Res> {
       double projectedAnnualAmount,
       double? yearlyCharges,
       double? transferValue,
-      double? amountPaidIn});
+      double? amountPaidIn,
+      String? notes});
 }
 
 /// @nodoc
@@ -72,6 +74,7 @@ class _$TransferStatementModelCopyWithImpl<$Res,
     Object? yearlyCharges = freezed,
     Object? transferValue = freezed,
     Object? amountPaidIn = freezed,
+    Object? notes = freezed,
   }) {
     return _then(_value.copyWith(
       statementId: null == statementId
@@ -102,6 +105,10 @@ class _$TransferStatementModelCopyWithImpl<$Res,
           ? _value.amountPaidIn
           : amountPaidIn // ignore: cast_nullable_to_non_nullable
               as double?,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -122,7 +129,8 @@ abstract class _$$TransferStatementModelImplCopyWith<$Res>
       double projectedAnnualAmount,
       double? yearlyCharges,
       double? transferValue,
-      double? amountPaidIn});
+      double? amountPaidIn,
+      String? notes});
 }
 
 /// @nodoc
@@ -145,6 +153,7 @@ class __$$TransferStatementModelImplCopyWithImpl<$Res>
     Object? yearlyCharges = freezed,
     Object? transferValue = freezed,
     Object? amountPaidIn = freezed,
+    Object? notes = freezed,
   }) {
     return _then(_$TransferStatementModelImpl(
       statementId: null == statementId
@@ -175,6 +184,10 @@ class __$$TransferStatementModelImplCopyWithImpl<$Res>
           ? _value.amountPaidIn
           : amountPaidIn // ignore: cast_nullable_to_non_nullable
               as double?,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -191,7 +204,8 @@ class _$TransferStatementModelImpl
       required this.projectedAnnualAmount,
       this.yearlyCharges,
       this.transferValue,
-      this.amountPaidIn});
+      this.amountPaidIn,
+      this.notes});
 
   factory _$TransferStatementModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$TransferStatementModelImplFromJson(json);
@@ -210,10 +224,12 @@ class _$TransferStatementModelImpl
   final double? transferValue;
   @override
   final double? amountPaidIn;
+  @override
+  final String? notes;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'TransferStatementModel(statementId: $statementId, statementDate: $statementDate, planValue: $planValue, projectedAnnualAmount: $projectedAnnualAmount, yearlyCharges: $yearlyCharges, transferValue: $transferValue, amountPaidIn: $amountPaidIn)';
+    return 'TransferStatementModel(statementId: $statementId, statementDate: $statementDate, planValue: $planValue, projectedAnnualAmount: $projectedAnnualAmount, yearlyCharges: $yearlyCharges, transferValue: $transferValue, amountPaidIn: $amountPaidIn, notes: $notes)';
   }
 
   @override
@@ -227,7 +243,8 @@ class _$TransferStatementModelImpl
       ..add(DiagnosticsProperty('projectedAnnualAmount', projectedAnnualAmount))
       ..add(DiagnosticsProperty('yearlyCharges', yearlyCharges))
       ..add(DiagnosticsProperty('transferValue', transferValue))
-      ..add(DiagnosticsProperty('amountPaidIn', amountPaidIn));
+      ..add(DiagnosticsProperty('amountPaidIn', amountPaidIn))
+      ..add(DiagnosticsProperty('notes', notes));
   }
 
   @override
@@ -248,7 +265,8 @@ class _$TransferStatementModelImpl
             (identical(other.transferValue, transferValue) ||
                 other.transferValue == transferValue) &&
             (identical(other.amountPaidIn, amountPaidIn) ||
-                other.amountPaidIn == amountPaidIn));
+                other.amountPaidIn == amountPaidIn) &&
+            (identical(other.notes, notes) || other.notes == notes));
   }
 
   @JsonKey(ignore: true)
@@ -261,7 +279,8 @@ class _$TransferStatementModelImpl
       projectedAnnualAmount,
       yearlyCharges,
       transferValue,
-      amountPaidIn);
+      amountPaidIn,
+      notes);
 
   @JsonKey(ignore: true)
   @override
@@ -286,7 +305,8 @@ abstract class _TransferStatementModel implements TransferStatementModel {
       required final double projectedAnnualAmount,
       final double? yearlyCharges,
       final double? transferValue,
-      final double? amountPaidIn}) = _$TransferStatementModelImpl;
+      final double? amountPaidIn,
+      final String? notes}) = _$TransferStatementModelImpl;
 
   factory _TransferStatementModel.fromJson(Map<String, dynamic> json) =
       _$TransferStatementModelImpl.fromJson;
@@ -305,6 +325,8 @@ abstract class _TransferStatementModel implements TransferStatementModel {
   double? get transferValue;
   @override
   double? get amountPaidIn;
+  @override
+  String? get notes;
   @override
   @JsonKey(ignore: true)
   _$$TransferStatementModelImplCopyWith<_$TransferStatementModelImpl>

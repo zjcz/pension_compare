@@ -16,6 +16,7 @@ _$TransferPensionModelImpl _$$TransferPensionModelImplFromJson(
           .map(
               (e) => TransferStatementModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+      notes: json['notes'] as String?,
     );
 
 Map<String, dynamic> _$$TransferPensionModelImplToJson(
@@ -25,4 +26,5 @@ Map<String, dynamic> _$$TransferPensionModelImplToJson(
       'name': instance.name,
       'maturityDate': instance.maturityDate.toIso8601String(),
       'statements': instance.statements,
+      'notes': instance.notes,
     };

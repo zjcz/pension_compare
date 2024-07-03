@@ -42,7 +42,7 @@ void main() {
           (_) => Stream.value(pensionRecord.copyWith(name: newName)));
       when(databaseService.doesPensionNameExist(id, newName))
           .thenAnswer((_) async => false);
-      when(databaseService.updatePension(id, newName, maturityDate))
+      when(databaseService.updatePension(id, newName, maturityDate, null))
           .thenAnswer((_) async => true);
       when(databaseService.getAllStatementsForPension(id))
           .thenAnswer((_) => Stream.value([]));
@@ -61,7 +61,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // assert
-      verify(databaseService.updatePension(id, newName, maturityDate))
+      verify(databaseService.updatePension(id, newName, maturityDate, null))
           .called(1);
       expect(find.byType(PensionOverviewScreen), findsOneWidget);
       expect(find.text(newName), findsOneWidget);

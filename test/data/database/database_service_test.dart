@@ -18,14 +18,14 @@ void main() {
   group('Test data cleardown functionality', () {
     test('running cleardown removes all pensions and statements', () async {
       final pension =
-          await database.createPension('test pension', DateHelper.getToday());
+          await database.createPension('test pension', DateHelper.getToday(), null);
       await database.createStatement(pension!.pensionId, DateTime(2021, 1, 1),
-          1000.0, 2000.0, 3000.0, 4000.0, 5000.0);
+          1000.0, 2000.0, 3000.0, 4000.0, 5000.0, null);
       await database.createStatement(pension.pensionId, DateTime(2022, 1, 1),
-          1000.0, 2000.0, 3000.0, 4000.0, 5000.0);
+          1000.0, 2000.0, 3000.0, 4000.0, 5000.0, null);
       await database.createStatement(pension.pensionId, DateTime(2023, 1, 1),
-          1000.0, 2000.0, 3000.0, 4000.0, 5000.0);
-      await database.saveStatePension(12345.0);
+          1000.0, 2000.0, 3000.0, 4000.0, 5000.0, null);
+      await database.saveStatePension(12345.0, null);
 
       await database.clearAllData();
 

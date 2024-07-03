@@ -7,4 +7,6 @@ class Pensions extends Table {
   IntColumn get pensionId => integer().autoIncrement()();
   TextColumn get name => text().unique().withLength(max: 100)();
   DateTimeColumn get maturityDate => dateTime()();
+  TextColumn get notes => text().nullable()();
+  
 }

@@ -10,6 +10,7 @@ class TransferOtherIncomeModel with _$TransferOtherIncomeModel {
     required int otherIncomeId,
     required String name,
     required double annualAmount,
+    String? notes
   }) = _TransferOtherIncomeModel;
 
   factory TransferOtherIncomeModel.fromJson(Map<String, Object?> json) =>

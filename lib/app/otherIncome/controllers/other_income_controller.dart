@@ -24,6 +24,6 @@ class OtherIncomeController extends _$OtherIncomeController {
   }
 
   Future<void> updateStatePension(double value) {
-    return _databaseService.saveStatePension(value);
+    return _databaseService.saveStatePension(value, null);
   }
 }

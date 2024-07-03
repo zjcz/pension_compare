@@ -9,8 +9,10 @@ void main() {
       int otherIncomeId = 5;
       String name = 'new income';
       double amount = 123.45;
+      String notes = 'some notes';
+
       OtherIncome otherIncome = OtherIncome(
-          otherIncomeId: otherIncomeId, name: name, annualAmount: amount);
+          otherIncomeId: otherIncomeId, name: name, annualAmount: amount, notes: notes);
 
       TransferOtherIncomeModel otherIncomeModel =
           OtherIncomeMapper.toTransfer(otherIncome);
@@ -19,14 +21,16 @@ void main() {
       expect(otherIncomeModel.otherIncomeId, otherIncomeId);
       expect(otherIncomeModel.name, name);
       expect(otherIncomeModel.annualAmount, amount);
+      expect(otherIncomeModel.notes, notes);
     });
 
     testWidgets('map transfer object to other income object', (tester) async {
       int otherIncomeId = 5;
       String name = 'new income';
       double amount = 123.45;
+      String notes = 'some notes';
       TransferOtherIncomeModel transferOtherIncome = TransferOtherIncomeModel(
-          otherIncomeId: otherIncomeId, name: name, annualAmount: amount);
+          otherIncomeId: otherIncomeId, name: name, annualAmount: amount, notes: notes);
 
       OtherIncome otherIncome =
           OtherIncomeMapper.fromTransfer(transferOtherIncome);
@@ -35,14 +39,16 @@ void main() {
       expect(otherIncome.otherIncomeId, otherIncomeId);
       expect(otherIncome.name, name);
       expect(otherIncome.annualAmount, amount);
+      expect(otherIncome.notes, notes);
     });
 
     testWidgets('map to transfer and back again', (tester) async {
       int otherIncomeId = 5;
       String name = 'new income';
       double amount = 123.45;
+      String notes = 'some notes';
       OtherIncome otherIncome = OtherIncome(
-          otherIncomeId: otherIncomeId, name: name, annualAmount: amount);
+          otherIncomeId: otherIncomeId, name: name, annualAmount: amount, notes: notes);
 
       TransferOtherIncomeModel transferOtherIncome =
           OtherIncomeMapper.toTransfer(otherIncome);
@@ -54,6 +60,7 @@ void main() {
       expect(resultOtherIncome.otherIncomeId, otherIncome.otherIncomeId);
       expect(resultOtherIncome.name, otherIncome.name);
       expect(resultOtherIncome.annualAmount, otherIncome.annualAmount);
+      expect(resultOtherIncome.notes, otherIncome.notes);
     });
   });
 }

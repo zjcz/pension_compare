@@ -14,6 +14,7 @@ class TransferStatementModel with _$TransferStatementModel {
     double? yearlyCharges,
     double? transferValue,
     double? amountPaidIn,
+    String? notes,
   }) = _TransferStatementModel;
 
   factory TransferStatementModel.fromJson(Map<String, Object?> json) =>

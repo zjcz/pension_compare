@@ -21,21 +21,20 @@ void main() {
       double projectedAnnualAmount = 678.90;
       double yearlyCharges = 987.65;
       double transferValue = 432.10;
-double amountPaidIn = 1928.37;
+      double amountPaidIn = 1928.37;
 
       final databaseService = MockDatabaseService();
       when(databaseService.getAllStatementsForPension(pensionId))
           .thenAnswer((_) => Stream.value([
                 Statement(
-                  statementId: statementId,
-                  pension: pensionId,
-                  statementDate: statementDate,
-                  planValue: planValue,
-                  projectedAnnualAmount: projectedAnnualAmount,
-                  yearlyCharges: yearlyCharges,
-                  transferValue: transferValue,
-                  amountPaidIn: amountPaidIn
-                ),
+                    statementId: statementId,
+                    pension: pensionId,
+                    statementDate: statementDate,
+                    planValue: planValue,
+                    projectedAnnualAmount: projectedAnnualAmount,
+                    yearlyCharges: yearlyCharges,
+                    transferValue: transferValue,
+                    amountPaidIn: amountPaidIn),
               ]));
 
       final container = createContainer(overrides: [
@@ -97,19 +96,25 @@ double amountPaidIn = 1928.37;
       double amountPaidIn = 1928.37;
 
       final databaseService = MockDatabaseService();
-      when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue, amountPaidIn))
+      when(databaseService.createStatement(
+              pensionId,
+              statementDate,
+              planValue,
+              projectedAnnualAmount,
+              yearlyCharges,
+              transferValue,
+              amountPaidIn,
+              null))
           .thenAnswer(
         (_) async => Statement(
-          statementId: statementId,
-          pension: pensionId,
-          statementDate: statementDate,
-          planValue: planValue,
-          projectedAnnualAmount: projectedAnnualAmount,
-          yearlyCharges: yearlyCharges,
-          transferValue: transferValue,
-          amountPaidIn: amountPaidIn
-        ),
+            statementId: statementId,
+            pension: pensionId,
+            statementDate: statementDate,
+            planValue: planValue,
+            projectedAnnualAmount: projectedAnnualAmount,
+            yearlyCharges: yearlyCharges,
+            transferValue: transferValue,
+            amountPaidIn: amountPaidIn),
       );
 
       final container = createContainer(overrides: [
@@ -123,7 +128,8 @@ double amountPaidIn = 1928.37;
           planValue,
           projectedAnnualAmount,
           yearlyCharges,
-          transferValue, amountPaidIn);
+          transferValue,
+          amountPaidIn);
 
       expect(savedStatement, isNotNull);
       expect(savedStatement!.statementId, statementId);
@@ -134,8 +140,15 @@ double amountPaidIn = 1928.37;
       expect(savedStatement.yearlyCharges, yearlyCharges);
       expect(savedStatement.transferValue, transferValue);
       expect(savedStatement.amountPaidIn, amountPaidIn);
-      verify(databaseService.createStatement(pensionId, statementDate,
-              planValue, projectedAnnualAmount, yearlyCharges, transferValue, amountPaidIn))
+      verify(databaseService.createStatement(
+              pensionId,
+              statementDate,
+              planValue,
+              projectedAnnualAmount,
+              yearlyCharges,
+              transferValue,
+              amountPaidIn,
+              null))
           .called(1);
 
       // Workaround to avoid the FakeTimer error
@@ -161,7 +174,9 @@ double amountPaidIn = 1928.37;
               planValue,
               projectedAnnualAmount,
               yearlyCharges,
-              transferValue, amountPaidIn))
+              transferValue,
+              amountPaidIn,
+              null))
           .thenAnswer((_) async => true);
 
       final container = createContainer(overrides: [
@@ -176,7 +191,8 @@ double amountPaidIn = 1928.37;
           planValue,
           projectedAnnualAmount,
           yearlyCharges,
-          transferValue, amountPaidIn);
+          transferValue,
+          amountPaidIn);
 
       expect(result, isTrue);
       verify(databaseService.updateStatement(
@@ -186,7 +202,9 @@ double amountPaidIn = 1928.37;
               planValue,
               projectedAnnualAmount,
               yearlyCharges,
-              transferValue, amountPaidIn))
+              transferValue,
+              amountPaidIn,
+              null))
           .called(1);
 
       // Workaround to avoid the FakeTimer error

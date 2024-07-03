@@ -25,6 +25,7 @@ mixin _$TransferPensionModel {
   DateTime get maturityDate => throw _privateConstructorUsedError;
   List<TransferStatementModel> get statements =>
       throw _privateConstructorUsedError;
+  String? get notes => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -42,7 +43,8 @@ abstract class $TransferPensionModelCopyWith<$Res> {
       {int pensionId,
       String name,
       DateTime maturityDate,
-      List<TransferStatementModel> statements});
+      List<TransferStatementModel> statements,
+      String? notes});
 }
 
 /// @nodoc
@@ -63,6 +65,7 @@ class _$TransferPensionModelCopyWithImpl<$Res,
     Object? name = null,
     Object? maturityDate = null,
     Object? statements = null,
+    Object? notes = freezed,
   }) {
     return _then(_value.copyWith(
       pensionId: null == pensionId
@@ -81,6 +84,10 @@ class _$TransferPensionModelCopyWithImpl<$Res,
           ? _value.statements
           : statements // ignore: cast_nullable_to_non_nullable
               as List<TransferStatementModel>,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -97,7 +104,8 @@ abstract class _$$TransferPensionModelImplCopyWith<$Res>
       {int pensionId,
       String name,
       DateTime maturityDate,
-      List<TransferStatementModel> statements});
+      List<TransferStatementModel> statements,
+      String? notes});
 }
 
 /// @nodoc
@@ -115,6 +123,7 @@ class __$$TransferPensionModelImplCopyWithImpl<$Res>
     Object? name = null,
     Object? maturityDate = null,
     Object? statements = null,
+    Object? notes = freezed,
   }) {
     return _then(_$TransferPensionModelImpl(
       pensionId: null == pensionId
@@ -133,6 +142,10 @@ class __$$TransferPensionModelImplCopyWithImpl<$Res>
           ? _value._statements
           : statements // ignore: cast_nullable_to_non_nullable
               as List<TransferStatementModel>,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -146,7 +159,8 @@ class _$TransferPensionModelImpl
       {required this.pensionId,
       required this.name,
       required this.maturityDate,
-      required final List<TransferStatementModel> statements})
+      required final List<TransferStatementModel> statements,
+      this.notes})
       : _statements = statements;
 
   factory _$TransferPensionModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -167,8 +181,11 @@ class _$TransferPensionModelImpl
   }
 
   @override
+  final String? notes;
+
+  @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'TransferPensionModel(pensionId: $pensionId, name: $name, maturityDate: $maturityDate, statements: $statements)';
+    return 'TransferPensionModel(pensionId: $pensionId, name: $name, maturityDate: $maturityDate, statements: $statements, notes: $notes)';
   }
 
   @override
@@ -179,7 +196,8 @@ class _$TransferPensionModelImpl
       ..add(DiagnosticsProperty('pensionId', pensionId))
       ..add(DiagnosticsProperty('name', name))
       ..add(DiagnosticsProperty('maturityDate', maturityDate))
-      ..add(DiagnosticsProperty('statements', statements));
+      ..add(DiagnosticsProperty('statements', statements))
+      ..add(DiagnosticsProperty('notes', notes));
   }
 
   @override
@@ -193,13 +211,14 @@ class _$TransferPensionModelImpl
             (identical(other.maturityDate, maturityDate) ||
                 other.maturityDate == maturityDate) &&
             const DeepCollectionEquality()
-                .equals(other._statements, _statements));
+                .equals(other._statements, _statements) &&
+            (identical(other.notes, notes) || other.notes == notes));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, pensionId, name, maturityDate,
-      const DeepCollectionEquality().hash(_statements));
+      const DeepCollectionEquality().hash(_statements), notes);
 
   @JsonKey(ignore: true)
   @override
@@ -219,11 +238,11 @@ class _$TransferPensionModelImpl
 
 abstract class _TransferPensionModel implements TransferPensionModel {
   const factory _TransferPensionModel(
-          {required final int pensionId,
-          required final String name,
-          required final DateTime maturityDate,
-          required final List<TransferStatementModel> statements}) =
-      _$TransferPensionModelImpl;
+      {required final int pensionId,
+      required final String name,
+      required final DateTime maturityDate,
+      required final List<TransferStatementModel> statements,
+      final String? notes}) = _$TransferPensionModelImpl;
 
   factory _TransferPensionModel.fromJson(Map<String, dynamic> json) =
       _$TransferPensionModelImpl.fromJson;
@@ -236,6 +255,8 @@ abstract class _TransferPensionModel implements TransferPensionModel {
   DateTime get maturityDate;
   @override
   List<TransferStatementModel> get statements;
+  @override
+  String? get notes;
   @override
   @JsonKey(ignore: true)
   _$$TransferPensionModelImplCopyWith<_$TransferPensionModelImpl>

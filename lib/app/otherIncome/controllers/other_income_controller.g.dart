@@ -7,7 +7,7 @@ part of 'other_income_controller.dart';
 // **************************************************************************
 
 String _$otherIncomeControllerHash() =>
-    r'5293d98c1e7f9dd8c93bef7fb578f8c0dccaa85e';
+    r'3e1c39b813afd2e066b639ff2d5065917f30d056';
 
 /// See also [OtherIncomeController].
 @ProviderFor(OtherIncomeController)

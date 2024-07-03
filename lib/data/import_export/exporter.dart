@@ -95,7 +95,7 @@ class Exporter {
 
     for (TransferPensionModel pension in dataModel.transferPensionModelList) {
       Pension? p = await databaseService.createPension(
-          pension.name, pension.maturityDate);
+          pension.name, pension.maturityDate, pension.notes);
       if (p != null && pension.statements.isNotEmpty) {
         for (TransferStatementModel statement in pension.statements) {
           await databaseService.createStatement(
@@ -105,13 +105,15 @@ class Exporter {
               statement.projectedAnnualAmount,
               statement.yearlyCharges,
               statement.transferValue,
-              statement.amountPaidIn);
+              statement.amountPaidIn,
+              statement.notes);
         }
       }
     }
 
     await databaseService.saveStatePension(
-        dataModel.transferOtherIncomeModelList.first.annualAmount);
+        dataModel.transferOtherIncomeModelList.first.annualAmount,
+        dataModel.transferOtherIncomeModelList.first.notes);
     await settingsService.saveAllSettings(Settings(
       retirementDate: dataModel.transferSettingsModel.retirementDate,
       targetIncome: dataModel.transferSettingsModel.targetIncome,

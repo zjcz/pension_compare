@@ -15,6 +15,7 @@ class Statements extends Table {
   RealColumn get yearlyCharges => real().nullable()();
   RealColumn get transferValue => real().nullable()();
   RealColumn get amountPaidIn => real().nullable()();
+  TextColumn get statementNotes => text().nullable()();
 
   @override
   List<Set<Column>> get uniqueKeys => [

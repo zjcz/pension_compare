@@ -67,7 +67,7 @@ void main() {
       expect(find.text("12,345.67"), findsOneWidget);
 
       verify(databaseService.getStatePension()).called(1);
-      verifyNever(databaseService.saveStatePension(value));
+      verifyNever(databaseService.saveStatePension(value, null));
     });
 
     testWidgets('load state pension record and format correctly',
@@ -95,7 +95,7 @@ void main() {
               otherIncomeId: defaults.defaultStatePensionId,
               name: defaults.defaultStatePensionName,
               annualAmount: initialValue));
-      when(databaseService.saveStatePension(updatedValue)).thenAnswer(
+      when(databaseService.saveStatePension(updatedValue, null)).thenAnswer(
           (_) async => OtherIncome(
               otherIncomeId: defaults.defaultStatePensionId,
               name: defaults.defaultStatePensionName,
@@ -109,7 +109,7 @@ void main() {
       // Tap the save button
       await tester.tap(find.byType(TextButton));
 
-      verify(databaseService.saveStatePension(updatedValue)).called(1);
+      verify(databaseService.saveStatePension(updatedValue, null)).called(1);
     });
 
     testWidgets('do not save state pension record with invalid values',
@@ -122,7 +122,7 @@ void main() {
               otherIncomeId: defaults.defaultStatePensionId,
               name: defaults.defaultStatePensionName,
               annualAmount: initialValue));
-      when(databaseService.saveStatePension(0)).thenAnswer((_) async =>
+      when(databaseService.saveStatePension(0, null)).thenAnswer((_) async =>
           const OtherIncome(
               otherIncomeId: defaults.defaultStatePensionId,
               name: defaults.defaultStatePensionName,
@@ -142,7 +142,7 @@ void main() {
       expect(
           find.text("Please enter a value, or 0 if unknown"), findsOneWidget);
 
-      verifyNever(databaseService.saveStatePension(0));
+      verifyNever(databaseService.saveStatePension(0, null));
     });
   });
 

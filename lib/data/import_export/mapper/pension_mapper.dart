@@ -9,6 +9,7 @@ class PensionMapper {
       pensionId: pension.pensionId,
       name: pension.name,
       maturityDate: pension.maturityDate,
+      notes: pension.notes,
       statements: statements
           .map((statement) => TransferStatementModel(
                 statementId: statement.statementId,
@@ -18,6 +19,7 @@ class PensionMapper {
                 yearlyCharges: statement.yearlyCharges,
                 transferValue: statement.transferValue,
                 amountPaidIn: statement.amountPaidIn,
+                notes: statement.statementNotes,
               ))
           .toList(),
     );
@@ -27,7 +29,8 @@ class PensionMapper {
     return Pension(
         pensionId: pension.pensionId,
         name: pension.name,
-        maturityDate: pension.maturityDate);
+        maturityDate: pension.maturityDate,
+        notes: pension.notes);
   }
 
   static List<Statement> statementFromTransfer(TransferPensionModel pension) {
@@ -40,7 +43,8 @@ class PensionMapper {
             projectedAnnualAmount: statement.projectedAnnualAmount,
             yearlyCharges: statement.yearlyCharges,
             transferValue: statement.transferValue,
-            amountPaidIn: statement.amountPaidIn))
+            amountPaidIn: statement.amountPaidIn,
+            statementNotes: statement.notes))
         .toList();
   }
 }
