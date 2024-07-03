@@ -64,7 +64,7 @@ void main() {
     testWidgets('save state pension records', (tester) async {
       double amount = 123.45;
       final databaseService = MockDatabaseService();
-      when(databaseService.saveStatePension(amount))
+      when(databaseService.saveStatePension(amount, null))
           .thenAnswer((_) async => (null));
 
       final container = createContainer(overrides: [
@@ -74,7 +74,7 @@ void main() {
       final provider = container.read(otherIncomeControllerProvider.notifier);
       await provider.updateStatePension(amount);
 
-      verify(databaseService.saveStatePension(amount)).called(1);
+      verify(databaseService.saveStatePension(amount, null)).called(1);
 
       // Workaround to avoid the FakeTimer error
       // https://github.com/rrousselGit/riverpod/issues/1941

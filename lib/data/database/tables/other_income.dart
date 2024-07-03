@@ -7,6 +7,7 @@ class OtherIncomes extends Table {
   IntColumn get otherIncomeId => integer()();
   TextColumn get name => text()();
   RealColumn get annualAmount => real()();
+  TextColumn get notes => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {otherIncomeId};

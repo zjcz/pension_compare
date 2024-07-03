@@ -26,33 +26,39 @@ void main() {
 
     test('read the state pension object after save', () async {
       double statePensionValue = 123.45;
-
-      await database.saveStatePension(statePensionValue);
+      String notes = 'test notes';
+      await database.saveStatePension(statePensionValue, notes);
       final entry = await database.getStatePension();
 
       expect(entry, match.isNotNull);
       expect(entry!.otherIncomeId, defaults.defaultStatePensionId);
       expect(entry.annualAmount, statePensionValue);
+      expect(entry.notes, notes);
     });
 
     test('update the state pension object', () async {
       double statePensionValue1 = 100;
+      String notes1 = 'test notes 1';
       double statePensionValue2 = 200;
+      String notes2 = 'test notes 2';
 
-      final saved1 = await database.saveStatePension(statePensionValue1);
+      final saved1 = await database.saveStatePension(statePensionValue1, notes1);
       expect(saved1, match.isNotNull);
       expect(saved1!.otherIncomeId, defaults.defaultStatePensionId);
       expect(saved1.annualAmount, statePensionValue1);
+      expect(saved1.notes, notes1);
 
-      final saved2 = await database.saveStatePension(statePensionValue2);
+      final saved2 = await database.saveStatePension(statePensionValue2, notes2);
       expect(saved2, match.isNotNull);
       expect(saved2!.otherIncomeId, defaults.defaultStatePensionId);
       expect(saved2.annualAmount, statePensionValue2);
+      expect(saved2.notes, notes2);
 
       final entry = await database.getStatePension();
       expect(entry, match.isNotNull);
       expect(entry!.otherIncomeId, defaults.defaultStatePensionId);
       expect(entry.annualAmount, statePensionValue2);
+      expect(entry.notes, notes2);
     });
   });
 }

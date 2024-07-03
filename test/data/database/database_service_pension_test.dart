@@ -18,37 +18,44 @@ void main() {
     test('create a new pension object', () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
 
-      final entry = await database.createPension(name, maturityDate);
+      final entry = await database.createPension(name, maturityDate, notes);
       expect(entry, match.isNotNull);
       expect(entry!.name, name);
       expect(entry.maturityDate, maturityDate);
+      expect(entry.notes, notes);
     });
 
     test('read a new pension object', () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
 
-      final entry = await database.createPension(name, maturityDate);
+      final entry = await database.createPension(name, maturityDate, notes);
       expect(entry, match.isNotNull);
       expect(entry!.name, name);
       expect(entry.maturityDate, maturityDate);
+      expect(entry.notes, notes);
 
       final result = await database.getPension(entry.pensionId);
       expect(result, match.isNotNull);
       expect(result!.pensionId, entry.pensionId);
       expect(result.name, name);
       expect(result.maturityDate, maturityDate);
+      expect(result.notes, notes);
     });
 
     test('watch returns a new pension object', () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
 
-      final entry = await database.createPension(name, maturityDate);
+      final entry = await database.createPension(name, maturityDate, notes);
       expect(entry, match.isNotNull);
       expect(entry!.name, name);
       expect(entry.maturityDate, maturityDate);
+      expect(entry.notes, notes);
 
       final result = database.watchPension(entry.pensionId);
       expect(result, match.isNotNull);
@@ -57,21 +64,23 @@ void main() {
       expect(pensionRecord!.pensionId, entry.pensionId);
       expect(pensionRecord.name, name);
       expect(pensionRecord.maturityDate, maturityDate);
+      expect(pensionRecord.notes, notes);
     });
 
     test('read all new pension objects', () async {
       String name1 = 'new pension 1';
       DateTime maturityDate1 = DateTime(2050, 1, 1);
-
+      String notes1 = 'notes 1';
       String name2 = 'new pension 2';
       DateTime maturityDate2 = DateTime(2050, 2, 2);
-
+      String notes2 = 'notes 2';
       String name3 = 'new pension 3';
       DateTime maturityDate3 = DateTime(2050, 3, 3);
+      String notes3 = 'notes 3';
 
-      final entry1 = await database.createPension(name1, maturityDate1);
-      final entry2 = await database.createPension(name2, maturityDate2);
-      final entry3 = await database.createPension(name3, maturityDate3);
+      final entry1 = await database.createPension(name1, maturityDate1, notes1);
+      final entry2 = await database.createPension(name2, maturityDate2, notes2);
+      final entry3 = await database.createPension(name3, maturityDate3, notes3);
 
       final results = await database.getAllPensions().first;
       expect(results, match.isNotNull);
@@ -79,25 +88,30 @@ void main() {
       expect(results[0].pensionId, entry1!.pensionId);
       expect(results[0].name, entry1.name);
       expect(results[0].maturityDate, entry1.maturityDate);
+      expect(results[0].notes, entry1.notes);
       expect(results[1].pensionId, entry2!.pensionId);
       expect(results[1].name, entry2.name);
       expect(results[1].maturityDate, entry2.maturityDate);
+      expect(results[1].notes, entry2.notes);
       expect(results[2].pensionId, entry3!.pensionId);
       expect(results[2].name, entry3.name);
       expect(results[2].maturityDate, entry3.maturityDate);
+      expect(results[2].notes, entry3.notes);
     });
 
     test('update a pension object', () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
       String updatedName = 'new pension';
       DateTime updatedMaturityDate = DateTime(2050, 1, 1);
+      String updatedNotes = 'updated notes';
 
-      final newEntry = await database.createPension(name, maturityDate);
+      final newEntry = await database.createPension(name, maturityDate, notes);
       expect(newEntry, match.isNotNull);
 
       bool updated = await database.updatePension(
-          newEntry!.pensionId, updatedName, updatedMaturityDate);
+          newEntry!.pensionId, updatedName, updatedMaturityDate, updatedNotes);
 
       expect(updated, isTrue);
 
@@ -106,13 +120,15 @@ void main() {
       expect(updatedEntry!.pensionId, newEntry.pensionId);
       expect(updatedEntry.name, updatedName);
       expect(updatedEntry.maturityDate, updatedMaturityDate);
+      expect(updatedEntry.notes, updatedNotes);
     });
 
     test('delete a pension object', () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
 
-      final entry = await database.createPension(name, maturityDate);
+      final entry = await database.createPension(name, maturityDate, notes);
 
       final results = await database.getAllPensions().first;
       expect(results, match.isNotNull);
@@ -131,8 +147,9 @@ void main() {
     test('Pension summary returns pension with no statements', () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
 
-      await database.createPension(name, maturityDate);
+      await database.createPension(name, maturityDate, notes);
 
       final results = await database.getAllPensionsWithLatestStatement().first;
       expect(results, match.isNotNull);
@@ -144,34 +161,56 @@ void main() {
     test('Pension summary returns pension and latest statements', () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
       DateTime statementDate1 = DateTime(2024, 2, 3);
       double planValue1 = 123.45;
       double projectedAnnualAmount1 = 456.78;
       double? yearlyCharges1 = 78.90;
       double? transferValue1 = 90.12;
       double? amountPaidIn1 = 34.56;
-
+      String statementNotes1 = 'statement notes 1';
       DateTime statementDate2 = DateTime(2025, 4, 5);
       double planValue2 = 543.21;
       double projectedAnnualAmount2 = 876.54;
       double? yearlyCharges2 = 90.87;
       double? transferValue2 = 21.90;
       double? amountPaidIn2 = 12.34;
-
+      String statementNotes2 = 'statement notes 2';
       DateTime statementDate3 = DateTime(2026, 6, 7);
       double planValue3 = 987.65;
       double projectedAnnualAmount3 = 432.10;
       double? yearlyCharges3 = 65.43;
       double? transferValue3 = 12.34;
       double? amountPaidIn3 = 56.78;
-
-      final pension = await database.createPension(name, maturityDate);
-      await database.createStatement(pension!.pensionId, statementDate1,
-          planValue1, projectedAnnualAmount1, yearlyCharges1, transferValue1, amountPaidIn1);
-      await database.createStatement(pension.pensionId, statementDate2,
-          planValue2, projectedAnnualAmount2, yearlyCharges2, transferValue2, amountPaidIn2);
-      await database.createStatement(pension.pensionId, statementDate3,
-          planValue3, projectedAnnualAmount3, yearlyCharges3, transferValue3, amountPaidIn3);
+      String statementNotes3 = 'statement notes 3';
+      final pension = await database.createPension(name, maturityDate, notes);
+      await database.createStatement(
+          pension!.pensionId,
+          statementDate1,
+          planValue1,
+          projectedAnnualAmount1,
+          yearlyCharges1,
+          transferValue1,
+          amountPaidIn1,
+          statementNotes1);
+      await database.createStatement(
+          pension.pensionId,
+          statementDate2,
+          planValue2,
+          projectedAnnualAmount2,
+          yearlyCharges2,
+          transferValue2,
+          amountPaidIn2,
+          statementNotes2);
+      await database.createStatement(
+          pension.pensionId,
+          statementDate3,
+          planValue3,
+          projectedAnnualAmount3,
+          yearlyCharges3,
+          transferValue3,
+          amountPaidIn3,
+          statementNotes3);
 
       final results = await database.getAllPensionsWithLatestStatement().first;
       expect(results, match.isNotNull);
@@ -182,6 +221,7 @@ void main() {
       expect(results[0].pension.pensionId, pension.pensionId);
       expect(results[0].pension.name, pension.name);
       expect(results[0].pension.maturityDate, pension.maturityDate);
+      expect(results[0].pension.notes, pension.notes);
 
       expect(results[0].statement!.pension, pension.pensionId);
       expect(results[0].statement!.statementDate, statementDate3);
@@ -191,56 +231,89 @@ void main() {
       expect(results[0].statement!.yearlyCharges, yearlyCharges3);
       expect(results[0].statement!.transferValue, transferValue3);
       expect(results[0].statement!.amountPaidIn, amountPaidIn3);
+      expect(results[0].statement!.statementNotes, statementNotes3);
     });
   });
 
-group('Test yearly pension summary', () {
-    test('Given no pensions When running Yearly Pension Summary Then expect no data ', () async {
+  group('Test yearly pension summary', () {
+    test(
+        'Given no pensions When running Yearly Pension Summary Then expect no data ',
+        () async {
       final results = await database.getYearlyPensionSummary().first;
       expect(results, match.isNotNull);
       expect(results.length, 0);
     });
 
-    test('Given no statements When running Yearly Pension Summary Then expect no data ', () async {
+    test(
+        'Given no statements When running Yearly Pension Summary Then expect no data ',
+        () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
 
-      await database.createPension(name, maturityDate);
+      await database.createPension(name, maturityDate, notes);
 
       final results = await database.getYearlyPensionSummary().first;
       expect(results, match.isNotNull);
       expect(results.length, 0);
     });
 
-    test('Given pension and statement data When running Yearly Pension Summary Then expect data ', () async {
+    test(
+        'Given pension and statement data When running Yearly Pension Summary Then expect data ',
+        () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
       DateTime statementDate1 = DateTime(2024, 2, 3);
       double planValue1 = 123.45;
       double projectedAnnualAmount1 = 456.78;
       double? yearlyCharges1 = 78.90;
       double? transferValue1 = 90.12;
       double? amountPaidIn1 = 34.56;
+      String statementNotes1 = 'statement notes 1';
       DateTime statementDate2 = DateTime(2025, 4, 5);
       double planValue2 = 543.21;
       double projectedAnnualAmount2 = 876.54;
       double? yearlyCharges2 = 90.87;
       double? transferValue2 = 21.90;
       double? amountPaidIn2 = 12.34;
+      String statementNotes2 = 'statement notes 2';
       DateTime statementDate3 = DateTime(2026, 6, 7);
       double planValue3 = 987.65;
       double projectedAnnualAmount3 = 432.10;
       double? yearlyCharges3 = 65.43;
       double? transferValue3 = 12.34;
       double? amountPaidIn3 = 56.78;
+      String statementNotes3 = 'statement notes 3';
 
-      final pension = await database.createPension(name, maturityDate);
-      final statement1 = await database.createStatement(pension!.pensionId, statementDate1,
-          planValue1, projectedAnnualAmount1, yearlyCharges1, transferValue1, amountPaidIn1);
-      final statement2 = await database.createStatement(pension.pensionId, statementDate2,
-          planValue2, projectedAnnualAmount2, yearlyCharges2, transferValue2, amountPaidIn2);
-      final statement3 = await database.createStatement(pension.pensionId, statementDate3,
-          planValue3, projectedAnnualAmount3, yearlyCharges3, transferValue3, amountPaidIn3);
+      final pension = await database.createPension(name, maturityDate, notes);
+      final statement1 = await database.createStatement(
+          pension!.pensionId,
+          statementDate1,
+          planValue1,
+          projectedAnnualAmount1,
+          yearlyCharges1,
+          transferValue1,
+          amountPaidIn1,
+          statementNotes1);
+      final statement2 = await database.createStatement(
+          pension.pensionId,
+          statementDate2,
+          planValue2,
+          projectedAnnualAmount2,
+          yearlyCharges2,
+          transferValue2,
+          amountPaidIn2,
+          statementNotes2);
+      final statement3 = await database.createStatement(
+          pension.pensionId,
+          statementDate3,
+          planValue3,
+          projectedAnnualAmount3,
+          yearlyCharges3,
+          transferValue3,
+          amountPaidIn3,
+          statementNotes3);
 
       final results = await database.getYearlyPensionSummary().first;
       expect(results, match.isNotNull);
@@ -265,28 +338,46 @@ group('Test yearly pension summary', () {
       expect(results[2].pensionWithStatement.first.statement, statement3!);
     });
 
-    test('Given pension with multiple statement in the same year When running Yearly Pension Summary Then expect latest statement ', () async {
+    test(
+        'Given pension with multiple statement in the same year When running Yearly Pension Summary Then expect latest statement ',
+        () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
       DateTime statementDate1 = DateTime(2024, 1, 1);
       double planValue1 = 123.45;
       double projectedAnnualAmount1 = 456.78;
       double? yearlyCharges1 = 78.90;
       double? transferValue1 = 90.12;
       double? amountPaidIn1 = 34.56;
+      String statementNotes1 = 'statement notes 1';
       DateTime statementDate2 = DateTime(2024, 2, 2);
       double planValue2 = 543.21;
       double projectedAnnualAmount2 = 876.54;
       double? yearlyCharges2 = 90.87;
       double? transferValue2 = 21.90;
       double? amountPaidIn2 = 12.34;
+      String statementNotes2 = 'statement notes 2';
 
-      final pension = await database.createPension(name, maturityDate);
-      await database.createStatement(pension!.pensionId, statementDate1,
-          planValue1, projectedAnnualAmount1, yearlyCharges1, transferValue1, amountPaidIn1);
-      final statement2 = await database.createStatement(pension.pensionId, statementDate2,
-          planValue2, projectedAnnualAmount2, yearlyCharges2, transferValue2, amountPaidIn2);
-
+      final pension = await database.createPension(name, maturityDate, notes);
+      await database.createStatement(
+          pension!.pensionId,
+          statementDate1,
+          planValue1,
+          projectedAnnualAmount1,
+          yearlyCharges1,
+          transferValue1,
+          amountPaidIn1,
+          statementNotes1);
+      final statement2 = await database.createStatement(
+          pension.pensionId,
+          statementDate2,
+          planValue2,
+          projectedAnnualAmount2,
+          yearlyCharges2,
+          transferValue2,
+          amountPaidIn2,
+          statementNotes2);
 
       final results = await database.getYearlyPensionSummary().first;
       expect(results, match.isNotNull);
@@ -304,19 +395,21 @@ group('Test yearly pension summary', () {
     test('Create fails if name already in use', () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
 
-      await database.createPension(name, maturityDate);
-      await expectLater(
-          database.createPension(name, maturityDate), throwsA(isException));
+      await database.createPension(name, maturityDate, notes);
+      await expectLater(database.createPension(name, maturityDate, notes),
+          throwsA(isException));
     });
 
     test('Create succeeds if name already in use but record deleted', () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
 
-      Pension? p1 = await database.createPension(name, maturityDate);
+      Pension? p1 = await database.createPension(name, maturityDate, notes);
       await database.deletePension(p1!.pensionId);
-      expectLater(database.createPension(name, maturityDate), completes);
+      expectLater(database.createPension(name, maturityDate, notes), completes);
     });
 
     // Sqlite UNIQUE(<column> COLLATE NOCASE) is not supported by Drift
@@ -340,8 +433,9 @@ group('Test yearly pension summary', () {
     test('Test if name already used in populated table', () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
 
-      await database.createPension(name, maturityDate);
+      await database.createPension(name, maturityDate, notes);
       bool response = await database.doesPensionNameExist(null, name);
 
       expect(response, isTrue);
@@ -350,8 +444,9 @@ group('Test yearly pension summary', () {
     test('Test if name already used for this record', () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
 
-      Pension? p1 = await database.createPension(name, maturityDate);
+      Pension? p1 = await database.createPension(name, maturityDate, notes);
       bool response = await database.doesPensionNameExist(p1!.pensionId, name);
 
       expect(response, isFalse);
@@ -362,9 +457,10 @@ group('Test yearly pension summary', () {
       String name2 = 'new pension 2';
       String name2updated = 'new pension 1';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
 
-      await database.createPension(name1, maturityDate);
-      Pension? p2 = await database.createPension(name2, maturityDate);
+      await database.createPension(name1, maturityDate, notes);
+      Pension? p2 = await database.createPension(name2, maturityDate, notes);
       bool response =
           await database.doesPensionNameExist(p2!.pensionId, name2updated);
 
@@ -374,8 +470,9 @@ group('Test yearly pension summary', () {
     test('Test if name already used with deleted record', () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
 
-      Pension? p1 = await database.createPension(name, maturityDate);
+      Pension? p1 = await database.createPension(name, maturityDate, notes);
       await database.deletePension(p1!.pensionId);
       bool response = await database.doesPensionNameExist(null, name);
 
@@ -385,8 +482,9 @@ group('Test yearly pension summary', () {
     test('Test if name in different case already used ', () async {
       String name = 'new pension';
       DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
 
-      await database.createPension(name.toUpperCase(), maturityDate);
+      await database.createPension(name.toUpperCase(), maturityDate, notes);
       bool response =
           await database.doesPensionNameExist(null, name.toLowerCase());
 

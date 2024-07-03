@@ -16,6 +16,7 @@ _$TransferStatementModelImpl _$$TransferStatementModelImplFromJson(
       yearlyCharges: (json['yearlyCharges'] as num?)?.toDouble(),
       transferValue: (json['transferValue'] as num?)?.toDouble(),
       amountPaidIn: (json['amountPaidIn'] as num?)?.toDouble(),
+      notes: json['notes'] as String?,
     );
 
 Map<String, dynamic> _$$TransferStatementModelImplToJson(
@@ -28,4 +29,5 @@ Map<String, dynamic> _$$TransferStatementModelImplToJson(
       'yearlyCharges': instance.yearlyCharges,
       'transferValue': instance.transferValue,
       'amountPaidIn': instance.amountPaidIn,
+      'notes': instance.notes,
     };

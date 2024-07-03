@@ -153,7 +153,7 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.doesPensionNameExist(null, name))
           .thenAnswer((_) async => false);
-      when(databaseService.createPension(name, maturityDate)).thenAnswer(
+      when(databaseService.createPension(name, maturityDate, null)).thenAnswer(
           (_) async =>
               Pension(pensionId: 1, name: name, maturityDate: maturityDate));
 
@@ -175,8 +175,8 @@ void main() {
       await tester.tap(find.widgetWithText(TextButton, "Save"));
       await tester.pumpAndSettle();
 
-      verify(databaseService.createPension(name, maturityDate)).called(1);
-      verifyNever(databaseService.updatePension(1, name, maturityDate));
+      verify(databaseService.createPension(name, maturityDate, null)).called(1);
+      verifyNever(databaseService.updatePension(1, name, maturityDate, null));
     });
 
     testWidgets('update existing pension record', (tester) async {
@@ -188,7 +188,7 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.doesPensionNameExist(id, newName))
           .thenAnswer((_) async => false);
-      when(databaseService.updatePension(id, newName, newMaturityDate))
+      when(databaseService.updatePension(id, newName, newMaturityDate, null))
           .thenAnswer((_) async => true);
 
       await tester.pumpWidget(createEditScreen(
@@ -212,8 +212,8 @@ void main() {
       // Tap the save button
       await tester.tap(find.widgetWithText(TextButton, "Save"));
 
-      verifyNever(databaseService.createPension(newName, newMaturityDate));
-      verify(databaseService.updatePension(id, newName, newMaturityDate))
+      verifyNever(databaseService.createPension(newName, newMaturityDate, null));
+      verify(databaseService.updatePension(id, newName, newMaturityDate, null))
           .called(1);
     });
   });
@@ -226,7 +226,7 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.doesPensionNameExist(null, name))
           .thenAnswer((_) async => false);
-      when(databaseService.createPension(name, maturityDate)).thenAnswer(
+      when(databaseService.createPension(name, maturityDate, null)).thenAnswer(
           (_) async =>
               Pension(pensionId: 1, name: name, maturityDate: maturityDate));
 
@@ -263,7 +263,7 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.doesPensionNameExist(id, newName))
           .thenAnswer((_) async => false);
-      when(databaseService.updatePension(id, newName, maturityDate))
+      when(databaseService.updatePension(id, newName, maturityDate, null))
           .thenAnswer((_) async => true);
 
       await tester.pumpWidget(createEditScreen(
@@ -365,7 +365,7 @@ void main() {
           .thenAnswer((_) async => true);
       when(databaseService.doesPensionNameExist(null, newName))
           .thenAnswer((_) async => false);
-      when(databaseService.createPension(newName, maturityDate)).thenAnswer(
+      when(databaseService.createPension(newName, maturityDate, null)).thenAnswer(
           (_) async =>
               Pension(pensionId: 1, name: newName, maturityDate: maturityDate));
 
@@ -396,7 +396,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text("This name is already in use"), findsNothing);
-      verify(databaseService.createPension(newName, maturityDate)).called(1);
+      verify(databaseService.createPension(newName, maturityDate, null)).called(1);
     });
   });
 

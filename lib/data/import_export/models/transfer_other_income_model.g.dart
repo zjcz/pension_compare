@@ -12,6 +12,7 @@ _$TransferOtherIncomeModelImpl _$$TransferOtherIncomeModelImplFromJson(
       otherIncomeId: (json['otherIncomeId'] as num).toInt(),
       name: json['name'] as String,
       annualAmount: (json['annualAmount'] as num).toDouble(),
+      notes: json['notes'] as String?,
     );
 
 Map<String, dynamic> _$$TransferOtherIncomeModelImplToJson(
@@ -20,4 +21,5 @@ Map<String, dynamic> _$$TransferOtherIncomeModelImplToJson(
       'otherIncomeId': instance.otherIncomeId,
       'name': instance.name,
       'annualAmount': instance.annualAmount,
+      'notes': instance.notes,
     };

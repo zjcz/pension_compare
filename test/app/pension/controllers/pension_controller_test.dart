@@ -72,7 +72,8 @@ void main() {
       String pensionName = 'new pension';
       DateTime maturityDate = DateTime.now();
       final databaseService = MockDatabaseService();
-      when(databaseService.createPension(pensionName, maturityDate)).thenAnswer(
+      when(databaseService.createPension(pensionName, maturityDate, null))
+          .thenAnswer(
         (_) async => Pension(
             pensionId: pensionId,
             name: pensionName,
@@ -90,7 +91,7 @@ void main() {
       expect(savedPension!.pensionId, pensionId);
       expect(savedPension.name, pensionName);
       expect(savedPension.maturityDate, maturityDate);
-      verify(databaseService.createPension(pensionName, maturityDate))
+      verify(databaseService.createPension(pensionName, maturityDate, null))
           .called(1);
 
       // Workaround to avoid the FakeTimer error
@@ -104,7 +105,8 @@ void main() {
       String pensionName = 'existing pension';
       DateTime maturityDate = DateTime.now();
       final databaseService = MockDatabaseService();
-      when(databaseService.updatePension(pensionId, pensionName, maturityDate))
+      when(databaseService.updatePension(
+              pensionId, pensionName, maturityDate, null))
           .thenAnswer((_) async => true);
 
       final container = createContainer(overrides: [
@@ -116,7 +118,7 @@ void main() {
 
       expect(result, isTrue);
       verify(databaseService.updatePension(
-              pensionId, pensionName, maturityDate))
+              pensionId, pensionName, maturityDate, null))
           .called(1);
 
       // Workaround to avoid the FakeTimer error

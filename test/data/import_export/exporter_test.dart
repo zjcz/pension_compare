@@ -23,11 +23,12 @@ void main() {
             Pension(
                 pensionId: 1,
                 name: 'Test Pension',
-                maturityDate: DateTime(2024, 1, 1))
+                maturityDate: DateTime(2024, 1, 1),
+                notes: 'Some notes')
           ]));
       when(databaseService.getStatePension()).thenAnswer((_) async =>
           const OtherIncome(
-              otherIncomeId: 1, name: 'State Pension', annualAmount: 1000));
+              otherIncomeId: 1, name: 'State Pension', annualAmount: 1000, notes: 'More notes'));
       when(databaseService.getAllStatementsForPension(1))
           .thenAnswer((_) => Stream.value([
                 Statement(
@@ -37,7 +38,8 @@ void main() {
                     planValue: 1000,
                     projectedAnnualAmount: 2000,
                     yearlyCharges: 3000,
-                    transferValue: 4000)
+                    transferValue: 4000,
+                    statementNotes: 'Statement notes')
               ]));
 
       final settingsService = MockSettingsService();
@@ -83,6 +85,7 @@ void main() {
       int pensionId = 1;
       String pensionName = 'Test Pension';
       DateTime maturityDate = DateTime(2024, 1, 1);
+      String pensionNotes = 'Some notes';
       int statementId = 5;
       DateTime statementDate = DateTime(2024, 1, 1);
       double planValue = 123.45;
@@ -90,7 +93,9 @@ void main() {
       double yearlyCharges = 987.65;
       double transferValue = 432.10;
       double amountPaidIn = 1928.37;
+      String statementNotes = 'Some statement notes';
       double statePensionAnnualAmount = 34567;
+      String otherIncomeNotes = 'Some other income notes';
       DateTime retirementDate = DateTime(2024, 1, 1);
       double targetIncome = 87654;
       bool acceptTermsAndConditions = true;
@@ -100,13 +105,14 @@ void main() {
 
       MockDatabaseService databaseService = MockDatabaseService();
       when(databaseService.clearAllData()).thenAnswer((_) async {});
-      when(databaseService.createPension(pensionName, maturityDate)).thenAnswer(
+      when(databaseService.createPension(pensionName, maturityDate, pensionNotes)).thenAnswer(
           (_) async => Pension(
               pensionId: pensionId,
               name: pensionName,
-              maturityDate: maturityDate));
+              maturityDate: maturityDate,
+              notes: pensionNotes));
       when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue, amountPaidIn))
+              projectedAnnualAmount, yearlyCharges, transferValue, amountPaidIn, statementNotes))
           .thenAnswer((_) async => Statement(
               statementId: statementId,
               pension: pensionId,
@@ -114,12 +120,14 @@ void main() {
               planValue: planValue,
               projectedAnnualAmount: projectedAnnualAmount,
               yearlyCharges: yearlyCharges,
-              transferValue: transferValue));
-      when(databaseService.saveStatePension(statePensionAnnualAmount))
+              transferValue: transferValue,
+              statementNotes: statementNotes));
+      when(databaseService.saveStatePension(statePensionAnnualAmount, otherIncomeNotes))
           .thenAnswer((_) async => OtherIncome(
               otherIncomeId: 1,
               name: 'State Pension',
-              annualAmount: statePensionAnnualAmount));
+              annualAmount: statePensionAnnualAmount,
+              notes: otherIncomeNotes));
 
       MockSettingsService settingsService = MockSettingsService();
       when(settingsService.saveAllSettings(Settings(
@@ -139,16 +147,19 @@ void main() {
           projectedAnnualAmount: projectedAnnualAmount,
           yearlyCharges: yearlyCharges,
           transferValue: transferValue, 
-          amountPaidIn: amountPaidIn);
+          amountPaidIn: amountPaidIn,
+          notes: statementNotes);
       TransferPensionModel transferPension = TransferPensionModel(
           pensionId: pensionId,
           name: pensionName,
           maturityDate: maturityDate,
+          notes: pensionNotes,
           statements: [transferStatement]);
       TransferOtherIncomeModel transferOtherIncome = TransferOtherIncomeModel(
           otherIncomeId: 1,
           name: 'State Pension',
-          annualAmount: statePensionAnnualAmount);
+          annualAmount: statePensionAnnualAmount,
+          notes: otherIncomeNotes);
       TransferSettingsModel transferSettings = TransferSettingsModel(
           retirementDate: retirementDate,
           targetIncome: targetIncome,
@@ -179,12 +190,12 @@ void main() {
 
       // // verify the data the File Handler was asked to save
       verify(databaseService.clearAllData()).called(1);
-      verify(databaseService.createPension(pensionName, maturityDate))
+      verify(databaseService.createPension(pensionName, maturityDate, pensionNotes))
           .called(1);
       verify(databaseService.createStatement(pensionId, statementDate,
-              planValue, projectedAnnualAmount, yearlyCharges, transferValue, amountPaidIn))
+              planValue, projectedAnnualAmount, yearlyCharges, transferValue, amountPaidIn, statementNotes))
           .called(1);
-      verify(databaseService.saveStatePension(statePensionAnnualAmount))
+      verify(databaseService.saveStatePension(statePensionAnnualAmount, otherIncomeNotes))
           .called(1);
       verify(settingsService.saveAllSettings(Settings(
               retirementDate: retirementDate,

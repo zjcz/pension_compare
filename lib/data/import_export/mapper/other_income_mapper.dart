@@ -7,6 +7,7 @@ class OtherIncomeMapper {
       otherIncomeId: otherIncome.otherIncomeId,
       name: otherIncome.name,
       annualAmount: otherIncome.annualAmount,
+      notes: otherIncome.notes,
     );
   }
 
@@ -15,6 +16,7 @@ class OtherIncomeMapper {
       otherIncomeId: otherIncome.otherIncomeId,
       name: otherIncome.name,
       annualAmount: otherIncome.annualAmount,
+      notes: otherIncome.notes,
     );
   }
 }

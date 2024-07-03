@@ -24,6 +24,7 @@ mixin _$TransferOtherIncomeModel {
   int get otherIncomeId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   double get annualAmount => throw _privateConstructorUsedError;
+  String? get notes => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -37,7 +38,8 @@ abstract class $TransferOtherIncomeModelCopyWith<$Res> {
           $Res Function(TransferOtherIncomeModel) then) =
       _$TransferOtherIncomeModelCopyWithImpl<$Res, TransferOtherIncomeModel>;
   @useResult
-  $Res call({int otherIncomeId, String name, double annualAmount});
+  $Res call(
+      {int otherIncomeId, String name, double annualAmount, String? notes});
 }
 
 /// @nodoc
@@ -57,6 +59,7 @@ class _$TransferOtherIncomeModelCopyWithImpl<$Res,
     Object? otherIncomeId = null,
     Object? name = null,
     Object? annualAmount = null,
+    Object? notes = freezed,
   }) {
     return _then(_value.copyWith(
       otherIncomeId: null == otherIncomeId
@@ -71,6 +74,10 @@ class _$TransferOtherIncomeModelCopyWithImpl<$Res,
           ? _value.annualAmount
           : annualAmount // ignore: cast_nullable_to_non_nullable
               as double,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -84,7 +91,8 @@ abstract class _$$TransferOtherIncomeModelImplCopyWith<$Res>
       __$$TransferOtherIncomeModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int otherIncomeId, String name, double annualAmount});
+  $Res call(
+      {int otherIncomeId, String name, double annualAmount, String? notes});
 }
 
 /// @nodoc
@@ -103,6 +111,7 @@ class __$$TransferOtherIncomeModelImplCopyWithImpl<$Res>
     Object? otherIncomeId = null,
     Object? name = null,
     Object? annualAmount = null,
+    Object? notes = freezed,
   }) {
     return _then(_$TransferOtherIncomeModelImpl(
       otherIncomeId: null == otherIncomeId
@@ -117,6 +126,10 @@ class __$$TransferOtherIncomeModelImplCopyWithImpl<$Res>
           ? _value.annualAmount
           : annualAmount // ignore: cast_nullable_to_non_nullable
               as double,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -129,7 +142,8 @@ class _$TransferOtherIncomeModelImpl
   const _$TransferOtherIncomeModelImpl(
       {required this.otherIncomeId,
       required this.name,
-      required this.annualAmount});
+      required this.annualAmount,
+      this.notes});
 
   factory _$TransferOtherIncomeModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$TransferOtherIncomeModelImplFromJson(json);
@@ -140,10 +154,12 @@ class _$TransferOtherIncomeModelImpl
   final String name;
   @override
   final double annualAmount;
+  @override
+  final String? notes;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'TransferOtherIncomeModel(otherIncomeId: $otherIncomeId, name: $name, annualAmount: $annualAmount)';
+    return 'TransferOtherIncomeModel(otherIncomeId: $otherIncomeId, name: $name, annualAmount: $annualAmount, notes: $notes)';
   }
 
   @override
@@ -153,7 +169,8 @@ class _$TransferOtherIncomeModelImpl
       ..add(DiagnosticsProperty('type', 'TransferOtherIncomeModel'))
       ..add(DiagnosticsProperty('otherIncomeId', otherIncomeId))
       ..add(DiagnosticsProperty('name', name))
-      ..add(DiagnosticsProperty('annualAmount', annualAmount));
+      ..add(DiagnosticsProperty('annualAmount', annualAmount))
+      ..add(DiagnosticsProperty('notes', notes));
   }
 
   @override
@@ -165,13 +182,14 @@ class _$TransferOtherIncomeModelImpl
                 other.otherIncomeId == otherIncomeId) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.annualAmount, annualAmount) ||
-                other.annualAmount == annualAmount));
+                other.annualAmount == annualAmount) &&
+            (identical(other.notes, notes) || other.notes == notes));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, otherIncomeId, name, annualAmount);
+      Object.hash(runtimeType, otherIncomeId, name, annualAmount, notes);
 
   @JsonKey(ignore: true)
   @override
@@ -192,7 +210,8 @@ abstract class _TransferOtherIncomeModel implements TransferOtherIncomeModel {
   const factory _TransferOtherIncomeModel(
       {required final int otherIncomeId,
       required final String name,
-      required final double annualAmount}) = _$TransferOtherIncomeModelImpl;
+      required final double annualAmount,
+      final String? notes}) = _$TransferOtherIncomeModelImpl;
 
   factory _TransferOtherIncomeModel.fromJson(Map<String, dynamic> json) =
       _$TransferOtherIncomeModelImpl.fromJson;
@@ -203,6 +222,8 @@ abstract class _TransferOtherIncomeModel implements TransferOtherIncomeModel {
   String get name;
   @override
   double get annualAmount;
+  @override
+  String? get notes;
   @override
   @JsonKey(ignore: true)
   _$$TransferOtherIncomeModelImplCopyWith<_$TransferOtherIncomeModelImpl>

@@ -178,7 +178,7 @@ void main() {
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
           ]));
       when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue))
+              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue, null))
           .thenAnswer((_) async => Statement(
               statementId: 1,
               pension: pensionId,
@@ -230,7 +230,7 @@ void main() {
               projectedAnnualAmount,
               yearlyCharges,
               transferValue,
-              paidInValue))
+              paidInValue, null))
           .called(1);
     });
 
@@ -265,7 +265,7 @@ void main() {
               newProjectedAnnualAmount,
               newYearlyCharges,
               newTransferValue,
-              newPaidInValue))
+              newPaidInValue, null))
           .thenAnswer((_) async => true);
       when(databaseService.doesStatementDateExist(
               statementId, pensionId, newStatementDate))
@@ -315,7 +315,7 @@ void main() {
           newProjectedAnnualAmount,
           newYearlyCharges,
           newTransferValue,
-          newPaidInValue));
+          newPaidInValue, null));
       verify(databaseService.updateStatement(
               statementId,
               pensionId,
@@ -324,7 +324,7 @@ void main() {
               newProjectedAnnualAmount,
               newYearlyCharges,
               newTransferValue,
-              newPaidInValue))
+              newPaidInValue, null))
           .called(1);
     });
   });
@@ -349,7 +349,7 @@ void main() {
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
           ]));
       when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue))
+              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue, null))
           .thenAnswer((_) async => Statement(
               statementId: 1,
               pension: pensionId,
@@ -432,7 +432,7 @@ void main() {
               newProjectedAnnualAmount,
               newYearlyCharges,
               newTransferValue,
-              newPaidInValue))
+              newPaidInValue, null))
           .thenAnswer((_) async => true);
       when(databaseService.doesStatementDateExist(
               statementId, pensionId, newStatementDate))
@@ -498,7 +498,7 @@ void main() {
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
           ]));
       when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue))
+              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue, null))
           .thenAnswer((_) async => Statement(
               statementId: 1,
               pension: pensionId,
@@ -553,7 +553,7 @@ void main() {
           projectedAnnualAmount,
           yearlyCharges,
           transferValue,
-          paidInValue));
+          paidInValue, null));
     });
 
     testWidgets('validation should warn of duplicate statement date',
@@ -574,7 +574,7 @@ void main() {
                 pensionId: pensionId, name: name, maturityDate: maturityDate)
           ]));
       when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue))
+              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue, null))
           .thenAnswer((_) async => Statement(
               statementId: 1,
               pension: pensionId,
@@ -634,7 +634,7 @@ void main() {
           projectedAnnualAmount,
           yearlyCharges,
           transferValue,
-          paidInValue));
+          paidInValue, null));
     });
 
     testWidgets('validation should clear after duplicate pension name',
@@ -665,7 +665,7 @@ void main() {
               projectedAnnualAmount,
               yearlyCharges,
               transferValue,
-              paidInValue))
+              paidInValue, null))
           .thenAnswer((_) async => Statement(
               statementId: 1,
               pension: pensionId,

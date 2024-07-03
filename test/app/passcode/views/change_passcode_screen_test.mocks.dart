@@ -608,6 +608,7 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
   _i6.Future<_i4.Pension?> createPension(
     String? name,
     DateTime? maturityDate,
+    String? notes,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -615,6 +616,7 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
           [
             name,
             maturityDate,
+            notes,
           ],
         ),
         returnValue: _i6.Future<_i4.Pension?>.value(),
@@ -625,6 +627,7 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
     int? id,
     String? name,
     DateTime? maturityDate,
+    String? notes,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -633,6 +636,7 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
             id,
             name,
             maturityDate,
+            notes,
           ],
         ),
         returnValue: _i6.Future<bool>.value(false),
@@ -691,6 +695,7 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
     double? yearlyCharges,
     double? transferValue,
     double? amountPaidIn,
+    String? notes,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -703,6 +708,7 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
             yearlyCharges,
             transferValue,
             amountPaidIn,
+            notes,
           ],
         ),
         returnValue: _i6.Future<_i4.Statement?>.value(),
@@ -718,6 +724,7 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
     double? yearlyCharges,
     double? transferValue,
     double? amountPaidIn,
+    String? notes,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -731,6 +738,7 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
             yearlyCharges,
             transferValue,
             amountPaidIn,
+            notes,
           ],
         ),
         returnValue: _i6.Future<bool>.value(false),
@@ -773,11 +781,17 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
       ) as _i6.Future<_i4.OtherIncome?>);
 
   @override
-  _i6.Future<_i4.OtherIncome?> saveStatePension(double? annualAmount) =>
+  _i6.Future<_i4.OtherIncome?> saveStatePension(
+    double? annualAmount,
+    String? notes,
+  ) =>
       (super.noSuchMethod(
         Invocation.method(
           #saveStatePension,
-          [annualAmount],
+          [
+            annualAmount,
+            notes,
+          ],
         ),
         returnValue: _i6.Future<_i4.OtherIncome?>.value(),
       ) as _i6.Future<_i4.OtherIncome?>);

@@ -32,7 +32,7 @@ class StatementController extends _$StatementController {
         projectedAnnualAmount,
         yearlyCharges,
         transferValue,
-        amountPaidIn);
+        amountPaidIn, null);
     return newStatement == null
         ? null
         : StatementMapper.mapToModel(newStatement);
@@ -64,7 +64,8 @@ class StatementController extends _$StatementController {
         projectedAnnualAmount,
         yearlyCharges,
         transferValue,
-        amountPaidIn);
+        amountPaidIn,
+        null);
   }
 
   Future<bool> doesStatementDateExist(

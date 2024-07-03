@@ -12,6 +12,7 @@ class TransferPensionModel with _$TransferPensionModel {
     required String name,
     required DateTime maturityDate,
     required List<TransferStatementModel> statements,
+    String? notes,
   }) = _TransferPensionModel;
 
   factory TransferPensionModel.fromJson(Map<String, Object?> json) =>

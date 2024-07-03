@@ -43,7 +43,7 @@ class DatabaseService extends _$DatabaseService {
         if (details.wasCreated) {
           // Create default records here
           // we create a default state pension record with a value of 0
-          await saveStatePension(0);
+          await saveStatePension(0, null);
         }
       },
     );
@@ -82,17 +82,22 @@ class DatabaseService extends _$DatabaseService {
   }
 
   // Create a new pension record
-  Future<Pension?> createPension(String name, DateTime maturityDate) {
+  Future<Pension?> createPension(
+      String name, DateTime maturityDate, String? notes) {
     return into(pensions).insertReturningOrNull(PensionsCompanion.insert(
-        name: name, maturityDate: DateHelper.removeTime(maturityDate)));
+        name: name,
+        maturityDate: DateHelper.removeTime(maturityDate),
+        notes: Value(notes)));
   }
 
   // Update an existing pension record, return true if successful
-  Future<bool> updatePension(int id, String name, DateTime maturityDate) {
+  Future<bool> updatePension(
+      int id, String name, DateTime maturityDate, String? notes) {
     return update(pensions).replace(Pension(
         pensionId: id,
         name: name,
-        maturityDate: DateHelper.removeTime(maturityDate)));
+        maturityDate: DateHelper.removeTime(maturityDate),
+        notes: notes));
   }
 
   // Delete a pension record by its id and return the number of records deleted
@@ -133,7 +138,8 @@ class DatabaseService extends _$DatabaseService {
       double projectedAnnualAmount,
       double? yearlyCharges,
       double? transferValue,
-      double? amountPaidIn) {
+      double? amountPaidIn,
+      String? notes) {
     return into(statements).insertReturningOrNull(StatementsCompanion.insert(
         pension: pensionId,
         statementDate: DateHelper.removeTime(statementDate),
@@ -141,7 +147,8 @@ class DatabaseService extends _$DatabaseService {
         projectedAnnualAmount: projectedAnnualAmount,
         yearlyCharges: Value(yearlyCharges),
         transferValue: Value(transferValue),
-        amountPaidIn: Value(amountPaidIn)));
+        amountPaidIn: Value(amountPaidIn),
+        statementNotes: Value(notes)));
   }
 
   // Update an existing statement record, return true if successful
@@ -153,7 +160,8 @@ class DatabaseService extends _$DatabaseService {
       double projectedAnnualAmount,
       double? yearlyCharges,
       double? transferValue,
-      double? amountPaidIn) {
+      double? amountPaidIn,
+      String? notes) {
     return update(statements).replace(Statement(
         statementId: id,
         pension: pensionId,
@@ -162,7 +170,8 @@ class DatabaseService extends _$DatabaseService {
         projectedAnnualAmount: projectedAnnualAmount,
         yearlyCharges: yearlyCharges,
         transferValue: transferValue,
-        amountPaidIn: amountPaidIn));
+        amountPaidIn: amountPaidIn,
+        statementNotes: notes));
   }
 
   // Delete a statement record by its id and return the number of records deleted
@@ -195,11 +204,13 @@ class DatabaseService extends _$DatabaseService {
 
   // Save the state pension data.  Update the existing record, or insert a new
   // one if it doesn't exist
-  Future<OtherIncome?> saveStatePension(double annualAmount) async {
+  Future<OtherIncome?> saveStatePension(
+      double annualAmount, String? notes) async {
     OtherIncome statePension = OtherIncome(
       otherIncomeId: defaults.defaultStatePensionId,
       name: defaults.defaultStatePensionName,
       annualAmount: annualAmount,
+      notes: notes,
     );
 
     // attempt to update the record, if it doesn't exist then insert it
@@ -279,40 +290,40 @@ class DatabaseService extends _$DatabaseService {
     await clearAllData();
 
     // create some test pensions
-    Pension? p1 = await createPension("Pension 1", DateTime(2030, 1, 1));
-    Pension? p2 = await createPension("Pension 2", DateTime(2030, 1, 1));
+    Pension? p1 = await createPension("Pension 1", DateTime(2030, 1, 1), null);
+    Pension? p2 = await createPension("Pension 2", DateTime(2030, 1, 1), null);
     await createPension(
-        "Pension 3", DateTime(2030, 1, 1)); // no statements required
-    Pension? p4 = await createPension("Pension 4", DateTime(2030, 1, 1));
+        "Pension 3", DateTime(2030, 1, 1), null); // no statements required
+    Pension? p4 = await createPension("Pension 4", DateTime(2030, 1, 1), null);
 
     // create some test statements
     await createStatement(
-        p1!.pensionId, DateTime(2020, 1, 1), 1000, 100, 10, 1000, 900);
+        p1!.pensionId, DateTime(2020, 1, 1), 1000, 100, 10, 1000, 900, null);
     await createStatement(
-        p1.pensionId, DateTime(2021, 1, 1), 2000, 200, 20, 2000, 1000);
+        p1.pensionId, DateTime(2021, 1, 1), 2000, 200, 20, 2000, 1000, null);
     await createStatement(
-        p1.pensionId, DateTime(2022, 1, 1), 3000, 300, 30, 3000, 2000);
+        p1.pensionId, DateTime(2022, 1, 1), 3000, 300, 30, 3000, 2000, null);
     await createStatement(
-        p1.pensionId, DateTime(2023, 1, 1), 4000, 500, 60, 7000, 3000);
+        p1.pensionId, DateTime(2023, 1, 1), 4000, 500, 60, 7000, 3000, null);
     await createStatement(
-        p2!.pensionId, DateTime(2020, 1, 1), 2000, 200, 20, 2000, 1000);
+        p2!.pensionId, DateTime(2020, 1, 1), 2000, 200, 20, 2000, 1000, null);
     await createStatement(
-        p2.pensionId, DateTime(2021, 1, 1), 3000, 300, 30, 3000, 2000);
+        p2.pensionId, DateTime(2021, 1, 1), 3000, 300, 30, 3000, 2000, null);
     await createStatement(
-        p2.pensionId, DateTime(2022, 1, 1), 4000, 400, 40, 4000, 3000);
+        p2.pensionId, DateTime(2022, 1, 1), 4000, 400, 40, 4000, 3000, null);
     await createStatement(
-        p2.pensionId, DateTime(2023, 1, 1), 5000, 400, 30, 2000, 4000);
+        p2.pensionId, DateTime(2023, 1, 1), 5000, 400, 30, 2000, 4000, null);
     await createStatement(
-        p4!.pensionId, DateTime(2020, 1, 1), 1500, 150, 15, 1500, 1300);
+        p4!.pensionId, DateTime(2020, 1, 1), 1500, 150, 15, 1500, 1300, null);
     await createStatement(
-        p4.pensionId, DateTime(2021, 1, 1), 2500, 250, 25, 2500, 2300);
+        p4.pensionId, DateTime(2021, 1, 1), 2500, 250, 25, 2500, 2300, null);
     await createStatement(
-        p4.pensionId, DateTime(2022, 1, 1), 3500, 350, 35, 3500, 3300);
+        p4.pensionId, DateTime(2022, 1, 1), 3500, 350, 35, 3500, 3300, null);
     await createStatement(
-        p4.pensionId, DateTime(2023, 1, 1), 4500, 450, 45, 4500, 4300);
+        p4.pensionId, DateTime(2023, 1, 1), 4500, 450, 45, 4500, 4300, null);
 
     // create a state pension record
-    await saveStatePension(1000);
+    await saveStatePension(1000, null);
   }
 
   // Clear all the data from the database
@@ -321,7 +332,7 @@ class DatabaseService extends _$DatabaseService {
     await (delete(pensions)).go();
 
     // do not delete the state pension record, just reset it to 0
-    await saveStatePension(0);
+    await saveStatePension(0, null);
   }
 
   // Provider for the database service

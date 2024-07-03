@@ -20,7 +20,7 @@ class PensionController extends _$PensionController {
   Future<PensionModel?> createPension(
       String name, DateTime maturityDate) async {
     Pension? newPension =
-        await _databaseService.createPension(name, maturityDate);
+        await _databaseService.createPension(name, maturityDate, null);
     return newPension == null ? null : PensionMapper.mapToModel(newPension);
   }
 
@@ -34,7 +34,7 @@ class PensionController extends _$PensionController {
   }
 
   Future<bool> updatePension(int id, String name, DateTime maturityDate) {
-    return _databaseService.updatePension(id, name, maturityDate);
+    return _databaseService.updatePension(id, name, maturityDate, null);
   }
 
   Future<bool> doesPensionNameExist(int? id, String name) {
