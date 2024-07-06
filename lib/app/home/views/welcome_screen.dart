@@ -142,8 +142,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       return false;
     }
     getIt<SettingsService>().saveAllSettings(Settings(
-      retirementDate: null,
-      targetIncome: null,
       acceptTermsAndConditions: acceptTermsAndConditions,
       acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
       welcomeScreenDismissed: true,

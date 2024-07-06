@@ -11,8 +11,6 @@ part 'settings.g.dart';
 @freezed
 class Settings with _$Settings {
   const factory Settings({
-    required DateTime? retirementDate,
-    required double? targetIncome,
     required bool? acceptTermsAndConditions,
     required bool? acceptFinancialAdviceWarning,
     required bool? welcomeScreenDismissed,

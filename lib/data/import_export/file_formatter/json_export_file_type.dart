@@ -5,6 +5,7 @@ import 'package:pension_compare/data/import_export/file_formatter/export_file_ty
 import 'package:pension_compare/data/import_export/models/backup_config_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_other_income_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_pension_model.dart';
+import 'package:pension_compare/data/import_export/models/transfer_secure_settings_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_settings_model.dart';
 
 /// Handle the import / export of the data in the json file format
@@ -35,11 +36,19 @@ class JsonExportFileType extends ExportFileType {
       fileContents: otherIncomeData,
     ));
 
-    // finally export the settings data
+    // next export the settings data
     String settingsData = jsonEncode(dataModel.transferSettingsModel.toJson());
     exportDataModel.add(ExportDataModel(
       filename: settingsExportFilename,
       fileContents: settingsData,
+    ));
+
+    // now export the secure settings data
+    String secureSettingsData =
+        jsonEncode(dataModel.transferSecureSettingsModel.toJson());
+    exportDataModel.add(ExportDataModel(
+      filename: secureSettingsExportFilename,
+      fileContents: secureSettingsData,
     ));
 
     // finally export the backup config data
@@ -54,16 +63,18 @@ class JsonExportFileType extends ExportFileType {
 
   @override
   TransferDataModel import(List<ExportDataModel> dataModel) {
+    const int expectedFileCount = 5;
     List<TransferPensionModel> pensionList = [];
     List<TransferOtherIncomeModel> otherIncomeList = [];
     late TransferSettingsModel settings;
+    late TransferSecureSettingsModel secureSettings;
     late BackupConfigModel backupConfig;
 
     // validate
     if (dataModel.isEmpty) {
       throw Exception('No data to import');
     }
-    if (dataModel.length != 4) {
+    if (dataModel.length != expectedFileCount) {
       throw Exception('Invalid number of files to import');
     }
     if (dataModel
@@ -98,6 +109,9 @@ class JsonExportFileType extends ExportFileType {
       } else if (item.filename == settingsExportFilename) {
         settings =
             TransferSettingsModel.fromJson(jsonDecode(item.fileContents));
+      } else if (item.filename == secureSettingsExportFilename) {
+        secureSettings =
+            TransferSecureSettingsModel.fromJson(jsonDecode(item.fileContents));
       } else if (item.filename == backupConfigExportFilename) {
         backupConfig =
             BackupConfigModel.fromJson(jsonDecode(item.fileContents));
@@ -108,6 +122,7 @@ class JsonExportFileType extends ExportFileType {
         transferOtherIncomeModelList: otherIncomeList,
         transferPensionModelList: pensionList,
         transferSettingsModel: settings,
+        transferSecureSettingsModel: secureSettings,
         backupConfigModel: backupConfig);
   }
 }

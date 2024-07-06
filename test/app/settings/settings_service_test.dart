@@ -1,4 +1,3 @@
-import 'package:pension_compare/app/settings/models/user_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
@@ -8,16 +7,12 @@ import 'package:matcher/matcher.dart' as match;
 void main() {
   group('Test read/write settings', () {
     test('get the settings', () async {
-      DateTime retirementDate = DateTime(2050, 2, 3);
-      double targetIncome = 1234.56;
       bool acceptTermsAndConditions = true;
       bool acceptFinancialAdviceWarning = true;
       bool welcomeScreenDismissed = true;
       bool optIntoAnalyticsWarning = true;
 
       SharedPreferences.setMockInitialValues({
-        'retirementDate': retirementDate.toIso8601String(),
-        'targetIncome': targetIncome,
         'acceptTermsAndConditions': acceptTermsAndConditions,
         'acceptFinancialAdviceWarning': acceptFinancialAdviceWarning,
         'welcomeScreenDismissed': welcomeScreenDismissed,
@@ -27,8 +22,6 @@ void main() {
       SettingsService settingsService = SettingsService();
       final settings = await settingsService.getAllSettings();
       expect(settings, match.isNotNull);
-      expect(settings.retirementDate, retirementDate);
-      expect(settings.targetIncome, targetIncome);
       expect(settings.acceptTermsAndConditions, acceptTermsAndConditions);
       expect(
           settings.acceptFinancialAdviceWarning, acceptFinancialAdviceWarning);
@@ -42,8 +35,6 @@ void main() {
       SettingsService settingsService = SettingsService();
       final settings = await settingsService.getAllSettings();
       expect(settings, match.isNotNull);
-      expect(settings.retirementDate, match.isNull);
-      expect(settings.targetIncome, match.isNull);
       expect(settings.acceptTermsAndConditions, match.isNull);
       expect(settings.acceptFinancialAdviceWarning, match.isNull);
       expect(settings.welcomeScreenDismissed, match.isNull);
@@ -51,8 +42,6 @@ void main() {
     });
 
     test('save the settings', () async {
-      DateTime retirementDate = DateTime(2050, 2, 3);
-      double targetIncome = 1234.56;
       bool acceptTermsAndConditions = true;
       bool acceptFinancialAdviceWarning = true;
       bool welcomeScreenDismissed = true;
@@ -61,8 +50,6 @@ void main() {
       SharedPreferences.setMockInitialValues({});
 
       Settings settingsToSave = Settings(
-          retirementDate: retirementDate,
-          targetIncome: targetIncome,
           acceptTermsAndConditions: acceptTermsAndConditions,
           acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
           welcomeScreenDismissed: welcomeScreenDismissed,
@@ -73,8 +60,6 @@ void main() {
 
       final settings = await settingsService.getAllSettings();
       expect(settings, match.isNotNull);
-      expect(settings.retirementDate, retirementDate);
-      expect(settings.targetIncome, targetIncome);
       expect(settings.acceptTermsAndConditions, acceptTermsAndConditions);
       expect(
           settings.acceptFinancialAdviceWarning, acceptFinancialAdviceWarning);
@@ -82,62 +67,44 @@ void main() {
       expect(optIntoAnalyticsWarning, optIntoAnalyticsWarning);
     });
 
-    test('save the user settings does lose welcome settings', () async {
-      DateTime retirementDate = DateTime(2050, 2, 3);
-      double targetIncome = 1234.56;
+    test('save the analytics settings does lose welcome settings', () async {
       bool acceptTermsAndConditions = true;
       bool acceptFinancialAdviceWarning = true;
       bool welcomeScreenDismissed = true;
-      DateTime newRetirementDate = DateTime(2055, 8, 16);
-      double newTargetIncome = 98765.43;
       bool optIntoAnalyticsWarning = true;
+      bool newOptIntoAnalyticsWarning = false;
 
       SharedPreferences.setMockInitialValues({
-        'retirementDate': retirementDate.toIso8601String(),
-        'targetIncome': targetIncome,
         'acceptTermsAndConditions': acceptTermsAndConditions,
         'acceptFinancialAdviceWarning': acceptFinancialAdviceWarning,
         'welcomeScreenDismissed': welcomeScreenDismissed,
         'optIntoAnalyticsWarning': optIntoAnalyticsWarning
       });
 
-      UserSettings settingsToSave = UserSettings(
-          retirementDate: newRetirementDate,
-          targetIncome: newTargetIncome,
-          optIntoAnalyticsWarning: optIntoAnalyticsWarning);
-
       SettingsService settingsService = SettingsService();
-      await settingsService.saveUserSettings(settingsToSave);
+      await settingsService.saveAnalyticsSettings(newOptIntoAnalyticsWarning);
 
       final settings = await settingsService.getAllSettings();
       expect(settings, match.isNotNull);
-      expect(settings.retirementDate, newRetirementDate);
-      expect(settings.targetIncome, newTargetIncome);
       expect(settings.acceptTermsAndConditions, acceptTermsAndConditions);
       expect(
           settings.acceptFinancialAdviceWarning, acceptFinancialAdviceWarning);
       expect(settings.welcomeScreenDismissed, welcomeScreenDismissed);
-      expect(settings.optIntoAnalyticsWarning, optIntoAnalyticsWarning);
+      expect(settings.optIntoAnalyticsWarning, newOptIntoAnalyticsWarning);
     });
 
     test('save the null settings', () async {
-      DateTime initialRetirementDate = DateTime(2050, 2, 3);
-      double initialTargetIncome = 1234.56;
       bool initialAcceptTermsAndConditions = true;
       bool initialAcceptFinancialAdviceWarning = true;
       bool initialWelcomeScreenDismissed = true;
       bool initialOptIntoAnalyticsWarning = true;
 
-      DateTime? newRetirementDate;
-      double? newTargetIncome;
       bool? newAcceptTermsAndConditions;
       bool? newAcceptFinancialAdviceWarning;
       bool? newWelcomeScreenDismissed;
       bool newOptIntoAnalyticsWarning = false; // cannot be null
 
       SharedPreferences.setMockInitialValues({
-        'retirementDate': initialRetirementDate.toIso8601String(),
-        'targetIncome': initialTargetIncome,
         'acceptTermsAndConditions': initialAcceptTermsAndConditions,
         'acceptFinancialAdviceWarning': initialAcceptFinancialAdviceWarning,
         'welcomeScreenDismissed': initialWelcomeScreenDismissed,
@@ -145,8 +112,6 @@ void main() {
       });
 
       Settings settingsToSave = Settings(
-          retirementDate: newRetirementDate,
-          targetIncome: newTargetIncome,
           acceptTermsAndConditions: newAcceptTermsAndConditions,
           acceptFinancialAdviceWarning: newAcceptFinancialAdviceWarning,
           welcomeScreenDismissed: newWelcomeScreenDismissed,
@@ -157,8 +122,6 @@ void main() {
 
       final settings = await settingsService.getAllSettings();
       expect(settings, match.isNotNull);
-      expect(settings.retirementDate, isNull);
-      expect(settings.targetIncome, isNull);
       expect(settings.acceptTermsAndConditions, isNull);
       expect(settings.acceptFinancialAdviceWarning, isNull);
       expect(settings.welcomeScreenDismissed, isNull);

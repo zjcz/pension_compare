@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:pension_compare/app/settings/models/user_settings.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
 import 'package:pension_compare/widgets/analytics_opt_in.dart';
 import 'package:pension_compare/widgets/date_field.dart';
 
-class EditSettingsWidget extends StatefulWidget {
+class EditSettingsWidget extends ConsumerStatefulWidget {
   static const editSettingRetirementDateKey = Key('retirementDate');
   static const editSettingTargetIncomeKey = Key('targetIncome');
   static const editSettingOptIntoAnalyticsKey = Key('optIntoAnalytics');
 
-  final UserSettings userSettings;
-  final Function(UserSettings) onChanged;
+  final EditSettingsData userSettings;
+  final Function(EditSettingsData) onChanged;
 
   const EditSettingsWidget(
       {super.key, required this.userSettings, required this.onChanged});
 
   @override
-  State<EditSettingsWidget> createState() => _EditSettingsWidgetState();
+  ConsumerState<EditSettingsWidget> createState() => _EditSettingsWidgetState();
 }
 
-class _EditSettingsWidgetState extends State<EditSettingsWidget> {
+class _EditSettingsWidgetState extends ConsumerState<EditSettingsWidget> {
   TextEditingController targetIncomeController = TextEditingController();
   DateTime? _retirementDate;
   bool _optIntoAnalyticsWarning = false;
@@ -91,9 +91,20 @@ class _EditSettingsWidgetState extends State<EditSettingsWidget> {
   }
 
   void _triggerOnChange() {
-    widget.onChanged(UserSettings(
+    widget.onChanged(EditSettingsData(
         retirementDate: _retirementDate,
         targetIncome: CurrencyHelper.parseCurrency(targetIncomeController.text),
         optIntoAnalyticsWarning: _optIntoAnalyticsWarning));
   }
+}
+
+class EditSettingsData {
+  final DateTime? retirementDate;
+  final double? targetIncome;
+  final bool optIntoAnalyticsWarning;
+
+  EditSettingsData(
+      {this.retirementDate,
+      this.targetIncome,
+      required this.optIntoAnalyticsWarning});
 }

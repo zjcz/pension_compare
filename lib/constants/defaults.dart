@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 const int defaultStatePensionId = 1;
 const String defaultStatePensionName = 'State Pension';
+const int defaultSecureSettingsId = 1;
 
 class AppDefaults {
   static const double padding = 16.0;

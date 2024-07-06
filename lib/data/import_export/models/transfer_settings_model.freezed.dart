@@ -21,8 +21,6 @@ TransferSettingsModel _$TransferSettingsModelFromJson(
 
 /// @nodoc
 mixin _$TransferSettingsModel {
-  DateTime? get retirementDate => throw _privateConstructorUsedError;
-  double? get targetIncome => throw _privateConstructorUsedError;
   bool? get acceptTermsAndConditions => throw _privateConstructorUsedError;
   bool? get acceptFinancialAdviceWarning => throw _privateConstructorUsedError;
   bool? get welcomeScreenDismissed => throw _privateConstructorUsedError;
@@ -41,9 +39,7 @@ abstract class $TransferSettingsModelCopyWith<$Res> {
       _$TransferSettingsModelCopyWithImpl<$Res, TransferSettingsModel>;
   @useResult
   $Res call(
-      {DateTime? retirementDate,
-      double? targetIncome,
-      bool? acceptTermsAndConditions,
+      {bool? acceptTermsAndConditions,
       bool? acceptFinancialAdviceWarning,
       bool? welcomeScreenDismissed,
       bool optIntoAnalyticsWarning});
@@ -63,22 +59,12 @@ class _$TransferSettingsModelCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? retirementDate = freezed,
-    Object? targetIncome = freezed,
     Object? acceptTermsAndConditions = freezed,
     Object? acceptFinancialAdviceWarning = freezed,
     Object? welcomeScreenDismissed = freezed,
     Object? optIntoAnalyticsWarning = null,
   }) {
     return _then(_value.copyWith(
-      retirementDate: freezed == retirementDate
-          ? _value.retirementDate
-          : retirementDate // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      targetIncome: freezed == targetIncome
-          ? _value.targetIncome
-          : targetIncome // ignore: cast_nullable_to_non_nullable
-              as double?,
       acceptTermsAndConditions: freezed == acceptTermsAndConditions
           ? _value.acceptTermsAndConditions
           : acceptTermsAndConditions // ignore: cast_nullable_to_non_nullable
@@ -109,9 +95,7 @@ abstract class _$$TransferSettingsModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {DateTime? retirementDate,
-      double? targetIncome,
-      bool? acceptTermsAndConditions,
+      {bool? acceptTermsAndConditions,
       bool? acceptFinancialAdviceWarning,
       bool? welcomeScreenDismissed,
       bool optIntoAnalyticsWarning});
@@ -129,22 +113,12 @@ class __$$TransferSettingsModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? retirementDate = freezed,
-    Object? targetIncome = freezed,
     Object? acceptTermsAndConditions = freezed,
     Object? acceptFinancialAdviceWarning = freezed,
     Object? welcomeScreenDismissed = freezed,
     Object? optIntoAnalyticsWarning = null,
   }) {
     return _then(_$TransferSettingsModelImpl(
-      retirementDate: freezed == retirementDate
-          ? _value.retirementDate
-          : retirementDate // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      targetIncome: freezed == targetIncome
-          ? _value.targetIncome
-          : targetIncome // ignore: cast_nullable_to_non_nullable
-              as double?,
       acceptTermsAndConditions: freezed == acceptTermsAndConditions
           ? _value.acceptTermsAndConditions
           : acceptTermsAndConditions // ignore: cast_nullable_to_non_nullable
@@ -171,9 +145,7 @@ class _$TransferSettingsModelImpl
     with DiagnosticableTreeMixin
     implements _TransferSettingsModel {
   const _$TransferSettingsModelImpl(
-      {required this.retirementDate,
-      required this.targetIncome,
-      required this.acceptTermsAndConditions,
+      {required this.acceptTermsAndConditions,
       required this.acceptFinancialAdviceWarning,
       required this.welcomeScreenDismissed,
       required this.optIntoAnalyticsWarning});
@@ -181,10 +153,6 @@ class _$TransferSettingsModelImpl
   factory _$TransferSettingsModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$TransferSettingsModelImplFromJson(json);
 
-  @override
-  final DateTime? retirementDate;
-  @override
-  final double? targetIncome;
   @override
   final bool? acceptTermsAndConditions;
   @override
@@ -196,7 +164,7 @@ class _$TransferSettingsModelImpl
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'TransferSettingsModel(retirementDate: $retirementDate, targetIncome: $targetIncome, acceptTermsAndConditions: $acceptTermsAndConditions, acceptFinancialAdviceWarning: $acceptFinancialAdviceWarning, welcomeScreenDismissed: $welcomeScreenDismissed, optIntoAnalyticsWarning: $optIntoAnalyticsWarning)';
+    return 'TransferSettingsModel(acceptTermsAndConditions: $acceptTermsAndConditions, acceptFinancialAdviceWarning: $acceptFinancialAdviceWarning, welcomeScreenDismissed: $welcomeScreenDismissed, optIntoAnalyticsWarning: $optIntoAnalyticsWarning)';
   }
 
   @override
@@ -204,8 +172,6 @@ class _$TransferSettingsModelImpl
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty('type', 'TransferSettingsModel'))
-      ..add(DiagnosticsProperty('retirementDate', retirementDate))
-      ..add(DiagnosticsProperty('targetIncome', targetIncome))
       ..add(DiagnosticsProperty(
           'acceptTermsAndConditions', acceptTermsAndConditions))
       ..add(DiagnosticsProperty(
@@ -221,10 +187,6 @@ class _$TransferSettingsModelImpl
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$TransferSettingsModelImpl &&
-            (identical(other.retirementDate, retirementDate) ||
-                other.retirementDate == retirementDate) &&
-            (identical(other.targetIncome, targetIncome) ||
-                other.targetIncome == targetIncome) &&
             (identical(
                     other.acceptTermsAndConditions, acceptTermsAndConditions) ||
                 other.acceptTermsAndConditions == acceptTermsAndConditions) &&
@@ -243,8 +205,6 @@ class _$TransferSettingsModelImpl
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      retirementDate,
-      targetIncome,
       acceptTermsAndConditions,
       acceptFinancialAdviceWarning,
       welcomeScreenDismissed,
@@ -267,9 +227,7 @@ class _$TransferSettingsModelImpl
 
 abstract class _TransferSettingsModel implements TransferSettingsModel {
   const factory _TransferSettingsModel(
-          {required final DateTime? retirementDate,
-          required final double? targetIncome,
-          required final bool? acceptTermsAndConditions,
+          {required final bool? acceptTermsAndConditions,
           required final bool? acceptFinancialAdviceWarning,
           required final bool? welcomeScreenDismissed,
           required final bool optIntoAnalyticsWarning}) =
@@ -278,10 +236,6 @@ abstract class _TransferSettingsModel implements TransferSettingsModel {
   factory _TransferSettingsModel.fromJson(Map<String, dynamic> json) =
       _$TransferSettingsModelImpl.fromJson;
 
-  @override
-  DateTime? get retirementDate;
-  @override
-  double? get targetIncome;
   @override
   bool? get acceptTermsAndConditions;
   @override

@@ -1000,11 +1000,241 @@ class OtherIncomesCompanion extends UpdateCompanion<OtherIncome> {
   }
 }
 
+class $SecureSettingTable extends SecureSetting
+    with TableInfo<$SecureSettingTable, SecureSettings> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SecureSettingTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _secureSettingsIdMeta =
+      const VerificationMeta('secureSettingsId');
+  @override
+  late final GeneratedColumn<int> secureSettingsId = GeneratedColumn<int>(
+      'secure_settings_id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _targetIncomeMeta =
+      const VerificationMeta('targetIncome');
+  @override
+  late final GeneratedColumn<double> targetIncome = GeneratedColumn<double>(
+      'target_income', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _retirementDateMeta =
+      const VerificationMeta('retirementDate');
+  @override
+  late final GeneratedColumn<DateTime> retirementDate =
+      GeneratedColumn<DateTime>('retirement_date', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [secureSettingsId, targetIncome, retirementDate];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'secure_setting';
+  @override
+  VerificationContext validateIntegrity(Insertable<SecureSettings> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('secure_settings_id')) {
+      context.handle(
+          _secureSettingsIdMeta,
+          secureSettingsId.isAcceptableOrUnknown(
+              data['secure_settings_id']!, _secureSettingsIdMeta));
+    }
+    if (data.containsKey('target_income')) {
+      context.handle(
+          _targetIncomeMeta,
+          targetIncome.isAcceptableOrUnknown(
+              data['target_income']!, _targetIncomeMeta));
+    }
+    if (data.containsKey('retirement_date')) {
+      context.handle(
+          _retirementDateMeta,
+          retirementDate.isAcceptableOrUnknown(
+              data['retirement_date']!, _retirementDateMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {secureSettingsId};
+  @override
+  SecureSettings map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SecureSettings(
+      secureSettingsId: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}secure_settings_id'])!,
+      targetIncome: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}target_income']),
+      retirementDate: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}retirement_date']),
+    );
+  }
+
+  @override
+  $SecureSettingTable createAlias(String alias) {
+    return $SecureSettingTable(attachedDatabase, alias);
+  }
+}
+
+class SecureSettings extends DataClass implements Insertable<SecureSettings> {
+  final int secureSettingsId;
+  final double? targetIncome;
+  final DateTime? retirementDate;
+  const SecureSettings(
+      {required this.secureSettingsId, this.targetIncome, this.retirementDate});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['secure_settings_id'] = Variable<int>(secureSettingsId);
+    if (!nullToAbsent || targetIncome != null) {
+      map['target_income'] = Variable<double>(targetIncome);
+    }
+    if (!nullToAbsent || retirementDate != null) {
+      map['retirement_date'] = Variable<DateTime>(retirementDate);
+    }
+    return map;
+  }
+
+  SecureSettingCompanion toCompanion(bool nullToAbsent) {
+    return SecureSettingCompanion(
+      secureSettingsId: Value(secureSettingsId),
+      targetIncome: targetIncome == null && nullToAbsent
+          ? const Value.absent()
+          : Value(targetIncome),
+      retirementDate: retirementDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(retirementDate),
+    );
+  }
+
+  factory SecureSettings.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SecureSettings(
+      secureSettingsId: serializer.fromJson<int>(json['secureSettingsId']),
+      targetIncome: serializer.fromJson<double?>(json['targetIncome']),
+      retirementDate: serializer.fromJson<DateTime?>(json['retirementDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'secureSettingsId': serializer.toJson<int>(secureSettingsId),
+      'targetIncome': serializer.toJson<double?>(targetIncome),
+      'retirementDate': serializer.toJson<DateTime?>(retirementDate),
+    };
+  }
+
+  SecureSettings copyWith(
+          {int? secureSettingsId,
+          Value<double?> targetIncome = const Value.absent(),
+          Value<DateTime?> retirementDate = const Value.absent()}) =>
+      SecureSettings(
+        secureSettingsId: secureSettingsId ?? this.secureSettingsId,
+        targetIncome:
+            targetIncome.present ? targetIncome.value : this.targetIncome,
+        retirementDate:
+            retirementDate.present ? retirementDate.value : this.retirementDate,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('SecureSettings(')
+          ..write('secureSettingsId: $secureSettingsId, ')
+          ..write('targetIncome: $targetIncome, ')
+          ..write('retirementDate: $retirementDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(secureSettingsId, targetIncome, retirementDate);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SecureSettings &&
+          other.secureSettingsId == this.secureSettingsId &&
+          other.targetIncome == this.targetIncome &&
+          other.retirementDate == this.retirementDate);
+}
+
+class SecureSettingCompanion extends UpdateCompanion<SecureSettings> {
+  final Value<int> secureSettingsId;
+  final Value<double?> targetIncome;
+  final Value<DateTime?> retirementDate;
+  const SecureSettingCompanion({
+    this.secureSettingsId = const Value.absent(),
+    this.targetIncome = const Value.absent(),
+    this.retirementDate = const Value.absent(),
+  });
+  SecureSettingCompanion.insert({
+    this.secureSettingsId = const Value.absent(),
+    this.targetIncome = const Value.absent(),
+    this.retirementDate = const Value.absent(),
+  });
+  static Insertable<SecureSettings> custom({
+    Expression<int>? secureSettingsId,
+    Expression<double>? targetIncome,
+    Expression<DateTime>? retirementDate,
+  }) {
+    return RawValuesInsertable({
+      if (secureSettingsId != null) 'secure_settings_id': secureSettingsId,
+      if (targetIncome != null) 'target_income': targetIncome,
+      if (retirementDate != null) 'retirement_date': retirementDate,
+    });
+  }
+
+  SecureSettingCompanion copyWith(
+      {Value<int>? secureSettingsId,
+      Value<double?>? targetIncome,
+      Value<DateTime?>? retirementDate}) {
+    return SecureSettingCompanion(
+      secureSettingsId: secureSettingsId ?? this.secureSettingsId,
+      targetIncome: targetIncome ?? this.targetIncome,
+      retirementDate: retirementDate ?? this.retirementDate,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (secureSettingsId.present) {
+      map['secure_settings_id'] = Variable<int>(secureSettingsId.value);
+    }
+    if (targetIncome.present) {
+      map['target_income'] = Variable<double>(targetIncome.value);
+    }
+    if (retirementDate.present) {
+      map['retirement_date'] = Variable<DateTime>(retirementDate.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SecureSettingCompanion(')
+          ..write('secureSettingsId: $secureSettingsId, ')
+          ..write('targetIncome: $targetIncome, ')
+          ..write('retirementDate: $retirementDate')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$DatabaseService extends GeneratedDatabase {
   _$DatabaseService(QueryExecutor e) : super(e);
   late final $PensionsTable pensions = $PensionsTable(this);
   late final $StatementsTable statements = $StatementsTable(this);
   late final $OtherIncomesTable otherIncomes = $OtherIncomesTable(this);
+  late final $SecureSettingTable secureSetting = $SecureSettingTable(this);
   late final Index parentPension = Index(
       'parent_pension', 'CREATE INDEX parent_pension ON statements (pension)');
   @override
@@ -1012,7 +1242,7 @@ abstract class _$DatabaseService extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [pensions, statements, otherIncomes, parentPension];
+      [pensions, statements, otherIncomes, secureSetting, parentPension];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
         [

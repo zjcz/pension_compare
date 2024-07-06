@@ -12,9 +12,8 @@ import 'package:pension_compare/app/passcode/controller/passcode_service.dart'
 import 'package:pension_compare/app/settings/controllers/settings_service.dart'
     as _i7;
 import 'package:pension_compare/app/settings/models/settings.dart' as _i2;
-import 'package:pension_compare/app/settings/models/user_settings.dart' as _i8;
 import 'package:pension_compare/data/database/database_service.dart' as _i5;
-import 'package:shared_preferences/shared_preferences.dart' as _i9;
+import 'package:shared_preferences/shared_preferences.dart' as _i8;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -165,15 +164,15 @@ class MockSettingsService extends _i1.Mock implements _i7.SettingsService {
       ) as _i6.Future<void>);
 
   @override
-  _i6.Future<void> saveUserSettings(
-    _i8.UserSettings? settings, [
-    _i9.SharedPreferences? sharedPreferences,
+  _i6.Future<void> saveAnalyticsSettings(
+    bool? optIntoAnalyticsWarning, [
+    _i8.SharedPreferences? sharedPreferences,
   ]) =>
       (super.noSuchMethod(
         Invocation.method(
-          #saveUserSettings,
+          #saveAnalyticsSettings,
           [
-            settings,
+            optIntoAnalyticsWarning,
             sharedPreferences,
           ],
         ),

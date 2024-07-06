@@ -5,6 +5,7 @@ import 'package:pension_compare/app/pension/views/edit_pension_screen.dart';
 import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/constants/chart_color_constants.dart';
+import 'package:pension_compare/constants/defaults.dart';
 import 'package:pension_compare/data/database/tables/pensions_with_statement.dart';
 import 'package:pension_compare/app/home/views/home_screen.dart';
 import 'package:pension_compare/data/database/database_service.dart';
@@ -41,8 +42,6 @@ void main() {
 
     when(mockSettingsService.getAllSettings())
         .thenAnswer((_) async => const Settings(
-              retirementDate: null,
-              targetIncome: null,
               acceptTermsAndConditions: false,
               acceptFinancialAdviceWarning: false,
               welcomeScreenDismissed: false,
@@ -62,6 +61,12 @@ void main() {
           .thenAnswer((_) => Stream.value([]));
       when(databaseService.getYearlyPensionSummary())
           .thenAnswer((_) => Stream.value([]));
+      when(databaseService.getSecureSettings())
+          .thenAnswer((_) => Future.value(const SecureSettings(
+                secureSettingsId: defaultSecureSettingsId,
+                targetIncome: null,
+                retirementDate: null,
+              )));
       await tester
           .pumpWidget(createHomeScreen(databaseService, mockSettingsService));
       await tester.pumpAndSettle();
@@ -88,6 +93,12 @@ void main() {
                         maturityDate: DateTime.now()),
                     null)
               ]));
+      when(databaseService.getSecureSettings())
+          .thenAnswer((_) => Future.value(const SecureSettings(
+                secureSettingsId: defaultSecureSettingsId,
+                targetIncome: null,
+                retirementDate: null,
+              )));
       await tester
           .pumpWidget(createHomeScreen(databaseService, mockSettingsService));
       await tester.pumpAndSettle();

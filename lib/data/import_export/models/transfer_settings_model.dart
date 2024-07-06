@@ -10,8 +10,6 @@ part 'transfer_settings_model.g.dart';
 @freezed
 class TransferSettingsModel with _$TransferSettingsModel {
   const factory TransferSettingsModel({
-    required DateTime? retirementDate,
-    required double? targetIncome,
     required bool? acceptTermsAndConditions,
     required bool? acceptFinancialAdviceWarning,
     required bool? welcomeScreenDismissed,

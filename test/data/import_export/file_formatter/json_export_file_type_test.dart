@@ -5,6 +5,7 @@ import 'package:pension_compare/data/import_export/models/backup_config_model.da
 import 'package:pension_compare/data/import_export/models/transfer_other_income_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pension_compare/data/import_export/models/transfer_pension_model.dart';
+import 'package:pension_compare/data/import_export/models/transfer_secure_settings_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_settings_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_statement_model.dart';
 
@@ -14,6 +15,7 @@ void main() {
       TransferOtherIncomeModel otherIncome = buildOtherIncomeModel();
       TransferPensionModel pension = buildPensionModel();
       TransferSettingsModel settings = buildSettingsModel();
+      TransferSecureSettingsModel secureSettings = buildSecureSettingsModel();
       BackupConfigModel backupConfig =
           BackupConfigModel(backupDate: DateTime.now(), backupVersion: '1');
 
@@ -21,6 +23,7 @@ void main() {
           transferOtherIncomeModelList: [otherIncome],
           transferPensionModelList: [pension],
           transferSettingsModel: settings,
+          transferSecureSettingsModel: secureSettings,
           backupConfigModel: backupConfig);
 
       JsonExportFileType jsonExportFileType = JsonExportFileType();
@@ -29,15 +32,17 @@ void main() {
 
       // Step 1: Check if the export data model is not null and has the correct length
       expect(exportDataModel, isNotNull);
-      expect(exportDataModel.length, 4);
+      expect(exportDataModel.length, 5);
       expect(exportDataModel[0].filename, 'pension_data.json');
       expect(exportDataModel[0].fileContents, isNotEmpty);
       expect(exportDataModel[1].filename, 'other_income_data.json');
       expect(exportDataModel[1].fileContents, isNotEmpty);
       expect(exportDataModel[2].filename, 'settings_data.json');
       expect(exportDataModel[2].fileContents, isNotEmpty);
-      expect(exportDataModel[3].filename, 'backup_config.json');
+      expect(exportDataModel[3].filename, 'sec_settings_data.json');
       expect(exportDataModel[3].fileContents, isNotEmpty);
+      expect(exportDataModel[4].filename, 'backup_config.json');
+      expect(exportDataModel[4].fileContents, isNotEmpty);
 
       // Step 2: Parse the JSON string back to an object
       List<dynamic> jsonPensionList =
@@ -52,13 +57,17 @@ void main() {
           .toList();
       TransferSettingsModel parsedSettings = TransferSettingsModel.fromJson(
           jsonDecode(exportDataModel[2].fileContents));
+      TransferSecureSettingsModel parsedSecureSettings =
+          TransferSecureSettingsModel.fromJson(
+              jsonDecode(exportDataModel[3].fileContents));
       BackupConfigModel parsedbackupConfig = BackupConfigModel.fromJson(
-          jsonDecode(exportDataModel[3].fileContents));
+          jsonDecode(exportDataModel[4].fileContents));
 
       // Step 3: Compare the original object with the parsed object
       expect(parsedOtherIncomes[0], equals(otherIncome));
       expect(parsedPensions[0], equals(pension));
       expect(parsedSettings, equals(settings));
+      expect(parsedSecureSettings, equals(secureSettings));
       expect(parsedbackupConfig, equals(backupConfig));
     });
 
@@ -66,6 +75,7 @@ void main() {
       TransferOtherIncomeModel otherIncome = buildOtherIncomeModel();
       TransferPensionModel pension = buildPensionModel();
       TransferSettingsModel settings = buildSettingsModel();
+      TransferSecureSettingsModel secureSettings = buildSecureSettingsModel();
       BackupConfigModel backupConfig =
           BackupConfigModel(backupDate: DateTime.now(), backupVersion: '1');
 
@@ -73,6 +83,7 @@ void main() {
         transferOtherIncomeModelList: [otherIncome],
         transferPensionModelList: [pension],
         transferSettingsModel: settings,
+        transferSecureSettingsModel: secureSettings,
         backupConfigModel: backupConfig,
       );
 
@@ -91,6 +102,8 @@ void main() {
           equals(dataModel.transferPensionModelList));
       expect(importedDataModel.transferSettingsModel,
           equals(dataModel.transferSettingsModel));
+      expect(importedDataModel.transferSecureSettingsModel,
+          equals(dataModel.transferSecureSettingsModel));
       expect(importedDataModel.backupConfigModel,
           equals(dataModel.backupConfigModel));
     });
@@ -256,20 +269,25 @@ TransferPensionModel buildPensionModel() {
 }
 
 TransferSettingsModel buildSettingsModel() {
-  DateTime retirementDate = DateTime(2000, 1, 1);
-  double targetIncome = 123.45;
   bool acceptTermsAndConditions = true;
   bool acceptFinancialAdviceWarning = true;
   bool welcomeScreenDismissed = true;
   bool optIntoAnalyticsWarning = true;
 
   TransferSettingsModel settings = TransferSettingsModel(
-      retirementDate: retirementDate,
-      targetIncome: targetIncome,
       acceptTermsAndConditions: acceptTermsAndConditions,
       acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
       welcomeScreenDismissed: welcomeScreenDismissed,
       optIntoAnalyticsWarning: optIntoAnalyticsWarning);
 
+  return settings;
+}
+
+TransferSecureSettingsModel buildSecureSettingsModel() {
+  DateTime retirementDate = DateTime(2000, 1, 1);
+  double targetIncome = 123.45;
+
+  TransferSecureSettingsModel settings = TransferSecureSettingsModel(
+      retirementDate: retirementDate, targetIncome: targetIncome);
   return settings;
 }
