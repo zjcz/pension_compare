@@ -62,7 +62,7 @@ void main() {
       when(databaseService.getYearlyPensionSummary())
           .thenAnswer((_) => Stream.value([]));
       when(databaseService.getSecureSettings())
-          .thenAnswer((_) => Future.value(const SecureSettings(
+          .thenAnswer((_) => Stream.value(const SecureSettings(
                 secureSettingsId: defaultSecureSettingsId,
                 targetIncome: null,
                 retirementDate: null,
@@ -94,7 +94,7 @@ void main() {
                     null)
               ]));
       when(databaseService.getSecureSettings())
-          .thenAnswer((_) => Future.value(const SecureSettings(
+          .thenAnswer((_) => Stream.value(const SecureSettings(
                 secureSettingsId: defaultSecureSettingsId,
                 targetIncome: null,
                 retirementDate: null,
