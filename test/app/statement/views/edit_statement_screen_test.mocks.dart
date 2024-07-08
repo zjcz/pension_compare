@@ -682,20 +682,13 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
       ) as _i5.Future<_i3.OtherIncome?>);
 
   @override
-  _i5.Future<_i3.SecureSettings> getSecureSettings() => (super.noSuchMethod(
+  _i5.Stream<_i3.SecureSettings> getSecureSettings() => (super.noSuchMethod(
         Invocation.method(
           #getSecureSettings,
           [],
         ),
-        returnValue:
-            _i5.Future<_i3.SecureSettings>.value(_FakeSecureSettings_13(
-          this,
-          Invocation.method(
-            #getSecureSettings,
-            [],
-          ),
-        )),
-      ) as _i5.Future<_i3.SecureSettings>);
+        returnValue: _i5.Stream<_i3.SecureSettings>.empty(),
+      ) as _i5.Stream<_i3.SecureSettings>);
 
   @override
   _i5.Future<_i3.SecureSettings> saveSecureSettings(

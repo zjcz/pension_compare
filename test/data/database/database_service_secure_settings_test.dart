@@ -17,7 +17,7 @@ void main() {
 
   group('Test secure settings object', () {
     test('secure settings object created at startup', () async {
-      final entry = await database.getSecureSettings();
+      final entry = await database.getSecureSettings().first;
 
       expect(entry, match.isNotNull);
       expect(entry.secureSettingsId, defaults.defaultSecureSettingsId);
@@ -28,7 +28,7 @@ void main() {
       double targetIncomeValue = 123.45;
       DateTime retirementDate = DateTime(2050, 5, 6);
       await database.saveSecureSettings(targetIncomeValue, retirementDate);
-      final entry = await database.getSecureSettings();
+      final entry = await database.getSecureSettings().first;
 
       expect(entry, match.isNotNull);
       expect(entry.secureSettingsId, defaults.defaultSecureSettingsId);
@@ -54,7 +54,7 @@ void main() {
       expect(saved2.targetIncome, targetIncomeValue2);
       expect(saved2.retirementDate, retirementDate2);
 
-      final entry = await database.getSecureSettings();
+      final entry = await database.getSecureSettings().first;
       expect(entry, match.isNotNull);
       expect(entry.secureSettingsId, defaults.defaultSecureSettingsId);
       expect(entry.targetIncome, targetIncomeValue2);

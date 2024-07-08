@@ -225,11 +225,11 @@ class DatabaseService extends _$DatabaseService {
   }
 
   // Get the secure settings record.
-  Future<SecureSettings> getSecureSettings() async {
+  Stream<SecureSettings> getSecureSettings() {
     return (select(secureSetting)
           ..where((o) =>
               o.secureSettingsId.equals(defaults.defaultSecureSettingsId)))
-        .getSingle();
+        .watchSingle();
   }
 
   // Save the secure settings data.  Update the existing record, or insert a new

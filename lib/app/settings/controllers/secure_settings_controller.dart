@@ -11,9 +11,10 @@ class SecureSettingsController extends _$SecureSettingsController {
       ref.read(DatabaseService.provider);
 
   @override
-  Future<SecureSettingsModel> build() async {
-    return SecureSettingsMapper.mapToModel(
-        await _databaseService.getSecureSettings());
+  Stream<SecureSettingsModel> build() {
+    return _databaseService
+        .getSecureSettings()
+        .map((s) => SecureSettingsMapper.mapToModel(s));
   }
 
   Future<SecureSettingsModel> saveSecureSettings(

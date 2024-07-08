@@ -59,7 +59,7 @@ class Exporter {
     OtherIncome? otherIncome = await databaseService.getStatePension();
     List<Pension> pensions = await databaseService.getAllPensions().first;
     Settings settings = await settingsService.getAllSettings();
-    SecureSettings secureSettings = await databaseService.getSecureSettings();
+    SecureSettings secureSettings = await databaseService.getSecureSettings().first;
 
     List<TransferPensionModel> transferPensions = [];
     for (Pension pension in pensions) {

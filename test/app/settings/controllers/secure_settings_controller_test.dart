@@ -19,7 +19,7 @@ void main() {
 
       final databaseService = MockDatabaseService();
       when(databaseService.getSecureSettings()).thenAnswer(
-        (_) => Future.value(
+        (_) => Stream.value(
           SecureSettings(
               secureSettingsId: defaults.defaultSecureSettingsId,
               targetIncome: targetAmount,

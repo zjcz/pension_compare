@@ -47,7 +47,7 @@ void main() {
                     statementNotes: 'Statement notes')
               ]));
       when(databaseService.getSecureSettings())
-          .thenAnswer((_) => Future.value(const SecureSettings(
+          .thenAnswer((_) => Stream.value(const SecureSettings(
                 secureSettingsId: defaultSecureSettingsId,
                 targetIncome: null,
                 retirementDate: null,

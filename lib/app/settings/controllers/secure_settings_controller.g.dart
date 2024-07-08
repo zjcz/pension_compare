@@ -7,11 +7,11 @@ part of 'secure_settings_controller.dart';
 // **************************************************************************
 
 String _$secureSettingsControllerHash() =>
-    r'e07826137897de55b5d483351fd663e58bb6b90b';
+    r'3aa74a9403fa58bf845af073959aaf391b68d1a1';
 
 /// See also [SecureSettingsController].
 @ProviderFor(SecureSettingsController)
-final secureSettingsControllerProvider = AutoDisposeAsyncNotifierProvider<
+final secureSettingsControllerProvider = AutoDisposeStreamNotifierProvider<
     SecureSettingsController, SecureSettingsModel>.internal(
   SecureSettingsController.new,
   name: r'secureSettingsControllerProvider',
@@ -23,6 +23,6 @@ final secureSettingsControllerProvider = AutoDisposeAsyncNotifierProvider<
 );
 
 typedef _$SecureSettingsController
-    = AutoDisposeAsyncNotifier<SecureSettingsModel>;
+    = AutoDisposeStreamNotifier<SecureSettingsModel>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
