@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:pension_compare/app/passcode/controller/passcode_service.dart';
+import 'package:pension_compare/data/database/tables/secure_setting.dart';
 import 'package:pension_compare/data/database/tables/yearly_pension_statement.dart';
 import 'package:pension_compare/service_locator.dart';
 import 'connection/connection.dart' as dbconn;
@@ -15,7 +16,7 @@ import 'package:pension_compare/helpers/date_helper.dart';
 part 'database_service.g.dart';
 
 @DriftDatabase(
-  tables: [Pensions, Statements, OtherIncomes],
+  tables: [Pensions, Statements, OtherIncomes, SecureSetting],
 )
 class DatabaseService extends _$DatabaseService {
   DatabaseService(super.connection);
@@ -42,8 +43,9 @@ class DatabaseService extends _$DatabaseService {
 
         if (details.wasCreated) {
           // Create default records here
-          // we create a default state pension record with a value of 0
+          // we create a default state pension and secure settings record
           await saveStatePension(0, null);
+          await saveSecureSettings(null, null);
         }
       },
     );
@@ -220,6 +222,33 @@ class DatabaseService extends _$DatabaseService {
     }
 
     return statePension;
+  }
+
+  // Get the secure settings record.
+  Stream<SecureSettings> getSecureSettings() {
+    return (select(secureSetting)
+          ..where((o) =>
+              o.secureSettingsId.equals(defaults.defaultSecureSettingsId)))
+        .watchSingle();
+  }
+
+  // Save the secure settings data.  Update the existing record, or insert a new
+  // one if it doesn't exist
+  Future<SecureSettings> saveSecureSettings(
+      double? targetIncome, DateTime? retirementDate) async {
+    SecureSettings settings = SecureSettings(
+      secureSettingsId: defaults.defaultSecureSettingsId,
+      targetIncome: targetIncome,
+      retirementDate: retirementDate,
+    );
+
+    // attempt to update the record, if it doesn't exist then insert it
+    bool success = await update(secureSetting).replace(settings);
+    if (!success) {
+      return into(secureSetting).insertReturning(settings);
+    }
+
+    return settings;
   }
 
   // List all the pensions in the database

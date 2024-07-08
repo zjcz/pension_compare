@@ -1,10 +1,7 @@
 import 'package:pension_compare/app/settings/models/settings.dart';
-import 'package:pension_compare/app/settings/models/user_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsService {
-  final String _keyRetirementDate = 'retirementDate';
-  final String _keyTargetIncome = 'targetIncome';
   final String _keyAcceptTermsAndConditions = 'acceptTermsAndConditions';
   final String _keyAcceptFinancialAdviceWarning =
       'acceptFinancialAdviceWarning';
@@ -15,9 +12,6 @@ class SettingsService {
     final prefs = await SharedPreferences.getInstance();
 
     return Settings(
-      retirementDate:
-          DateTime.tryParse(prefs.getString(_keyRetirementDate) ?? ''),
-      targetIncome: prefs.getDouble(_keyTargetIncome),
       acceptTermsAndConditions: prefs.getBool(_keyAcceptTermsAndConditions),
       acceptFinancialAdviceWarning:
           prefs.getBool(_keyAcceptFinancialAdviceWarning),
@@ -51,26 +45,13 @@ class SettingsService {
       await prefs.remove(_keyWelcomeScreenDismissed);
     }
 
-    await saveUserSettings(
-        UserSettings(
-            retirementDate: settings.retirementDate,
-            targetIncome: settings.targetIncome,
-            optIntoAnalyticsWarning: settings.optIntoAnalyticsWarning),
-        prefs);
+    await saveAnalyticsSettings(settings.optIntoAnalyticsWarning, prefs);
   }
 
-  Future<void> saveUserSettings(UserSettings settings,
+  Future<void> saveAnalyticsSettings(bool optIntoAnalyticsWarning,
       [SharedPreferences? sharedPreferences]) async {
     final prefs = sharedPreferences ?? await SharedPreferences.getInstance();
 
-    await prefs.setString(
-        _keyRetirementDate, settings.retirementDate?.toIso8601String() ?? '');
-    if (settings.targetIncome != null) {
-      await prefs.setDouble(_keyTargetIncome, settings.targetIncome ?? 0);
-    } else {
-      await prefs.remove(_keyTargetIncome);
-    }
-    await prefs.setBool(
-        _keyOptIntoAnalyticsWarning, settings.optIntoAnalyticsWarning);
+    await prefs.setBool(_keyOptIntoAnalyticsWarning, optIntoAnalyticsWarning);
   }
 }

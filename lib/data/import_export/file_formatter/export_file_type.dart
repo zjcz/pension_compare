@@ -7,6 +7,7 @@ abstract class ExportFileType {
   String get pensionExportFilename => 'pension_data.$fileExtension';
   String get otherIncomeExportFilename => 'other_income_data.$fileExtension';
   String get settingsExportFilename => 'settings_data.$fileExtension';
+  String get secureSettingsExportFilename => 'sec_settings_data.$fileExtension';
   String get backupConfigExportFilename => 'backup_config.$fileExtension';
 
   List<ExportDataModel> export(TransferDataModel dataModel);

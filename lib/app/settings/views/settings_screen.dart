@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pension_compare/app/settings/controllers/secure_settings_controller.dart';
 import 'package:pension_compare/app/settings/views/widgets/backup_password_bottomsheet.dart';
 import 'package:pension_compare/app/settings/views/widgets/edit_settings_widget.dart';
 import 'package:pension_compare/app/settings/views/widgets/restore_password_bottomsheet.dart';
@@ -7,7 +8,6 @@ import 'package:pension_compare/extensions/material_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
-import 'package:pension_compare/app/settings/models/user_settings.dart';
 import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/helpers/analytics_helper.dart';
 import 'package:pension_compare/helpers/backup_restore_helper.dart';
@@ -30,7 +30,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late Future<Settings> _settings;
   bool _unsavedChanges = false;
-  UserSettings? _userSettings;
+  EditSettingsData? _userSettings;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -42,6 +42,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final secureSettingsData = ref.watch(secureSettingsControllerProvider);
+
     return Scaffold(
         appBar: AppBar(title: const Text('Settings'), actions: [
           TextButton(
@@ -86,32 +88,36 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   child: Column(
                 children: [
                   FutureBuilder<Settings>(
-                      future: _settings,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return Center(
-                              child: Text(
-                                  'Error loading settings: ${snapshot.error}'));
-                        } else {
-                          final Settings settings = snapshot.data!;
-                          _userSettings = UserSettings(
-                              retirementDate: settings.retirementDate,
-                              targetIncome: settings.targetIncome,
+                    future: _settings,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return buildLoadingWidget();
+                      } else if (snapshot.hasError) {
+                        return buildErrorWidget(snapshot.error!);
+                      }
+
+                      final settings = snapshot.data!;
+
+                      return secureSettingsData.when(
+                        data: (secureSettings) {
+                          _userSettings = EditSettingsData(
+                              retirementDate: secureSettings.retirementDate,
+                              targetIncome: secureSettings.targetIncome,
                               optIntoAnalyticsWarning:
                                   settings.optIntoAnalyticsWarning);
 
                           return EditSettingsWidget(
                               userSettings: _userSettings!,
-                              onChanged: (UserSettings updated) {
+                              onChanged: (EditSettingsData updated) {
                                 _userSettings = updated;
                                 _unsavedChanges = true;
                               });
-                        }
-                      }),
+                        },
+                        loading: () => buildLoadingWidget(),
+                        error: (error, _) => buildErrorWidget(error),
+                      );
+                    },
+                  ),
                   CustomStyles.spacerBox,
                   SizedBox(
                     width: double.infinity,
@@ -179,10 +185,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ));
   }
 
+  Widget buildLoadingWidget() {
+    return const Center(child: CircularProgressIndicator());
+  }
+
+  Widget buildErrorWidget(Object error) {
+    return Center(child: Text('Error loading data: $error'));
+  }
+
   Future<bool> _saveData() async {
     if (_userSettings == null) return false;
 
-    getIt<SettingsService>().saveUserSettings(_userSettings!);
+    ref.read(secureSettingsControllerProvider.notifier).saveSecureSettings(
+        _userSettings!.targetIncome, _userSettings!.retirementDate);
+
+    getIt<SettingsService>()
+        .saveAnalyticsSettings(_userSettings!.optIntoAnalyticsWarning);
 
     // enable / disable analytics
     getIt<AnalyticsHelper>()
@@ -249,7 +267,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
 
     if (shouldDelete ?? false) {
-      final databaseService = ref.read(DatabaseService.provider);      
+      final databaseService = ref.read(DatabaseService.provider);
       await databaseService.clearAllData();
 
       if (!mounted) return;

@@ -1,6 +1,7 @@
 import 'package:mockito/annotations.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/app/settings/controllers/settings_service.dart';
+import 'package:pension_compare/constants/defaults.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/data/import_export/exporter.dart';
 import 'package:pension_compare/data/import_export/file_formatter/json_export_file_type.dart';
@@ -10,6 +11,7 @@ import 'package:mockito/mockito.dart';
 import 'package:pension_compare/data/import_export/models/backup_config_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_other_income_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_pension_model.dart';
+import 'package:pension_compare/data/import_export/models/transfer_secure_settings_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_settings_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_statement_model.dart';
 import 'exporter_test.mocks.dart';
@@ -28,7 +30,10 @@ void main() {
           ]));
       when(databaseService.getStatePension()).thenAnswer((_) async =>
           const OtherIncome(
-              otherIncomeId: 1, name: 'State Pension', annualAmount: 1000, notes: 'More notes'));
+              otherIncomeId: 1,
+              name: 'State Pension',
+              annualAmount: 1000,
+              notes: 'More notes'));
       when(databaseService.getAllStatementsForPension(1))
           .thenAnswer((_) => Stream.value([
                 Statement(
@@ -41,15 +46,20 @@ void main() {
                     transferValue: 4000,
                     statementNotes: 'Statement notes')
               ]));
+      when(databaseService.getSecureSettings())
+          .thenAnswer((_) => Stream.value(const SecureSettings(
+                secureSettingsId: defaultSecureSettingsId,
+                targetIncome: null,
+                retirementDate: null,
+              )));
 
       final settingsService = MockSettingsService();
-      when(settingsService.getAllSettings()).thenAnswer((_) async => Settings(
-          retirementDate: DateTime(2050, 1, 1),
-          targetIncome: 9000,
-          acceptTermsAndConditions: true,
-          acceptFinancialAdviceWarning: true,
-          welcomeScreenDismissed: true,
-          optIntoAnalyticsWarning: true));
+      when(settingsService.getAllSettings()).thenAnswer((_) async =>
+          const Settings(
+              acceptTermsAndConditions: true,
+              acceptFinancialAdviceWarning: true,
+              welcomeScreenDismissed: true,
+              optIntoAnalyticsWarning: true));
 
       final fileHandler = MockFileHandler();
 
@@ -63,15 +73,17 @@ void main() {
 
       // verify the data the File Handler was asked to save
       expect(fileHandler.exportDataFiles, isNotNull);
-      expect(fileHandler.exportDataFiles.length, 4);
+      expect(fileHandler.exportDataFiles.length, 5);
       expect(fileHandler.exportDataFiles[0].filename, 'pension_data.json');
       expect(fileHandler.exportDataFiles[1].filename, 'other_income_data.json');
       expect(fileHandler.exportDataFiles[2].filename, 'settings_data.json');
-      expect(fileHandler.exportDataFiles[3].filename, 'backup_config.json');
+      expect(fileHandler.exportDataFiles[3].filename, 'sec_settings_data.json');
+      expect(fileHandler.exportDataFiles[4].filename, 'backup_config.json');
       expect(fileHandler.exportDataFiles[0].fileContents, isNotEmpty);
       expect(fileHandler.exportDataFiles[1].fileContents, isNotEmpty);
       expect(fileHandler.exportDataFiles[2].fileContents, isNotEmpty);
       expect(fileHandler.exportDataFiles[3].fileContents, isNotEmpty);
+      expect(fileHandler.exportDataFiles[4].fileContents, isNotEmpty);
 
       verify(databaseService.getAllPensions()).called(1);
       verify(databaseService.getStatePension()).called(1);
@@ -105,14 +117,22 @@ void main() {
 
       MockDatabaseService databaseService = MockDatabaseService();
       when(databaseService.clearAllData()).thenAnswer((_) async {});
-      when(databaseService.createPension(pensionName, maturityDate, pensionNotes)).thenAnswer(
-          (_) async => Pension(
+      when(databaseService.createPension(
+              pensionName, maturityDate, pensionNotes))
+          .thenAnswer((_) async => Pension(
               pensionId: pensionId,
               name: pensionName,
               maturityDate: maturityDate,
               notes: pensionNotes));
-      when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue, amountPaidIn, statementNotes))
+      when(databaseService.createStatement(
+              pensionId,
+              statementDate,
+              planValue,
+              projectedAnnualAmount,
+              yearlyCharges,
+              transferValue,
+              amountPaidIn,
+              statementNotes))
           .thenAnswer((_) async => Statement(
               statementId: statementId,
               pension: pensionId,
@@ -122,17 +142,20 @@ void main() {
               yearlyCharges: yearlyCharges,
               transferValue: transferValue,
               statementNotes: statementNotes));
-      when(databaseService.saveStatePension(statePensionAnnualAmount, otherIncomeNotes))
+      when(databaseService.saveStatePension(
+              statePensionAnnualAmount, otherIncomeNotes))
           .thenAnswer((_) async => OtherIncome(
               otherIncomeId: 1,
               name: 'State Pension',
               annualAmount: statePensionAnnualAmount,
               notes: otherIncomeNotes));
-
+      when(databaseService.saveSecureSettings(targetIncome, retirementDate))
+          .thenAnswer((_) async => SecureSettings(
+              secureSettingsId: 1,
+              targetIncome: targetIncome,
+              retirementDate: retirementDate));
       MockSettingsService settingsService = MockSettingsService();
       when(settingsService.saveAllSettings(Settings(
-              retirementDate: retirementDate,
-              targetIncome: targetIncome,
               acceptTermsAndConditions: acceptTermsAndConditions,
               acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
               welcomeScreenDismissed: welcomeScreenDismissed,
@@ -146,7 +169,7 @@ void main() {
           planValue: planValue,
           projectedAnnualAmount: projectedAnnualAmount,
           yearlyCharges: yearlyCharges,
-          transferValue: transferValue, 
+          transferValue: transferValue,
           amountPaidIn: amountPaidIn,
           notes: statementNotes);
       TransferPensionModel transferPension = TransferPensionModel(
@@ -161,16 +184,18 @@ void main() {
           annualAmount: statePensionAnnualAmount,
           notes: otherIncomeNotes);
       TransferSettingsModel transferSettings = TransferSettingsModel(
-          retirementDate: retirementDate,
-          targetIncome: targetIncome,
           acceptTermsAndConditions: acceptTermsAndConditions,
           acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
           welcomeScreenDismissed: welcomeScreenDismissed,
           optIntoAnalyticsWarning: optIntoAnalyticsWarning);
+      TransferSecureSettingsModel transferSecureSettings =
+          TransferSecureSettingsModel(
+              retirementDate: retirementDate, targetIncome: targetIncome);
       TransferDataModel dataModel = TransferDataModel(
         transferOtherIncomeModelList: [transferOtherIncome],
         transferPensionModelList: [transferPension],
         transferSettingsModel: transferSettings,
+        transferSecureSettingsModel: transferSecureSettings,
         backupConfigModel: BackupConfigModel(
           backupDate: DateTime.now(),
           backupVersion: "1",
@@ -190,16 +215,25 @@ void main() {
 
       // // verify the data the File Handler was asked to save
       verify(databaseService.clearAllData()).called(1);
-      verify(databaseService.createPension(pensionName, maturityDate, pensionNotes))
+      verify(databaseService.createPension(
+              pensionName, maturityDate, pensionNotes))
           .called(1);
-      verify(databaseService.createStatement(pensionId, statementDate,
-              planValue, projectedAnnualAmount, yearlyCharges, transferValue, amountPaidIn, statementNotes))
+      verify(databaseService.createStatement(
+              pensionId,
+              statementDate,
+              planValue,
+              projectedAnnualAmount,
+              yearlyCharges,
+              transferValue,
+              amountPaidIn,
+              statementNotes))
           .called(1);
-      verify(databaseService.saveStatePension(statePensionAnnualAmount, otherIncomeNotes))
+      verify(databaseService.saveStatePension(
+              statePensionAnnualAmount, otherIncomeNotes))
+          .called(1);
+      verify(databaseService.saveSecureSettings(targetIncome, retirementDate))
           .called(1);
       verify(settingsService.saveAllSettings(Settings(
-              retirementDate: retirementDate,
-              targetIncome: targetIncome,
               acceptTermsAndConditions: acceptTermsAndConditions,
               acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
               welcomeScreenDismissed: welcomeScreenDismissed,

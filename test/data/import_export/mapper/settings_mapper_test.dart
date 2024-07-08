@@ -6,16 +6,12 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Test settings transfer mapper', () {
     testWidgets('map settings to transfer object', (tester) async {
-      DateTime retirementDate = DateTime.now();
-      double targetIncome = 123.45;
       bool acceptTermsAndConditions = true;
       bool acceptFinancialAdviceWarning = true;
       bool welcomeScreenDismissed = true;
       bool optIntoAnalyticsWarning = true;
 
       Settings settings = Settings(
-          retirementDate: retirementDate,
-          targetIncome: targetIncome,
           acceptTermsAndConditions: acceptTermsAndConditions,
           acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
           welcomeScreenDismissed: welcomeScreenDismissed,
@@ -24,44 +20,40 @@ void main() {
       TransferSettingsModel settingsModel = SettingsMapper.toTransfer(settings);
 
       expect(settingsModel, isNotNull);
-      expect(settingsModel.retirementDate, retirementDate);
-      expect(settingsModel.targetIncome, targetIncome);
+      expect(settingsModel.acceptTermsAndConditions, acceptTermsAndConditions);
+      expect(settingsModel.acceptFinancialAdviceWarning, acceptFinancialAdviceWarning);
+      expect(settingsModel.welcomeScreenDismissed, welcomeScreenDismissed);
+      expect(settingsModel.optIntoAnalyticsWarning, optIntoAnalyticsWarning);
     });
 
     testWidgets('map transfer object to settings object', (tester) async {
-      DateTime retirementDate = DateTime.now();
-      double targetIncome = 123.45;
       bool acceptTermsAndConditions = true;
       bool acceptFinancialAdviceWarning = true;
       bool welcomeScreenDismissed = true;
       bool optIntoAnalyticsWarning = true;
 
-      TransferSettingsModel settings = TransferSettingsModel(
-          retirementDate: retirementDate,
-          targetIncome: targetIncome,
+      TransferSettingsModel settingsModel = TransferSettingsModel(
           acceptTermsAndConditions: acceptTermsAndConditions,
           acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
           welcomeScreenDismissed: welcomeScreenDismissed,
           optIntoAnalyticsWarning: optIntoAnalyticsWarning);
 
-      Settings settingsModel = SettingsMapper.fromTransfer(settings);
+      Settings settings = SettingsMapper.fromTransfer(settingsModel);
 
-      expect(settingsModel, isNotNull);
-      expect(settingsModel.retirementDate, retirementDate);
-      expect(settingsModel.targetIncome, targetIncome);
+      expect(settings, isNotNull);
+      expect(settings.acceptTermsAndConditions, acceptTermsAndConditions);
+      expect(settings.acceptFinancialAdviceWarning, acceptFinancialAdviceWarning);
+      expect(settings.welcomeScreenDismissed, welcomeScreenDismissed);
+      expect(settings.optIntoAnalyticsWarning, optIntoAnalyticsWarning);
     });
 
     testWidgets('map to transfer and back again', (tester) async {
-      DateTime retirementDate = DateTime.now();
-      double targetIncome = 123.45;
       bool acceptTermsAndConditions = true;
       bool acceptFinancialAdviceWarning = true;
       bool welcomeScreenDismissed = true;
       bool optIntoAnalyticsWarning = true;
 
       Settings settings = Settings(
-          retirementDate: retirementDate,
-          targetIncome: targetIncome,
           acceptTermsAndConditions: acceptTermsAndConditions,
           acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
           welcomeScreenDismissed: welcomeScreenDismissed,
@@ -73,8 +65,10 @@ void main() {
       Settings resultSettings = SettingsMapper.fromTransfer(settingsModel);
 
       expect(resultSettings, isNotNull);
-      expect(resultSettings.retirementDate, settings.retirementDate);
-      expect(resultSettings.targetIncome, settings.targetIncome);
+      expect(resultSettings.acceptTermsAndConditions, acceptTermsAndConditions);
+      expect(resultSettings.acceptFinancialAdviceWarning, acceptFinancialAdviceWarning);
+      expect(resultSettings.welcomeScreenDismissed, welcomeScreenDismissed);
+      expect(resultSettings.optIntoAnalyticsWarning, optIntoAnalyticsWarning);
     });
   });
 }

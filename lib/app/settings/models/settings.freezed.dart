@@ -20,8 +20,6 @@ Settings _$SettingsFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Settings {
-  DateTime? get retirementDate => throw _privateConstructorUsedError;
-  double? get targetIncome => throw _privateConstructorUsedError;
   bool? get acceptTermsAndConditions => throw _privateConstructorUsedError;
   bool? get acceptFinancialAdviceWarning => throw _privateConstructorUsedError;
   bool? get welcomeScreenDismissed => throw _privateConstructorUsedError;
@@ -39,9 +37,7 @@ abstract class $SettingsCopyWith<$Res> {
       _$SettingsCopyWithImpl<$Res, Settings>;
   @useResult
   $Res call(
-      {DateTime? retirementDate,
-      double? targetIncome,
-      bool? acceptTermsAndConditions,
+      {bool? acceptTermsAndConditions,
       bool? acceptFinancialAdviceWarning,
       bool? welcomeScreenDismissed,
       bool optIntoAnalyticsWarning});
@@ -60,22 +56,12 @@ class _$SettingsCopyWithImpl<$Res, $Val extends Settings>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? retirementDate = freezed,
-    Object? targetIncome = freezed,
     Object? acceptTermsAndConditions = freezed,
     Object? acceptFinancialAdviceWarning = freezed,
     Object? welcomeScreenDismissed = freezed,
     Object? optIntoAnalyticsWarning = null,
   }) {
     return _then(_value.copyWith(
-      retirementDate: freezed == retirementDate
-          ? _value.retirementDate
-          : retirementDate // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      targetIncome: freezed == targetIncome
-          ? _value.targetIncome
-          : targetIncome // ignore: cast_nullable_to_non_nullable
-              as double?,
       acceptTermsAndConditions: freezed == acceptTermsAndConditions
           ? _value.acceptTermsAndConditions
           : acceptTermsAndConditions // ignore: cast_nullable_to_non_nullable
@@ -105,9 +91,7 @@ abstract class _$$SettingsImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {DateTime? retirementDate,
-      double? targetIncome,
-      bool? acceptTermsAndConditions,
+      {bool? acceptTermsAndConditions,
       bool? acceptFinancialAdviceWarning,
       bool? welcomeScreenDismissed,
       bool optIntoAnalyticsWarning});
@@ -124,22 +108,12 @@ class __$$SettingsImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? retirementDate = freezed,
-    Object? targetIncome = freezed,
     Object? acceptTermsAndConditions = freezed,
     Object? acceptFinancialAdviceWarning = freezed,
     Object? welcomeScreenDismissed = freezed,
     Object? optIntoAnalyticsWarning = null,
   }) {
     return _then(_$SettingsImpl(
-      retirementDate: freezed == retirementDate
-          ? _value.retirementDate
-          : retirementDate // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      targetIncome: freezed == targetIncome
-          ? _value.targetIncome
-          : targetIncome // ignore: cast_nullable_to_non_nullable
-              as double?,
       acceptTermsAndConditions: freezed == acceptTermsAndConditions
           ? _value.acceptTermsAndConditions
           : acceptTermsAndConditions // ignore: cast_nullable_to_non_nullable
@@ -164,9 +138,7 @@ class __$$SettingsImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
   const _$SettingsImpl(
-      {required this.retirementDate,
-      required this.targetIncome,
-      required this.acceptTermsAndConditions,
+      {required this.acceptTermsAndConditions,
       required this.acceptFinancialAdviceWarning,
       required this.welcomeScreenDismissed,
       required this.optIntoAnalyticsWarning});
@@ -174,10 +146,6 @@ class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
   factory _$SettingsImpl.fromJson(Map<String, dynamic> json) =>
       _$$SettingsImplFromJson(json);
 
-  @override
-  final DateTime? retirementDate;
-  @override
-  final double? targetIncome;
   @override
   final bool? acceptTermsAndConditions;
   @override
@@ -189,7 +157,7 @@ class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Settings(retirementDate: $retirementDate, targetIncome: $targetIncome, acceptTermsAndConditions: $acceptTermsAndConditions, acceptFinancialAdviceWarning: $acceptFinancialAdviceWarning, welcomeScreenDismissed: $welcomeScreenDismissed, optIntoAnalyticsWarning: $optIntoAnalyticsWarning)';
+    return 'Settings(acceptTermsAndConditions: $acceptTermsAndConditions, acceptFinancialAdviceWarning: $acceptFinancialAdviceWarning, welcomeScreenDismissed: $welcomeScreenDismissed, optIntoAnalyticsWarning: $optIntoAnalyticsWarning)';
   }
 
   @override
@@ -197,8 +165,6 @@ class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty('type', 'Settings'))
-      ..add(DiagnosticsProperty('retirementDate', retirementDate))
-      ..add(DiagnosticsProperty('targetIncome', targetIncome))
       ..add(DiagnosticsProperty(
           'acceptTermsAndConditions', acceptTermsAndConditions))
       ..add(DiagnosticsProperty(
@@ -214,10 +180,6 @@ class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SettingsImpl &&
-            (identical(other.retirementDate, retirementDate) ||
-                other.retirementDate == retirementDate) &&
-            (identical(other.targetIncome, targetIncome) ||
-                other.targetIncome == targetIncome) &&
             (identical(
                     other.acceptTermsAndConditions, acceptTermsAndConditions) ||
                 other.acceptTermsAndConditions == acceptTermsAndConditions) &&
@@ -236,8 +198,6 @@ class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      retirementDate,
-      targetIncome,
       acceptTermsAndConditions,
       acceptFinancialAdviceWarning,
       welcomeScreenDismissed,
@@ -259,9 +219,7 @@ class _$SettingsImpl with DiagnosticableTreeMixin implements _Settings {
 
 abstract class _Settings implements Settings {
   const factory _Settings(
-      {required final DateTime? retirementDate,
-      required final double? targetIncome,
-      required final bool? acceptTermsAndConditions,
+      {required final bool? acceptTermsAndConditions,
       required final bool? acceptFinancialAdviceWarning,
       required final bool? welcomeScreenDismissed,
       required final bool optIntoAnalyticsWarning}) = _$SettingsImpl;
@@ -269,10 +227,6 @@ abstract class _Settings implements Settings {
   factory _Settings.fromJson(Map<String, dynamic> json) =
       _$SettingsImpl.fromJson;
 
-  @override
-  DateTime? get retirementDate;
-  @override
-  double? get targetIncome;
   @override
   bool? get acceptTermsAndConditions;
   @override

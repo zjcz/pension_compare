@@ -72,8 +72,6 @@ void main() {
 Widget createScreen(Pension pensionRecord, DatabaseService db) {
   final settingsService = MockSettingsService();
   when(settingsService.getAllSettings()).thenAnswer((_) async => const Settings(
-      retirementDate: null,
-      targetIncome: null,
       acceptTermsAndConditions: null,
       acceptFinancialAdviceWarning: null,
       welcomeScreenDismissed: null,

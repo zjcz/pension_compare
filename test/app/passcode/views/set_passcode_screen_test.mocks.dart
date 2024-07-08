@@ -6,15 +6,14 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i8;
+import 'package:mockito/src/dummies.dart' as _i7;
 import 'package:pension_compare/app/passcode/controller/passcode_service.dart'
-    as _i7;
+    as _i6;
 import 'package:pension_compare/app/settings/controllers/settings_service.dart'
     as _i3;
 import 'package:pension_compare/app/settings/models/settings.dart' as _i2;
-import 'package:pension_compare/app/settings/models/user_settings.dart' as _i5;
-import 'package:pension_compare/data/database/database_service.dart' as _i9;
-import 'package:shared_preferences/shared_preferences.dart' as _i6;
+import 'package:pension_compare/data/database/database_service.dart' as _i8;
+import 'package:shared_preferences/shared_preferences.dart' as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -74,15 +73,15 @@ class MockSettingsService extends _i1.Mock implements _i3.SettingsService {
       ) as _i4.Future<void>);
 
   @override
-  _i4.Future<void> saveUserSettings(
-    _i5.UserSettings? settings, [
-    _i6.SharedPreferences? sharedPreferences,
+  _i4.Future<void> saveAnalyticsSettings(
+    bool? optIntoAnalyticsWarning, [
+    _i5.SharedPreferences? sharedPreferences,
   ]) =>
       (super.noSuchMethod(
         Invocation.method(
-          #saveUserSettings,
+          #saveAnalyticsSettings,
           [
-            settings,
+            optIntoAnalyticsWarning,
             sharedPreferences,
           ],
         ),
@@ -94,7 +93,7 @@ class MockSettingsService extends _i1.Mock implements _i3.SettingsService {
 /// A class which mocks [PasscodeService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockPasscodeService extends _i1.Mock implements _i7.PasscodeService {
+class MockPasscodeService extends _i1.Mock implements _i6.PasscodeService {
   MockPasscodeService() {
     _i1.throwOnMissingStub(this);
   }
@@ -114,7 +113,7 @@ class MockPasscodeService extends _i1.Mock implements _i7.PasscodeService {
           #getEncryptedPasscode,
           [],
         ),
-        returnValue: _i8.dummyValue<String>(
+        returnValue: _i7.dummyValue<String>(
           this,
           Invocation.method(
             #getEncryptedPasscode,
@@ -135,7 +134,7 @@ class MockPasscodeService extends _i1.Mock implements _i7.PasscodeService {
   @override
   bool changePasscode(
     String? newPasscode,
-    _i9.DatabaseService? databaseService,
+    _i8.DatabaseService? databaseService,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -172,7 +171,7 @@ class MockPasscodeService extends _i1.Mock implements _i7.PasscodeService {
           #encryptPasscode,
           [passcode],
         ),
-        returnValue: _i8.dummyValue<String>(
+        returnValue: _i7.dummyValue<String>(
           this,
           Invocation.method(
             #encryptPasscode,

@@ -45,8 +45,6 @@ void main() {
 
     when(mockSettingsService.getAllSettings())
         .thenAnswer((_) async => const Settings(
-              retirementDate: null,
-              targetIncome: null,
               acceptTermsAndConditions: false,
               acceptFinancialAdviceWarning: false,
               welcomeScreenDismissed: false,
@@ -72,8 +70,6 @@ void main() {
         'tapping continue button without accepting terms does not save data and does not navigate to home screen',
         (WidgetTester tester) async {
       const saveSettings = Settings(
-        retirementDate: null,
-        targetIncome: null,
         acceptTermsAndConditions: true,
         acceptFinancialAdviceWarning: true,
         welcomeScreenDismissed: true,
@@ -102,8 +98,6 @@ void main() {
         'tapping continue button without accepting financial advice warning does not save data and does not navigate to home screen',
         (WidgetTester tester) async {
       const saveSettings = Settings(
-        retirementDate: null,
-        targetIncome: null,
         acceptTermsAndConditions: true,
         acceptFinancialAdviceWarning: true,
         welcomeScreenDismissed: true,
@@ -136,8 +130,6 @@ void main() {
         'tapping continue button without accepting terms and conditions does not save data and does not navigate to home screen',
         (WidgetTester tester) async {
       const saveSettings = Settings(
-        retirementDate: null,
-        targetIncome: null,
         acceptTermsAndConditions: true,
         acceptFinancialAdviceWarning: true,
         welcomeScreenDismissed: true,
@@ -172,8 +164,6 @@ void main() {
         'tapping continue button after accepting terms and conditions and financial advice warning saves data and navigates to set passcode screen',
         (WidgetTester tester) async {
       const saveSettings = Settings(
-        retirementDate: null,
-        targetIncome: null,
         acceptTermsAndConditions: true,
         acceptFinancialAdviceWarning: true,
         welcomeScreenDismissed: true,
@@ -216,8 +206,6 @@ void main() {
         'tapping continue button after opting into analytics calls enableAnalytics',
         (WidgetTester tester) async {
       const saveSettings = Settings(
-        retirementDate: null,
-        targetIncome: null,
         acceptTermsAndConditions: true,
         acceptFinancialAdviceWarning: true,
         welcomeScreenDismissed: true,

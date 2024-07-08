@@ -65,8 +65,6 @@ void main() {
 
     when(mockSettingsService.getAllSettings())
         .thenAnswer((_) async => const Settings(
-              retirementDate: null,
-              targetIncome: null,
               acceptTermsAndConditions: false,
               acceptFinancialAdviceWarning: false,
               welcomeScreenDismissed: true,

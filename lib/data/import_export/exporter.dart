@@ -9,8 +9,10 @@ import 'package:pension_compare/data/import_export/mapper/settings_mapper.dart';
 import 'package:pension_compare/data/import_export/models/backup_config_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_other_income_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_pension_model.dart';
+import 'package:pension_compare/data/import_export/models/transfer_secure_settings_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_settings_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_statement_model.dart';
+import 'package:pension_compare/data/import_export/mapper/secure_settings_mapper.dart';
 
 /// Export and import the data from the database using the ExportFileType and FileHandler supplied.
 class Exporter {
@@ -57,6 +59,7 @@ class Exporter {
     OtherIncome? otherIncome = await databaseService.getStatePension();
     List<Pension> pensions = await databaseService.getAllPensions().first;
     Settings settings = await settingsService.getAllSettings();
+    SecureSettings secureSettings = await databaseService.getSecureSettings().first;
 
     List<TransferPensionModel> transferPensions = [];
     for (Pension pension in pensions) {
@@ -74,6 +77,7 @@ class Exporter {
           : [OtherIncomeMapper.toTransfer(otherIncome)],
       transferPensionModelList: transferPensions,
       transferSettingsModel: SettingsMapper.toTransfer(settings),
+      transferSecureSettingsModel: SecureSettingsMapper.toTransfer(secureSettings),
       backupConfigModel: BackupConfigModel(
         backupDate: DateTime.now(),
         backupVersion: backupVersionNumber,
@@ -114,9 +118,12 @@ class Exporter {
     await databaseService.saveStatePension(
         dataModel.transferOtherIncomeModelList.first.annualAmount,
         dataModel.transferOtherIncomeModelList.first.notes);
+
+    await databaseService.saveSecureSettings(
+        dataModel.transferSecureSettingsModel.targetIncome,
+        dataModel.transferSecureSettingsModel.retirementDate);
+
     await settingsService.saveAllSettings(Settings(
-      retirementDate: dataModel.transferSettingsModel.retirementDate,
-      targetIncome: dataModel.transferSettingsModel.targetIncome,
       acceptTermsAndConditions:
           dataModel.transferSettingsModel.acceptTermsAndConditions,
       acceptFinancialAdviceWarning:
@@ -134,12 +141,14 @@ class TransferDataModel {
   final List<TransferOtherIncomeModel> transferOtherIncomeModelList;
   final List<TransferPensionModel> transferPensionModelList;
   final TransferSettingsModel transferSettingsModel;
+  final TransferSecureSettingsModel transferSecureSettingsModel;
   final BackupConfigModel backupConfigModel;
 
   TransferDataModel({
     required this.transferOtherIncomeModelList,
     required this.transferPensionModelList,
     required this.transferSettingsModel,
+    required this.transferSecureSettingsModel,
     required this.backupConfigModel,
   });
 }
