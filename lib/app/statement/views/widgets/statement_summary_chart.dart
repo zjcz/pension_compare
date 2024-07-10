@@ -16,6 +16,7 @@ class StatementSummaryChart extends StatefulWidget {
 }
 
 class _StatementSummaryChartState extends State<StatementSummaryChart> {
+  List<StatementModel> _chartData = [];
   PensionSummaryChartStyles _selectedStyle =
       PensionSummaryChartStyles.planValue;
   static const double barWidth = 30;
@@ -28,9 +29,12 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
       return const Center(child: Text('No data'));
     }
 
+    _chartData = List.from(widget.statementData!);
+    _chartData.sort((a, b) => a.statementDate.compareTo(b.statementDate));
+
     ChartColorConstants chartColorConstants = getIt<ChartColorConstants>();
-    _barColor = chartColorConstants
-        .getColorForPension(widget.statementData!.first.pension);
+    _barColor =
+        chartColorConstants.getColorForPension(_chartData.first.pension);
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -94,7 +98,7 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
             int rodIndex,
           ) {
             return BarTooltipItem(
-              '${DateHelper.formatDate(widget.statementData![groupIndex].statementDate)}\n'
+              '${DateHelper.formatDate(_chartData[groupIndex].statementDate)}\n'
               '${CurrencyHelper.formatCurrency(rod.toY, _currencySymbol)}',
               const TextStyle(
                 color: Colors.white,
@@ -106,8 +110,7 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
       );
 
   Widget getBottomTitles(double value, TitleMeta meta) {
-    String text =
-        widget.statementData![value.toInt()].statementDate.year.toString();
+    String text = _chartData[value.toInt()].statementDate.year.toString();
 
     return SideTitleWidget(
       axisSide: meta.axisSide,
@@ -157,7 +160,7 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
         show: false,
       );
 
-  List<BarChartGroupData> get planValueBarGroups => widget.statementData!
+  List<BarChartGroupData> get planValueBarGroups => _chartData
       .asMap()
       .entries
       .map((entry) => BarChartGroupData(
@@ -166,17 +169,16 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
           ))
       .toList();
 
-  List<BarChartGroupData> get projectedAnnualAmountBarGroups =>
-      widget.statementData!
-          .asMap()
-          .entries
-          .map((entry) => BarChartGroupData(
-                x: entry.key,
-                barRods: [buildBarRodData(entry.value.projectedAnnualAmount)],
-              ))
-          .toList();
+  List<BarChartGroupData> get projectedAnnualAmountBarGroups => _chartData
+      .asMap()
+      .entries
+      .map((entry) => BarChartGroupData(
+            x: entry.key,
+            barRods: [buildBarRodData(entry.value.projectedAnnualAmount)],
+          ))
+      .toList();
 
-  List<BarChartGroupData> get yearlyChargesBarGroups => widget.statementData!
+  List<BarChartGroupData> get yearlyChargesBarGroups => _chartData
       .asMap()
       .entries
       .map((entry) => BarChartGroupData(
@@ -185,7 +187,7 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
           ))
       .toList();
 
-  List<BarChartGroupData> get transferValueBarGroups => widget.statementData!
+  List<BarChartGroupData> get transferValueBarGroups => _chartData
       .asMap()
       .entries
       .map((entry) => BarChartGroupData(
@@ -194,7 +196,7 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
           ))
       .toList();
 
-  List<BarChartGroupData> get amountPaidInBarGroups => widget.statementData!
+  List<BarChartGroupData> get amountPaidInBarGroups => _chartData
       .asMap()
       .entries
       .map((entry) => BarChartGroupData(

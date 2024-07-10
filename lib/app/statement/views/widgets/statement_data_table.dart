@@ -16,12 +16,18 @@ class StatementDataTable extends StatefulWidget {
 }
 
 class _StatementDataTableState extends State<StatementDataTable> {
+  List<StatementModel> _dataList = [];
+
   @override
   Widget build(BuildContext context) {
     if (widget.statementDataList.isEmpty) {
       return const Center(
           child: Text('No statements found.  Click + to add one'));
     }
+
+    _dataList = List.from(widget.statementDataList);
+    _dataList.sort((a, b) => b.statementDate.compareTo(a.statementDate));
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: DataTable(
@@ -65,9 +71,8 @@ class _StatementDataTableState extends State<StatementDataTable> {
             ),
           ),
         ],
-        rows: List<DataRow>.generate(widget.statementDataList.length,
-            (int index) {
-          StatementModel statementData = widget.statementDataList[index];
+        rows: List<DataRow>.generate(_dataList.length, (int index) {
+          StatementModel statementData = _dataList[index];
           return DataRow(
             onSelectChanged: (bool? selected) => widget.onTap(statementData),
             cells: <DataCell>[

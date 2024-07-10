@@ -68,7 +68,8 @@ class DatabaseService extends _$DatabaseService {
 
   // List all the pensions in the database
   Stream<List<Pension>> getAllPensions() {
-    return select(pensions).watch();
+    return (select(pensions)..orderBy([(p) => OrderingTerm.asc(p.name)]))
+        .watch();
   }
 
   // Get a single pension by its id
@@ -122,7 +123,9 @@ class DatabaseService extends _$DatabaseService {
 
   // List all the statements in the database for a given pension
   Stream<List<Statement>> getAllStatementsForPension(int pensionId) {
-    return (select(statements)..where((s) => s.pension.equals(pensionId)))
+    return (select(statements)
+          ..where((s) => s.pension.equals(pensionId))
+          ..orderBy([(s) => OrderingTerm.desc(s.statementDate)]))
         .watch();
   }
 
