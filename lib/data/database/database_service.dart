@@ -125,7 +125,7 @@ class DatabaseService extends _$DatabaseService {
   Stream<List<Statement>> getAllStatementsForPension(int pensionId) {
     return (select(statements)
           ..where((s) => s.pension.equals(pensionId))
-          ..orderBy([(s) => OrderingTerm.desc(s.statementDate)]))
+          ..orderBy([(s) => OrderingTerm.asc(s.statementDate)]))
         .watch();
   }
 
