@@ -110,10 +110,10 @@ void main() {
       final newEntry = await database.createPension(name, maturityDate, notes);
       expect(newEntry, match.isNotNull);
 
-      bool updated = await database.updatePension(
+      int updatedCount = await database.updatePension(
           newEntry!.pensionId, updatedName, updatedMaturityDate, updatedNotes);
 
-      expect(updated, isTrue);
+      expect(updatedCount, 1);
 
       final updatedEntry = await database.getPension(newEntry.pensionId);
       expect(updatedEntry, match.isNotNull);
@@ -121,6 +121,59 @@ void main() {
       expect(updatedEntry.name, updatedName);
       expect(updatedEntry.maturityDate, updatedMaturityDate);
       expect(updatedEntry.notes, updatedNotes);
+    });
+
+    test('update a pension object does not change status', () async {
+      String name = 'new pension';
+      DateTime maturityDate = DateTime(2050, 1, 1);
+      String notes = 'notes';
+      String updatedName = 'new pension';
+      DateTime updatedMaturityDate = DateTime(2050, 1, 1);
+      String updatedNotes = 'updated notes';
+
+      final newEntry = await database.createPension(name, maturityDate, notes);
+      expect(newEntry, match.isNotNull);
+
+      int updatedCount = await database.updatePension(
+          newEntry!.pensionId, updatedName, updatedMaturityDate, updatedNotes);
+
+      expect(updatedCount, 1);
+
+      final updatedEntry = await database.getPension(newEntry.pensionId);
+      expect(updatedEntry, match.isNotNull);
+      expect(updatedEntry!.status, newEntry.status);
+      expect(updatedEntry.statusDate, newEntry.statusDate);
+    });
+
+    test('update a pension object only changes intended record', () async {
+      String name1 = 'new pension 1';
+      DateTime maturityDate1 = DateTime(2050, 1, 1);
+      String notes1 = 'notes 1';
+      String name2 = 'new pension 2';
+      DateTime maturityDate2 = DateTime(2050, 2, 2);
+      String notes2 = 'notes 2';
+      String name3 = 'new pension 3';
+      DateTime maturityDate3 = DateTime(2050, 3, 3);
+      String notes3 = 'notes 3';
+      String updatedName = 'new pension';
+      DateTime updatedMaturityDate = DateTime(2050, 1, 1);
+      String updatedNotes = 'updated notes';
+
+      final newEntry1 = await database.createPension(name1, maturityDate1, notes1);
+      final newEntry2 = await database.createPension(name2, maturityDate2, notes2);
+      final newEntry3 = await database.createPension(name3, maturityDate3, notes3);
+
+      int updatedCount = await database.updatePension(
+          newEntry2!.pensionId, updatedName, updatedMaturityDate, updatedNotes);
+
+      expect(updatedCount, 1);
+
+      final notChangedEntry1 = await database.getPension(newEntry1!.pensionId);
+      final notChangedEntry3 = await database.getPension(newEntry3!.pensionId);      
+      expect(notChangedEntry1, match.isNotNull);
+      expect(notChangedEntry3, match.isNotNull);
+      expect(notChangedEntry1, newEntry1);
+      expect(notChangedEntry3, newEntry3);
     });
 
     test('delete a pension object', () async {

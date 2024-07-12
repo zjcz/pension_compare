@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:pension_compare/app/passcode/controller/passcode_service.dart';
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/database/tables/secure_setting.dart';
 import 'package:pension_compare/data/database/tables/yearly_pension_statement.dart';
 import 'package:pension_compare/service_locator.dart';
@@ -88,19 +89,24 @@ class DatabaseService extends _$DatabaseService {
   Future<Pension?> createPension(
       String name, DateTime maturityDate, String? notes) {
     return into(pensions).insertReturningOrNull(PensionsCompanion.insert(
-        name: name,
-        maturityDate: DateHelper.removeTime(maturityDate),
-        notes: Value(notes)));
+      name: name,
+      maturityDate: DateHelper.removeTime(maturityDate),
+      notes: Value(notes),
+      status: Value(PensionStatus.active.dataValue),
+      statusDate: Value(DateTime.now()),
+    ));
   }
 
-  // Update an existing pension record, return true if successful
-  Future<bool> updatePension(
+  // Update an existing pension record, return the number of records updated
+  Future<int> updatePension(
       int id, String name, DateTime maturityDate, String? notes) {
-    return update(pensions).replace(Pension(
-        pensionId: id,
-        name: name,
-        maturityDate: DateHelper.removeTime(maturityDate),
-        notes: notes));
+    return (update(pensions)..where((p) => p.pensionId.equals(id)))
+        .write(PensionsCompanion.insert(
+      pensionId: Value(id),
+      name: name,
+      maturityDate: DateHelper.removeTime(maturityDate),
+      notes: Value(notes),
+    ));
   }
 
   // Delete a pension record by its id and return the number of records deleted

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:pension_compare/app/pension/controllers/single_pension_controller.dart';
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -16,13 +17,16 @@ void main() {
       int pensionId = 1;
       String pensionName = 'new pension';
       DateTime maturityDate = DateTime.now();
+      DateTime statusDate = DateTime.now();
       final databaseService = MockDatabaseService();
       when(databaseService.watchPension(pensionId))
           .thenAnswer((_) => Stream.value(
                 Pension(
                     pensionId: pensionId,
                     name: pensionName,
-                    maturityDate: maturityDate),
+                    maturityDate: maturityDate,
+                    status: PensionStatus.active.dataValue,
+                    statusDate: statusDate),
               ));
 
       final container = createContainer(overrides: [
@@ -36,6 +40,8 @@ void main() {
       expect(pension!.pensionId, pensionId);
       expect(pension.name, pensionName);
       expect(pension.maturityDate, maturityDate);
+      expect(pension.status, PensionStatus.active);
+      expect(pension.statusDate, statusDate);
       verify(databaseService.watchPension(pensionId)).called(1);
 
       // Workaround to avoid the FakeTimer error

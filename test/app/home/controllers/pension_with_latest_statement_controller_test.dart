@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:pension_compare/app/home/controllers/pension_with_latest_statement_controller.dart';
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -23,7 +24,9 @@ void main() {
                     Pension(
                         pensionId: pensionId,
                         name: pensionName,
-                        maturityDate: DateTime.now()),
+                        maturityDate: DateTime.now(),
+                        status: PensionStatus.active.dataValue,
+                        statusDate: DateTime.now()),
                     null)
               ]));
 

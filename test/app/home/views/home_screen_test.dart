@@ -6,6 +6,7 @@ import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/constants/chart_color_constants.dart';
 import 'package:pension_compare/constants/defaults.dart';
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/database/tables/pensions_with_statement.dart';
 import 'package:pension_compare/app/home/views/home_screen.dart';
 import 'package:pension_compare/data/database/database_service.dart';
@@ -90,7 +91,9 @@ void main() {
                     Pension(
                         pensionId: pensionId,
                         name: pensionName,
-                        maturityDate: DateTime.now()),
+                        maturityDate: DateTime.now(),
+                        status: PensionStatus.active.dataValue,
+                        statusDate: DateTime.now()),
                     null)
               ]));
       when(databaseService.getSecureSettings())

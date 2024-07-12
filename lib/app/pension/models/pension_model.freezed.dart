@@ -23,6 +23,8 @@ mixin _$PensionModel {
   int? get pensionId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   DateTime? get maturityDate => throw _privateConstructorUsedError;
+  PensionStatus get status => throw _privateConstructorUsedError;
+  DateTime get statusDate => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -36,7 +38,12 @@ abstract class $PensionModelCopyWith<$Res> {
           PensionModel value, $Res Function(PensionModel) then) =
       _$PensionModelCopyWithImpl<$Res, PensionModel>;
   @useResult
-  $Res call({int? pensionId, String name, DateTime? maturityDate});
+  $Res call(
+      {int? pensionId,
+      String name,
+      DateTime? maturityDate,
+      PensionStatus status,
+      DateTime statusDate});
 }
 
 /// @nodoc
@@ -55,6 +62,8 @@ class _$PensionModelCopyWithImpl<$Res, $Val extends PensionModel>
     Object? pensionId = freezed,
     Object? name = null,
     Object? maturityDate = freezed,
+    Object? status = null,
+    Object? statusDate = null,
   }) {
     return _then(_value.copyWith(
       pensionId: freezed == pensionId
@@ -69,6 +78,14 @@ class _$PensionModelCopyWithImpl<$Res, $Val extends PensionModel>
           ? _value.maturityDate
           : maturityDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as PensionStatus,
+      statusDate: null == statusDate
+          ? _value.statusDate
+          : statusDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
     ) as $Val);
   }
 }
@@ -81,7 +98,12 @@ abstract class _$$PensionModelImplCopyWith<$Res>
       __$$PensionModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int? pensionId, String name, DateTime? maturityDate});
+  $Res call(
+      {int? pensionId,
+      String name,
+      DateTime? maturityDate,
+      PensionStatus status,
+      DateTime statusDate});
 }
 
 /// @nodoc
@@ -98,6 +120,8 @@ class __$$PensionModelImplCopyWithImpl<$Res>
     Object? pensionId = freezed,
     Object? name = null,
     Object? maturityDate = freezed,
+    Object? status = null,
+    Object? statusDate = null,
   }) {
     return _then(_$PensionModelImpl(
       pensionId: freezed == pensionId
@@ -112,6 +136,14 @@ class __$$PensionModelImplCopyWithImpl<$Res>
           ? _value.maturityDate
           : maturityDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as PensionStatus,
+      statusDate: null == statusDate
+          ? _value.statusDate
+          : statusDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
     ));
   }
 }
@@ -120,7 +152,11 @@ class __$$PensionModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PensionModelImpl with DiagnosticableTreeMixin implements _PensionModel {
   const _$PensionModelImpl(
-      {this.pensionId, required this.name, this.maturityDate});
+      {this.pensionId,
+      required this.name,
+      this.maturityDate,
+      required this.status,
+      required this.statusDate});
 
   factory _$PensionModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$PensionModelImplFromJson(json);
@@ -131,10 +167,14 @@ class _$PensionModelImpl with DiagnosticableTreeMixin implements _PensionModel {
   final String name;
   @override
   final DateTime? maturityDate;
+  @override
+  final PensionStatus status;
+  @override
+  final DateTime statusDate;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'PensionModel(pensionId: $pensionId, name: $name, maturityDate: $maturityDate)';
+    return 'PensionModel(pensionId: $pensionId, name: $name, maturityDate: $maturityDate, status: $status, statusDate: $statusDate)';
   }
 
   @override
@@ -144,7 +184,9 @@ class _$PensionModelImpl with DiagnosticableTreeMixin implements _PensionModel {
       ..add(DiagnosticsProperty('type', 'PensionModel'))
       ..add(DiagnosticsProperty('pensionId', pensionId))
       ..add(DiagnosticsProperty('name', name))
-      ..add(DiagnosticsProperty('maturityDate', maturityDate));
+      ..add(DiagnosticsProperty('maturityDate', maturityDate))
+      ..add(DiagnosticsProperty('status', status))
+      ..add(DiagnosticsProperty('statusDate', statusDate));
   }
 
   @override
@@ -156,12 +198,16 @@ class _$PensionModelImpl with DiagnosticableTreeMixin implements _PensionModel {
                 other.pensionId == pensionId) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.maturityDate, maturityDate) ||
-                other.maturityDate == maturityDate));
+                other.maturityDate == maturityDate) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.statusDate, statusDate) ||
+                other.statusDate == statusDate));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, pensionId, name, maturityDate);
+  int get hashCode => Object.hash(
+      runtimeType, pensionId, name, maturityDate, status, statusDate);
 
   @JsonKey(ignore: true)
   @override
@@ -181,7 +227,9 @@ abstract class _PensionModel implements PensionModel {
   const factory _PensionModel(
       {final int? pensionId,
       required final String name,
-      final DateTime? maturityDate}) = _$PensionModelImpl;
+      final DateTime? maturityDate,
+      required final PensionStatus status,
+      required final DateTime statusDate}) = _$PensionModelImpl;
 
   factory _PensionModel.fromJson(Map<String, dynamic> json) =
       _$PensionModelImpl.fromJson;
@@ -192,6 +240,10 @@ abstract class _PensionModel implements PensionModel {
   String get name;
   @override
   DateTime? get maturityDate;
+  @override
+  PensionStatus get status;
+  @override
+  DateTime get statusDate;
   @override
   @JsonKey(ignore: true)
   _$$PensionModelImplCopyWith<_$PensionModelImpl> get copyWith =>

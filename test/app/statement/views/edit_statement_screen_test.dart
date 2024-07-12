@@ -5,6 +5,7 @@ import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/app/statement/models/statement_model.dart';
 import 'package:pension_compare/app/statement/views/edit_statement_screen.dart';
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/data/mapper/statement_mapper.dart';
 import 'package:pension_compare/helpers/date_helper.dart';
@@ -80,7 +81,11 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
             Pension(
-                pensionId: 1, name: "new pension", maturityDate: DateTime.now())
+                pensionId: 1,
+                name: "new pension",
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
       await tester.pumpWidget(createEditScreen(null, databaseService));
       await tester.pumpAndSettle();
@@ -173,10 +178,21 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
             Pension(
-                pensionId: pensionId, name: name, maturityDate: maturityDate)
+                pensionId: pensionId,
+                name: name,
+                maturityDate: maturityDate,
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
-      when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue, null))
+      when(databaseService.createStatement(
+              pensionId,
+              statementDate,
+              planValue,
+              projectedAnnualAmount,
+              yearlyCharges,
+              transferValue,
+              paidInValue,
+              null))
           .thenAnswer((_) async => Statement(
               statementId: 1,
               pension: pensionId,
@@ -228,7 +244,8 @@ void main() {
               projectedAnnualAmount,
               yearlyCharges,
               transferValue,
-              paidInValue, null))
+              paidInValue,
+              null))
           .called(1);
     });
 
@@ -253,7 +270,11 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
             Pension(
-                pensionId: pensionId, name: name, maturityDate: maturityDate)
+                pensionId: pensionId,
+                name: name,
+                maturityDate: maturityDate,
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
       when(databaseService.updateStatement(
               statementId,
@@ -263,7 +284,8 @@ void main() {
               newProjectedAnnualAmount,
               newYearlyCharges,
               newTransferValue,
-              newPaidInValue, null))
+              newPaidInValue,
+              null))
           .thenAnswer((_) async => true);
       when(databaseService.doesStatementDateExist(
               statementId, pensionId, newStatementDate))
@@ -313,7 +335,8 @@ void main() {
           newProjectedAnnualAmount,
           newYearlyCharges,
           newTransferValue,
-          newPaidInValue, null));
+          newPaidInValue,
+          null));
       verify(databaseService.updateStatement(
               statementId,
               pensionId,
@@ -322,7 +345,8 @@ void main() {
               newProjectedAnnualAmount,
               newYearlyCharges,
               newTransferValue,
-              newPaidInValue, null))
+              newPaidInValue,
+              null))
           .called(1);
     });
   });
@@ -344,10 +368,21 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
             Pension(
-                pensionId: pensionId, name: name, maturityDate: maturityDate)
+                pensionId: pensionId,
+                name: name,
+                maturityDate: maturityDate,
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
-      when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue, null))
+      when(databaseService.createStatement(
+              pensionId,
+              statementDate,
+              planValue,
+              projectedAnnualAmount,
+              yearlyCharges,
+              transferValue,
+              paidInValue,
+              null))
           .thenAnswer((_) async => Statement(
               statementId: 1,
               pension: pensionId,
@@ -420,7 +455,11 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
             Pension(
-                pensionId: pensionId, name: name, maturityDate: maturityDate)
+                pensionId: pensionId,
+                name: name,
+                maturityDate: maturityDate,
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
       when(databaseService.updateStatement(
               statementId,
@@ -430,7 +469,8 @@ void main() {
               newProjectedAnnualAmount,
               newYearlyCharges,
               newTransferValue,
-              newPaidInValue, null))
+              newPaidInValue,
+              null))
           .thenAnswer((_) async => true);
       when(databaseService.doesStatementDateExist(
               statementId, pensionId, newStatementDate))
@@ -493,10 +533,21 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
             Pension(
-                pensionId: pensionId, name: name, maturityDate: maturityDate)
+                pensionId: pensionId,
+                name: name,
+                maturityDate: maturityDate,
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
-      when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue, null))
+      when(databaseService.createStatement(
+              pensionId,
+              statementDate,
+              planValue,
+              projectedAnnualAmount,
+              yearlyCharges,
+              transferValue,
+              paidInValue,
+              null))
           .thenAnswer((_) async => Statement(
               statementId: 1,
               pension: pensionId,
@@ -551,7 +602,8 @@ void main() {
           projectedAnnualAmount,
           yearlyCharges,
           transferValue,
-          paidInValue, null));
+          paidInValue,
+          null));
     });
 
     testWidgets('validation should warn of duplicate statement date',
@@ -569,10 +621,21 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
             Pension(
-                pensionId: pensionId, name: name, maturityDate: maturityDate)
+                pensionId: pensionId,
+                name: name,
+                maturityDate: maturityDate,
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
-      when(databaseService.createStatement(pensionId, statementDate, planValue,
-              projectedAnnualAmount, yearlyCharges, transferValue, paidInValue, null))
+      when(databaseService.createStatement(
+              pensionId,
+              statementDate,
+              planValue,
+              projectedAnnualAmount,
+              yearlyCharges,
+              transferValue,
+              paidInValue,
+              null))
           .thenAnswer((_) async => Statement(
               statementId: 1,
               pension: pensionId,
@@ -632,7 +695,8 @@ void main() {
           projectedAnnualAmount,
           yearlyCharges,
           transferValue,
-          paidInValue, null));
+          paidInValue,
+          null));
     });
 
     testWidgets('validation should clear after duplicate pension name',
@@ -654,7 +718,11 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
             Pension(
-                pensionId: pensionId, name: name, maturityDate: maturityDate)
+                pensionId: pensionId,
+                name: name,
+                maturityDate: maturityDate,
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
       when(databaseService.createStatement(
               pensionId,
@@ -663,7 +731,8 @@ void main() {
               projectedAnnualAmount,
               yearlyCharges,
               transferValue,
-              paidInValue, null))
+              paidInValue,
+              null))
           .thenAnswer((_) async => Statement(
               statementId: 1,
               pension: pensionId,
@@ -739,7 +808,11 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
             Pension(
-                pensionId: pensionId, name: name, maturityDate: maturityDate)
+                pensionId: pensionId,
+                name: name,
+                maturityDate: maturityDate,
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
 
       await tester.pumpWidget(createEditScreen(null, databaseService));
@@ -763,7 +836,11 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
             Pension(
-                pensionId: pensionId, name: name, maturityDate: maturityDate)
+                pensionId: pensionId,
+                name: name,
+                maturityDate: maturityDate,
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
       final statement = Statement(
           statementId: statementId,
@@ -797,7 +874,11 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
             Pension(
-                pensionId: pensionId, name: name, maturityDate: maturityDate)
+                pensionId: pensionId,
+                name: name,
+                maturityDate: maturityDate,
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
       final statement = Statement(
           statementId: statementId,
@@ -844,7 +925,11 @@ void main() {
       final databaseService = createMockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
             Pension(
-                pensionId: pensionId, name: name, maturityDate: maturityDate)
+                pensionId: pensionId,
+                name: name,
+                maturityDate: maturityDate,
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
       when(databaseService.deleteStatement(statementId))
           .thenAnswer((_) async => statementId);
@@ -893,8 +978,12 @@ void main() {
       double paidInValue = 123456;
 
       final databaseService = createMockDatabaseService();
-      Pension p =
-          Pension(pensionId: pensionId, name: name, maturityDate: maturityDate);
+      Pension p = Pension(
+          pensionId: pensionId,
+          name: name,
+          maturityDate: maturityDate,
+          status: PensionStatus.active.dataValue,
+          statusDate: DateTime.now());
       when(databaseService.getAllPensions())
           .thenAnswer((_) => Stream.value([p]));
       when(databaseService.getPension(pensionId)).thenAnswer((_) async => p);

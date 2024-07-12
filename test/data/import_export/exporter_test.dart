@@ -2,6 +2,7 @@ import 'package:mockito/annotations.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
 import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/constants/defaults.dart';
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/data/import_export/exporter.dart';
 import 'package:pension_compare/data/import_export/file_formatter/json_export_file_type.dart';
@@ -26,7 +27,9 @@ void main() {
                 pensionId: 1,
                 name: 'Test Pension',
                 maturityDate: DateTime(2024, 1, 1),
-                notes: 'Some notes')
+                notes: 'Some notes',
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
       when(databaseService.getStatePension()).thenAnswer((_) async =>
           const OtherIncome(
@@ -97,6 +100,7 @@ void main() {
       int pensionId = 1;
       String pensionName = 'Test Pension';
       DateTime maturityDate = DateTime(2024, 1, 1);
+      DateTime statusDate = DateTime.now();
       String pensionNotes = 'Some notes';
       int statementId = 5;
       DateTime statementDate = DateTime(2024, 1, 1);
@@ -123,7 +127,9 @@ void main() {
               pensionId: pensionId,
               name: pensionName,
               maturityDate: maturityDate,
-              notes: pensionNotes));
+              notes: pensionNotes,
+              status: PensionStatus.active.dataValue,
+              statusDate: statusDate));
       when(databaseService.createStatement(
               pensionId,
               statementDate,
@@ -177,6 +183,8 @@ void main() {
           name: pensionName,
           maturityDate: maturityDate,
           notes: pensionNotes,
+                status: PensionStatus.active,
+                statusDate: statusDate,
           statements: [transferStatement]);
       TransferOtherIncomeModel transferOtherIncome = TransferOtherIncomeModel(
           otherIncomeId: 1,

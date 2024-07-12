@@ -37,8 +37,24 @@ class $PensionsTable extends Pensions with TableInfo<$PensionsTable, Pension> {
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
       'notes', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
-  List<GeneratedColumn> get $columns => [pensionId, name, maturityDate, notes];
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+      'status', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: Constant(PensionStatus.active.dataValue));
+  static const VerificationMeta _statusDateMeta =
+      const VerificationMeta('statusDate');
+  @override
+  late final GeneratedColumn<DateTime> statusDate = GeneratedColumn<DateTime>(
+      'status_date', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [pensionId, name, maturityDate, notes, status, statusDate];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -71,6 +87,16 @@ class $PensionsTable extends Pensions with TableInfo<$PensionsTable, Pension> {
       context.handle(
           _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
     }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    }
+    if (data.containsKey('status_date')) {
+      context.handle(
+          _statusDateMeta,
+          statusDate.isAcceptableOrUnknown(
+              data['status_date']!, _statusDateMeta));
+    }
     return context;
   }
 
@@ -88,6 +114,10 @@ class $PensionsTable extends Pensions with TableInfo<$PensionsTable, Pension> {
           DriftSqlType.dateTime, data['${effectivePrefix}maturity_date'])!,
       notes: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}notes']),
+      status: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}status'])!,
+      statusDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}status_date'])!,
     );
   }
 
@@ -102,11 +132,15 @@ class Pension extends DataClass implements Insertable<Pension> {
   final String name;
   final DateTime maturityDate;
   final String? notes;
+  final int status;
+  final DateTime statusDate;
   const Pension(
       {required this.pensionId,
       required this.name,
       required this.maturityDate,
-      this.notes});
+      this.notes,
+      required this.status,
+      required this.statusDate});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -116,6 +150,8 @@ class Pension extends DataClass implements Insertable<Pension> {
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
     }
+    map['status'] = Variable<int>(status);
+    map['status_date'] = Variable<DateTime>(statusDate);
     return map;
   }
 
@@ -126,6 +162,8 @@ class Pension extends DataClass implements Insertable<Pension> {
       maturityDate: Value(maturityDate),
       notes:
           notes == null && nullToAbsent ? const Value.absent() : Value(notes),
+      status: Value(status),
+      statusDate: Value(statusDate),
     );
   }
 
@@ -137,6 +175,8 @@ class Pension extends DataClass implements Insertable<Pension> {
       name: serializer.fromJson<String>(json['name']),
       maturityDate: serializer.fromJson<DateTime>(json['maturityDate']),
       notes: serializer.fromJson<String?>(json['notes']),
+      status: serializer.fromJson<int>(json['status']),
+      statusDate: serializer.fromJson<DateTime>(json['statusDate']),
     );
   }
   @override
@@ -147,6 +187,8 @@ class Pension extends DataClass implements Insertable<Pension> {
       'name': serializer.toJson<String>(name),
       'maturityDate': serializer.toJson<DateTime>(maturityDate),
       'notes': serializer.toJson<String?>(notes),
+      'status': serializer.toJson<int>(status),
+      'statusDate': serializer.toJson<DateTime>(statusDate),
     };
   }
 
@@ -154,12 +196,16 @@ class Pension extends DataClass implements Insertable<Pension> {
           {int? pensionId,
           String? name,
           DateTime? maturityDate,
-          Value<String?> notes = const Value.absent()}) =>
+          Value<String?> notes = const Value.absent(),
+          int? status,
+          DateTime? statusDate}) =>
       Pension(
         pensionId: pensionId ?? this.pensionId,
         name: name ?? this.name,
         maturityDate: maturityDate ?? this.maturityDate,
         notes: notes.present ? notes.value : this.notes,
+        status: status ?? this.status,
+        statusDate: statusDate ?? this.statusDate,
       );
   @override
   String toString() {
@@ -167,13 +213,16 @@ class Pension extends DataClass implements Insertable<Pension> {
           ..write('pensionId: $pensionId, ')
           ..write('name: $name, ')
           ..write('maturityDate: $maturityDate, ')
-          ..write('notes: $notes')
+          ..write('notes: $notes, ')
+          ..write('status: $status, ')
+          ..write('statusDate: $statusDate')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(pensionId, name, maturityDate, notes);
+  int get hashCode =>
+      Object.hash(pensionId, name, maturityDate, notes, status, statusDate);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -181,7 +230,9 @@ class Pension extends DataClass implements Insertable<Pension> {
           other.pensionId == this.pensionId &&
           other.name == this.name &&
           other.maturityDate == this.maturityDate &&
-          other.notes == this.notes);
+          other.notes == this.notes &&
+          other.status == this.status &&
+          other.statusDate == this.statusDate);
 }
 
 class PensionsCompanion extends UpdateCompanion<Pension> {
@@ -189,17 +240,23 @@ class PensionsCompanion extends UpdateCompanion<Pension> {
   final Value<String> name;
   final Value<DateTime> maturityDate;
   final Value<String?> notes;
+  final Value<int> status;
+  final Value<DateTime> statusDate;
   const PensionsCompanion({
     this.pensionId = const Value.absent(),
     this.name = const Value.absent(),
     this.maturityDate = const Value.absent(),
     this.notes = const Value.absent(),
+    this.status = const Value.absent(),
+    this.statusDate = const Value.absent(),
   });
   PensionsCompanion.insert({
     this.pensionId = const Value.absent(),
     required String name,
     required DateTime maturityDate,
     this.notes = const Value.absent(),
+    this.status = const Value.absent(),
+    this.statusDate = const Value.absent(),
   })  : name = Value(name),
         maturityDate = Value(maturityDate);
   static Insertable<Pension> custom({
@@ -207,12 +264,16 @@ class PensionsCompanion extends UpdateCompanion<Pension> {
     Expression<String>? name,
     Expression<DateTime>? maturityDate,
     Expression<String>? notes,
+    Expression<int>? status,
+    Expression<DateTime>? statusDate,
   }) {
     return RawValuesInsertable({
       if (pensionId != null) 'pension_id': pensionId,
       if (name != null) 'name': name,
       if (maturityDate != null) 'maturity_date': maturityDate,
       if (notes != null) 'notes': notes,
+      if (status != null) 'status': status,
+      if (statusDate != null) 'status_date': statusDate,
     });
   }
 
@@ -220,12 +281,16 @@ class PensionsCompanion extends UpdateCompanion<Pension> {
       {Value<int>? pensionId,
       Value<String>? name,
       Value<DateTime>? maturityDate,
-      Value<String?>? notes}) {
+      Value<String?>? notes,
+      Value<int>? status,
+      Value<DateTime>? statusDate}) {
     return PensionsCompanion(
       pensionId: pensionId ?? this.pensionId,
       name: name ?? this.name,
       maturityDate: maturityDate ?? this.maturityDate,
       notes: notes ?? this.notes,
+      status: status ?? this.status,
+      statusDate: statusDate ?? this.statusDate,
     );
   }
 
@@ -244,6 +309,12 @@ class PensionsCompanion extends UpdateCompanion<Pension> {
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
     }
+    if (status.present) {
+      map['status'] = Variable<int>(status.value);
+    }
+    if (statusDate.present) {
+      map['status_date'] = Variable<DateTime>(statusDate.value);
+    }
     return map;
   }
 
@@ -253,7 +324,9 @@ class PensionsCompanion extends UpdateCompanion<Pension> {
           ..write('pensionId: $pensionId, ')
           ..write('name: $name, ')
           ..write('maturityDate: $maturityDate, ')
-          ..write('notes: $notes')
+          ..write('notes: $notes, ')
+          ..write('status: $status, ')
+          ..write('statusDate: $statusDate')
           ..write(')'))
         .toString();
   }

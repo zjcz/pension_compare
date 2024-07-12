@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:pension_compare/app/pension/controllers/pension_controller.dart';
 import 'package:pension_compare/app/pension/models/pension_model.dart';
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -17,12 +18,15 @@ void main() {
       int pensionId = 1;
       String pensionName = 'new pension';
       DateTime maturityDate = DateTime.now();
+      DateTime statusDate = DateTime.now();
       final databaseService = MockDatabaseService();
       when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
             Pension(
                 pensionId: pensionId,
                 name: pensionName,
-                maturityDate: maturityDate),
+                maturityDate: maturityDate,
+                status: PensionStatus.active.dataValue,
+                statusDate: statusDate),
           ]));
 
       final container = createContainer(overrides: [
@@ -37,6 +41,8 @@ void main() {
       expect(pensionList[0].pensionId, pensionId);
       expect(pensionList[0].name, pensionName);
       expect(pensionList[0].maturityDate, maturityDate);
+      expect(pensionList[0].status, PensionStatus.active);
+      expect(pensionList[0].statusDate, statusDate);
       verify(databaseService.getAllPensions()).called(1);
 
       // Workaround to avoid the FakeTimer error
@@ -71,13 +77,16 @@ void main() {
       int pensionId = 1;
       String pensionName = 'new pension';
       DateTime maturityDate = DateTime.now();
+      DateTime statusDate = DateTime.now();
       final databaseService = MockDatabaseService();
       when(databaseService.createPension(pensionName, maturityDate, null))
           .thenAnswer(
         (_) async => Pension(
             pensionId: pensionId,
             name: pensionName,
-            maturityDate: maturityDate),
+            maturityDate: maturityDate,
+            status: PensionStatus.active.dataValue,
+            statusDate: statusDate),
       );
 
       final container = createContainer(overrides: [
@@ -91,6 +100,8 @@ void main() {
       expect(savedPension!.pensionId, pensionId);
       expect(savedPension.name, pensionName);
       expect(savedPension.maturityDate, maturityDate);
+      expect(savedPension.status, PensionStatus.active);
+      expect(savedPension.statusDate, statusDate);
       verify(databaseService.createPension(pensionName, maturityDate, null))
           .called(1);
 
@@ -107,16 +118,16 @@ void main() {
       final databaseService = MockDatabaseService();
       when(databaseService.updatePension(
               pensionId, pensionName, maturityDate, null))
-          .thenAnswer((_) async => true);
+          .thenAnswer((_) async => 1);
 
       final container = createContainer(overrides: [
         DatabaseService.provider.overrideWithValue(databaseService)
       ]);
       final provider = container.read(pensionControllerProvider.notifier);
-      bool result =
+      int result =
           await provider.updatePension(pensionId, pensionName, maturityDate);
 
-      expect(result, isTrue);
+      expect(result, 1);
       verify(databaseService.updatePension(
               pensionId, pensionName, maturityDate, null))
           .called(1);

@@ -561,7 +561,7 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
       ) as _i6.Future<_i4.Pension?>);
 
   @override
-  _i6.Future<bool> updatePension(
+  _i6.Future<int> updatePension(
     int? id,
     String? name,
     DateTime? maturityDate,
@@ -577,8 +577,8 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
             notes,
           ],
         ),
-        returnValue: _i6.Future<bool>.value(false),
-      ) as _i6.Future<bool>);
+        returnValue: _i6.Future<int>.value(0),
+      ) as _i6.Future<int>);
 
   @override
   _i6.Future<int> deletePension(int? id) => (super.noSuchMethod(

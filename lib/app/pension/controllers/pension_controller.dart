@@ -33,7 +33,7 @@ class PensionController extends _$PensionController {
     return _databaseService.deletePension(id);
   }
 
-  Future<bool> updatePension(int id, String name, DateTime maturityDate) {
+  Future<int> updatePension(int id, String name, DateTime maturityDate) {
     return _databaseService.updatePension(id, name, maturityDate, null);
   }
 

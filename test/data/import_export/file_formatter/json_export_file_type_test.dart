@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/import_export/exporter.dart';
 import 'package:pension_compare/data/import_export/file_formatter/json_export_file_type.dart';
 import 'package:pension_compare/data/import_export/models/backup_config_model.dart';
@@ -243,6 +244,7 @@ TransferPensionModel buildPensionModel() {
   int pensionId = 5;
   String pensionName = 'new pension';
   DateTime maturityDate = DateTime(2050, 1, 1);
+  DateTime statusDate = DateTime(2024, 1, 1);
   int statementId = 5;
   DateTime statementDate = DateTime(2024, 1, 1);
   double planValue = 123.45;
@@ -263,6 +265,8 @@ TransferPensionModel buildPensionModel() {
       pensionId: pensionId,
       name: pensionName,
       maturityDate: maturityDate,
+      status: PensionStatus.active,
+      statusDate: statusDate,
       statements: [transferStatement]);
 
   return transferPension;

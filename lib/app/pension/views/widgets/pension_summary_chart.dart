@@ -238,7 +238,7 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
                   entry.value.pension, entry.value.statement?.amountPaidIn)
             ],
           ))
-      .toList();      
+      .toList();
 
   BarChartRodData buildBarRodData(PensionModel pension, double? value) {
     ChartColorConstants chartColorConstants = getIt<ChartColorConstants>();

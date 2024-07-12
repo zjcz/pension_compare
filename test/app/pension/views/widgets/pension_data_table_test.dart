@@ -3,6 +3,7 @@ import 'package:pension_compare/app/home/models/pension_with_statement_model.dar
 import 'package:pension_compare/app/pension/models/pension_model.dart';
 import 'package:pension_compare/app/statement/models/statement_model.dart';
 import 'package:pension_compare/constants/chart_color_constants.dart';
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/helpers/currency_helper.dart';
 import 'package:pension_compare/app/pension/views/widgets/pension_data_table.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -47,7 +48,11 @@ void main() {
       final pensionData = [
         PensionWithStatementModel(
             pension: PensionModel(
-                pensionId: 1, name: pensionName, maturityDate: DateTime.now()),
+                pensionId: 1,
+                name: pensionName,
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active,
+                statusDate: DateTime.now()),
             statement: null)
       ];
 
@@ -69,7 +74,11 @@ void main() {
       final pensionData = [
         PensionWithStatementModel(
             pension: PensionModel(
-                pensionId: 1, name: pensionName, maturityDate: DateTime.now()),
+                pensionId: 1,
+                name: pensionName,
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active,
+                statusDate: DateTime.now()),
             statement: StatementModel(
                 statementId: 1,
                 pension: 1,
@@ -115,19 +124,25 @@ void main() {
             pension: PensionModel(
                 pensionId: pensionId1,
                 name: pensionName1,
-                maturityDate: DateTime.now()),
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active,
+                statusDate: DateTime.now()),
             statement: null),
         PensionWithStatementModel(
             pension: PensionModel(
                 pensionId: pensionId2,
                 name: pensionName2,
-                maturityDate: DateTime.now()),
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active,
+                statusDate: DateTime.now()),
             statement: null),
         PensionWithStatementModel(
             pension: PensionModel(
                 pensionId: pensionId3,
                 name: pensionName3,
-                maturityDate: DateTime.now()),
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active,
+                statusDate: DateTime.now()),
             statement: null)
       ];
 
@@ -163,19 +178,25 @@ void main() {
             pension: PensionModel(
                 pensionId: pensionId1,
                 name: pensionName1,
-                maturityDate: DateTime.now()),
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active,
+                statusDate: DateTime.now()),
             statement: null),
         PensionWithStatementModel(
             pension: PensionModel(
                 pensionId: pensionId2,
                 name: pensionName2,
-                maturityDate: DateTime.now()),
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active,
+                statusDate: DateTime.now()),
             statement: null),
         PensionWithStatementModel(
             pension: PensionModel(
                 pensionId: pensionId3,
                 name: pensionName3,
-                maturityDate: DateTime.now()),
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active,
+                statusDate: DateTime.now()),
             statement: null)
       ];
 

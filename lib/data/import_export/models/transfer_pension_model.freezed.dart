@@ -23,6 +23,8 @@ mixin _$TransferPensionModel {
   int get pensionId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   DateTime get maturityDate => throw _privateConstructorUsedError;
+  PensionStatus get status => throw _privateConstructorUsedError;
+  DateTime get statusDate => throw _privateConstructorUsedError;
   List<TransferStatementModel> get statements =>
       throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
@@ -43,6 +45,8 @@ abstract class $TransferPensionModelCopyWith<$Res> {
       {int pensionId,
       String name,
       DateTime maturityDate,
+      PensionStatus status,
+      DateTime statusDate,
       List<TransferStatementModel> statements,
       String? notes});
 }
@@ -64,6 +68,8 @@ class _$TransferPensionModelCopyWithImpl<$Res,
     Object? pensionId = null,
     Object? name = null,
     Object? maturityDate = null,
+    Object? status = null,
+    Object? statusDate = null,
     Object? statements = null,
     Object? notes = freezed,
   }) {
@@ -79,6 +85,14 @@ class _$TransferPensionModelCopyWithImpl<$Res,
       maturityDate: null == maturityDate
           ? _value.maturityDate
           : maturityDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as PensionStatus,
+      statusDate: null == statusDate
+          ? _value.statusDate
+          : statusDate // ignore: cast_nullable_to_non_nullable
               as DateTime,
       statements: null == statements
           ? _value.statements
@@ -104,6 +118,8 @@ abstract class _$$TransferPensionModelImplCopyWith<$Res>
       {int pensionId,
       String name,
       DateTime maturityDate,
+      PensionStatus status,
+      DateTime statusDate,
       List<TransferStatementModel> statements,
       String? notes});
 }
@@ -122,6 +138,8 @@ class __$$TransferPensionModelImplCopyWithImpl<$Res>
     Object? pensionId = null,
     Object? name = null,
     Object? maturityDate = null,
+    Object? status = null,
+    Object? statusDate = null,
     Object? statements = null,
     Object? notes = freezed,
   }) {
@@ -137,6 +155,14 @@ class __$$TransferPensionModelImplCopyWithImpl<$Res>
       maturityDate: null == maturityDate
           ? _value.maturityDate
           : maturityDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as PensionStatus,
+      statusDate: null == statusDate
+          ? _value.statusDate
+          : statusDate // ignore: cast_nullable_to_non_nullable
               as DateTime,
       statements: null == statements
           ? _value._statements
@@ -159,6 +185,8 @@ class _$TransferPensionModelImpl
       {required this.pensionId,
       required this.name,
       required this.maturityDate,
+      required this.status,
+      required this.statusDate,
       required final List<TransferStatementModel> statements,
       this.notes})
       : _statements = statements;
@@ -172,6 +200,10 @@ class _$TransferPensionModelImpl
   final String name;
   @override
   final DateTime maturityDate;
+  @override
+  final PensionStatus status;
+  @override
+  final DateTime statusDate;
   final List<TransferStatementModel> _statements;
   @override
   List<TransferStatementModel> get statements {
@@ -185,7 +217,7 @@ class _$TransferPensionModelImpl
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'TransferPensionModel(pensionId: $pensionId, name: $name, maturityDate: $maturityDate, statements: $statements, notes: $notes)';
+    return 'TransferPensionModel(pensionId: $pensionId, name: $name, maturityDate: $maturityDate, status: $status, statusDate: $statusDate, statements: $statements, notes: $notes)';
   }
 
   @override
@@ -196,6 +228,8 @@ class _$TransferPensionModelImpl
       ..add(DiagnosticsProperty('pensionId', pensionId))
       ..add(DiagnosticsProperty('name', name))
       ..add(DiagnosticsProperty('maturityDate', maturityDate))
+      ..add(DiagnosticsProperty('status', status))
+      ..add(DiagnosticsProperty('statusDate', statusDate))
       ..add(DiagnosticsProperty('statements', statements))
       ..add(DiagnosticsProperty('notes', notes));
   }
@@ -210,6 +244,9 @@ class _$TransferPensionModelImpl
             (identical(other.name, name) || other.name == name) &&
             (identical(other.maturityDate, maturityDate) ||
                 other.maturityDate == maturityDate) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.statusDate, statusDate) ||
+                other.statusDate == statusDate) &&
             const DeepCollectionEquality()
                 .equals(other._statements, _statements) &&
             (identical(other.notes, notes) || other.notes == notes));
@@ -217,8 +254,15 @@ class _$TransferPensionModelImpl
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, pensionId, name, maturityDate,
-      const DeepCollectionEquality().hash(_statements), notes);
+  int get hashCode => Object.hash(
+      runtimeType,
+      pensionId,
+      name,
+      maturityDate,
+      status,
+      statusDate,
+      const DeepCollectionEquality().hash(_statements),
+      notes);
 
   @JsonKey(ignore: true)
   @override
@@ -241,6 +285,8 @@ abstract class _TransferPensionModel implements TransferPensionModel {
       {required final int pensionId,
       required final String name,
       required final DateTime maturityDate,
+      required final PensionStatus status,
+      required final DateTime statusDate,
       required final List<TransferStatementModel> statements,
       final String? notes}) = _$TransferPensionModelImpl;
 
@@ -253,6 +299,10 @@ abstract class _TransferPensionModel implements TransferPensionModel {
   String get name;
   @override
   DateTime get maturityDate;
+  @override
+  PensionStatus get status;
+  @override
+  DateTime get statusDate;
   @override
   List<TransferStatementModel> get statements;
   @override

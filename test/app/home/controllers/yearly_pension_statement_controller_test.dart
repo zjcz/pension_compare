@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:pension_compare/app/home/controllers/yearly_pension_statement_controller.dart';
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -25,7 +26,9 @@ void main() {
                       Pension(
                           pensionId: pensionId,
                           name: pensionName,
-                          maturityDate: DateTime.now()),
+                          maturityDate: DateTime.now(),
+                          status: PensionStatus.active.dataValue,
+                          statusDate: DateTime.now()),
                       null)
                 ])
               ]));
@@ -43,7 +46,8 @@ void main() {
       expect(pensionList[0].pensionWithStatement, isNotNull);
       expect(pensionList[0].pensionWithStatement.length, 1);
       expect(pensionList[0].pensionWithStatement[0].pension, isNotNull);
-      expect(pensionList[0].pensionWithStatement[0].pension.pensionId, pensionId);
+      expect(
+          pensionList[0].pensionWithStatement[0].pension.pensionId, pensionId);
       expect(pensionList[0].pensionWithStatement[0].pension.name, pensionName);
       expect(pensionList[0].pensionWithStatement[0].statement, isNull);
       verify(databaseService.getYearlyPensionSummary()).called(1);
