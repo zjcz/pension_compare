@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/foundation.dart';
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/import_export/models/transfer_statement_model.dart';
 
 part 'transfer_pension_model.freezed.dart';
@@ -11,6 +12,8 @@ class TransferPensionModel with _$TransferPensionModel {
     required int pensionId,
     required String name,
     required DateTime maturityDate,
+    required PensionStatus status,
+    required DateTime statusDate,
     required List<TransferStatementModel> statements,
     String? notes,
   }) = _TransferPensionModel;

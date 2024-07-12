@@ -1,3 +1,4 @@
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/data/import_export/models/transfer_pension_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_statement_model.dart';
@@ -10,6 +11,8 @@ class PensionMapper {
       name: pension.name,
       maturityDate: pension.maturityDate,
       notes: pension.notes,
+      status: PensionStatus.fromDataValue(pension.status),
+      statusDate: pension.statusDate,
       statements: statements
           .map((statement) => TransferStatementModel(
                 statementId: statement.statementId,
@@ -27,10 +30,13 @@ class PensionMapper {
 
   static Pension pensionFromTransfer(TransferPensionModel pension) {
     return Pension(
-        pensionId: pension.pensionId,
-        name: pension.name,
-        maturityDate: pension.maturityDate,
-        notes: pension.notes);
+      pensionId: pension.pensionId,
+      name: pension.name,
+      maturityDate: pension.maturityDate,
+      notes: pension.notes,
+      status: pension.status.dataValue,
+      statusDate: pension.statusDate,
+    );
   }
 
   static List<Statement> statementFromTransfer(TransferPensionModel pension) {

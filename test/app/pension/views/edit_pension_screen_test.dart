@@ -6,6 +6,7 @@ import 'package:pension_compare/app/pension/views/edit_pension_screen.dart';
 import 'package:pension_compare/app/pension/views/pension_overview_screen.dart';
 import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/data/mapper/pension_mapper.dart';
 import 'package:pension_compare/helpers/date_helper.dart';
@@ -104,7 +105,11 @@ void main() {
 
     testWidgets('show the edit screen with a pension record', (tester) async {
       Pension p = Pension(
-          pensionId: 1, name: "Test Pension", maturityDate: DateTime.now());
+          pensionId: 1,
+          name: "Test Pension",
+          maturityDate: DateTime.now(),
+          status: PensionStatus.active.dataValue,
+          statusDate: DateTime.now());
       await tester.pumpWidget(createEditScreen(p, createMockDatabaseService()));
       await tester.pumpAndSettle();
 
@@ -152,8 +157,12 @@ void main() {
       when(databaseService.doesPensionNameExist(null, name))
           .thenAnswer((_) async => false);
       when(databaseService.createPension(name, maturityDate, null)).thenAnswer(
-          (_) async =>
-              Pension(pensionId: 1, name: name, maturityDate: maturityDate));
+          (_) async => Pension(
+              pensionId: 1,
+              name: name,
+              maturityDate: maturityDate,
+              status: PensionStatus.active.dataValue,
+              statusDate: DateTime.now()));
 
       await tester.pumpWidget(createEditScreen(null, databaseService, true));
 
@@ -187,14 +196,17 @@ void main() {
       when(databaseService.doesPensionNameExist(id, newName))
           .thenAnswer((_) async => false);
       when(databaseService.updatePension(id, newName, newMaturityDate, null))
-          .thenAnswer((_) async => true);
+          .thenAnswer((_) async => 1);
 
       await tester.pumpWidget(createEditScreen(
           Pension(
               pensionId: id,
               name: originalName,
-              maturityDate: originalMaturityDate),
-          databaseService, true));
+              maturityDate: originalMaturityDate,
+              status: PensionStatus.active.dataValue,
+              statusDate: DateTime.now()),
+          databaseService,
+          true));
 
       // Enter name into the TextFormField
       await tester.enterText(
@@ -210,7 +222,8 @@ void main() {
       // Tap the save button
       await tester.tap(find.widgetWithText(TextButton, "Save"));
 
-      verifyNever(databaseService.createPension(newName, newMaturityDate, null));
+      verifyNever(
+          databaseService.createPension(newName, newMaturityDate, null));
       verify(databaseService.updatePension(id, newName, newMaturityDate, null))
           .called(1);
     });
@@ -225,8 +238,12 @@ void main() {
       when(databaseService.doesPensionNameExist(null, name))
           .thenAnswer((_) async => false);
       when(databaseService.createPension(name, maturityDate, null)).thenAnswer(
-          (_) async =>
-              Pension(pensionId: 1, name: name, maturityDate: maturityDate));
+          (_) async => Pension(
+              pensionId: 1,
+              name: name,
+              maturityDate: maturityDate,
+              status: PensionStatus.active.dataValue,
+              statusDate: DateTime.now()));
 
       await tester.pumpWidget(createEditScreen(null, databaseService, true));
 
@@ -262,12 +279,17 @@ void main() {
       when(databaseService.doesPensionNameExist(id, newName))
           .thenAnswer((_) async => false);
       when(databaseService.updatePension(id, newName, maturityDate, null))
-          .thenAnswer((_) async => true);
+          .thenAnswer((_) async => 1);
 
       await tester.pumpWidget(createEditScreen(
           Pension(
-              pensionId: id, name: originalName, maturityDate: maturityDate),
-          databaseService, true));
+              pensionId: id,
+              name: originalName,
+              maturityDate: maturityDate,
+              status: PensionStatus.active.dataValue,
+              statusDate: DateTime.now()),
+          databaseService,
+          true));
 
       // Enter name into the TextFormField
       await tester.enterText(
@@ -363,9 +385,13 @@ void main() {
           .thenAnswer((_) async => true);
       when(databaseService.doesPensionNameExist(null, newName))
           .thenAnswer((_) async => false);
-      when(databaseService.createPension(newName, maturityDate, null)).thenAnswer(
-          (_) async =>
-              Pension(pensionId: 1, name: newName, maturityDate: maturityDate));
+      when(databaseService.createPension(newName, maturityDate, null))
+          .thenAnswer((_) async => Pension(
+              pensionId: 1,
+              name: newName,
+              maturityDate: maturityDate,
+              status: PensionStatus.active.dataValue,
+              statusDate: DateTime.now()));
 
       await tester.pumpWidget(createEditScreen(null, databaseService, true));
       await tester.pumpAndSettle();
@@ -394,7 +420,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text("This name is already in use"), findsNothing);
-      verify(databaseService.createPension(newName, maturityDate, null)).called(1);
+      verify(databaseService.createPension(newName, maturityDate, null))
+          .called(1);
     });
   });
 
@@ -411,7 +438,11 @@ void main() {
     testWidgets('delete button is visible for edit record', (tester) async {
       final databaseService = createMockDatabaseService();
       final pension = Pension(
-          pensionId: 1, name: 'originalName', maturityDate: DateTime.now());
+          pensionId: 1,
+          name: 'originalName',
+          maturityDate: DateTime.now(),
+          status: PensionStatus.active.dataValue,
+          statusDate: DateTime.now());
 
       await tester.pumpWidget(createEditScreen(pension, databaseService));
       await tester.pumpAndSettle();
@@ -422,7 +453,11 @@ void main() {
     testWidgets('tapping the delete button displays warning prompt',
         (tester) async {
       final pension = Pension(
-          pensionId: 1, name: 'originalName', maturityDate: DateTime.now());
+          pensionId: 1,
+          name: 'originalName',
+          maturityDate: DateTime.now(),
+          status: PensionStatus.active.dataValue,
+          statusDate: DateTime.now());
 
       await tester
           .pumpWidget(createEditScreen(pension, createMockDatabaseService()));
@@ -451,7 +486,9 @@ void main() {
       final pension = Pension(
           pensionId: pensionId,
           name: 'originalName',
-          maturityDate: DateTime.now());
+          maturityDate: DateTime.now(),
+          status: PensionStatus.active.dataValue,
+          statusDate: DateTime.now());
       final databaseService = createMockDatabaseService();
       when(databaseService.deletePension(pensionId))
           .thenAnswer((_) async => pensionId);
@@ -481,7 +518,9 @@ void main() {
       final pension = Pension(
           pensionId: pensionId,
           name: 'originalName',
-          maturityDate: DateTime.now());
+          maturityDate: DateTime.now(),
+          status: PensionStatus.active.dataValue,
+          statusDate: DateTime.now());
       final databaseService = createMockDatabaseService();
       when(databaseService.deletePension(pensionId))
           .thenAnswer((_) async => pensionId);

@@ -13,6 +13,8 @@ _$PensionModelImpl _$$PensionModelImplFromJson(Map<String, dynamic> json) =>
       maturityDate: json['maturityDate'] == null
           ? null
           : DateTime.parse(json['maturityDate'] as String),
+      status: $enumDecode(_$PensionStatusEnumMap, json['status']),
+      statusDate: DateTime.parse(json['statusDate'] as String),
     );
 
 Map<String, dynamic> _$$PensionModelImplToJson(_$PensionModelImpl instance) =>
@@ -20,4 +22,13 @@ Map<String, dynamic> _$$PensionModelImplToJson(_$PensionModelImpl instance) =>
       'pensionId': instance.pensionId,
       'name': instance.name,
       'maturityDate': instance.maturityDate?.toIso8601String(),
+      'status': _$PensionStatusEnumMap[instance.status]!,
+      'statusDate': instance.statusDate.toIso8601String(),
     };
+
+const _$PensionStatusEnumMap = {
+  PensionStatus.active: 'active',
+  PensionStatus.closed: 'closed',
+  PensionStatus.transferred: 'transferred',
+  PensionStatus.matured: 'matured',
+};

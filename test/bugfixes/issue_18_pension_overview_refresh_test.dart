@@ -5,6 +5,7 @@ import 'package:pension_compare/app/pension/views/edit_pension_screen.dart';
 import 'package:pension_compare/app/pension/views/pension_overview_screen.dart';
 import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/app/settings/models/settings.dart';
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -33,7 +34,9 @@ void main() {
       DateTime maturityDate = DateTime(2024, 1, 1);
       String newName = "Record after changes";
       Pension pensionRecord =
-          Pension(pensionId: id, name: name, maturityDate: maturityDate);
+          Pension(pensionId: id, name: name, maturityDate: maturityDate,
+            status: PensionStatus.active.dataValue,
+            statusDate: DateTime.now());
 
       final databaseService = createMockDatabaseService();
       when(databaseService.watchPension(id))
@@ -43,7 +46,7 @@ void main() {
       when(databaseService.doesPensionNameExist(id, newName))
           .thenAnswer((_) async => false);
       when(databaseService.updatePension(id, newName, maturityDate, null))
-          .thenAnswer((_) async => true);
+          .thenAnswer((_) async => 1);
       when(databaseService.getAllStatementsForPension(id))
           .thenAnswer((_) => Stream.value([]));
 

@@ -1,3 +1,4 @@
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/data/import_export/models/transfer_pension_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_statement_model.dart';
@@ -10,6 +11,7 @@ void main() {
       int pensionId = 5;
       String pensionName = 'new pension';
       DateTime maturityDate = DateTime.now();
+      DateTime statusDate = DateTime.now();
       int statementId = 5;
       DateTime statementDate = DateTime.now();
       double planValue = 123.45;
@@ -23,7 +25,9 @@ void main() {
           pensionId: pensionId,
           name: pensionName,
           maturityDate: maturityDate,
-          notes: notes);
+          notes: notes,
+          status: PensionStatus.active.dataValue,
+          statusDate: statusDate);
       Statement statement = Statement(
           statementId: statementId,
           pension: pensionId,
@@ -42,6 +46,8 @@ void main() {
       expect(pensionModel.name, pensionName);
       expect(pensionModel.maturityDate, maturityDate);
       expect(pensionModel.notes, notes);
+      expect(pensionModel.status, PensionStatus.active);
+      expect(pensionModel.statusDate, statusDate);
       expect(pensionModel.statements, isNotNull);
       expect(pensionModel.statements.length, 1);
       expect(pensionModel.statements[0].statementId, statementId);
@@ -58,6 +64,7 @@ void main() {
       int pensionId = 5;
       String pensionName = 'new pension';
       DateTime maturityDate = DateTime.now();
+      DateTime statusDate = DateTime.now();
       int statementId = 5;
       DateTime statementDate = DateTime.now();
       double planValue = 123.45;
@@ -82,6 +89,8 @@ void main() {
           name: pensionName,
           maturityDate: maturityDate,
           notes: notes,
+          status: PensionStatus.active,
+          statusDate: statusDate,
           statements: [transferStatement]);
 
       Pension pension = PensionMapper.pensionFromTransfer(transferPension);
@@ -91,12 +100,15 @@ void main() {
       expect(pension.name, pensionName);
       expect(pension.maturityDate, maturityDate);
       expect(pension.notes, notes);
+      expect(pension.status, PensionStatus.active.dataValue);
+      expect(pension.statusDate, statusDate);
     });
 
     testWidgets('map transfer object to statement object', (tester) async {
       int pensionId = 5;
       String pensionName = 'new pension';
       DateTime maturityDate = DateTime.now();
+      DateTime statusDate = DateTime.now();
       int statementId = 5;
       DateTime statementDate = DateTime.now();
       double planValue = 123.45;
@@ -121,6 +133,8 @@ void main() {
           name: pensionName,
           maturityDate: maturityDate,
           notes: notes,
+          status: PensionStatus.active,
+          statusDate: statusDate,
           statements: [transferStatement]);
 
       List<Statement> statements =
@@ -142,6 +156,7 @@ void main() {
       int pensionId = 5;
       String pensionName = 'new pension';
       DateTime maturityDate = DateTime.now();
+      DateTime statusDate = DateTime.now();
       int statementId = 5;
       DateTime statementDate = DateTime.now();
       double planValue = 123.45;
@@ -153,7 +168,12 @@ void main() {
       String statementNotes = 'some statement notes';
 
       Pension pension = Pension(
-          pensionId: pensionId, name: pensionName, maturityDate: maturityDate, notes: notes);
+          pensionId: pensionId,
+          name: pensionName,
+          maturityDate: maturityDate,
+          notes: notes,
+          status: PensionStatus.active.dataValue,
+          statusDate: statusDate);
       Statement statement = Statement(
           statementId: statementId,
           pension: pensionId,
@@ -176,6 +196,8 @@ void main() {
       expect(resultPension.name, pension.name);
       expect(resultPension.maturityDate, pension.maturityDate);
       expect(resultPension.notes, pension.notes);
+      expect(resultPension.status, PensionStatus.active.dataValue);
+      expect(resultPension.statusDate, pension.statusDate);
       expect(resultStatements, isNotNull);
       expect(resultStatements.length, 1);
       expect(resultStatements[0].statementId, statement.statementId);

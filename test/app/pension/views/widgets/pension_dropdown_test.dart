@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mockito/annotations.dart';
 import 'package:pension_compare/app/pension/views/widgets/pension_dropdown.dart';
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -61,7 +62,9 @@ void main() {
             Pension(
                 pensionId: pensionId,
                 name: pensionName,
-                maturityDate: DateTime.now())
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
 
       await tester
@@ -93,7 +96,9 @@ void main() {
             Pension(
                 pensionId: pensionId,
                 name: pensionName,
-                maturityDate: DateTime.now())
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
 
       await tester.pumpWidget(createDropdown(
@@ -129,7 +134,9 @@ void main() {
             Pension(
                 pensionId: pensionId,
                 name: pensionName,
-                maturityDate: DateTime.now())
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
       await tester.pumpWidget(createDropdown(
           databaseService, null, onSelectionChanged, onValidate));
@@ -167,7 +174,9 @@ void main() {
             Pension(
                 pensionId: pensionId,
                 name: pensionName,
-                maturityDate: DateTime.now())
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
       await tester.pumpWidget(createDropdown(
           databaseService, null, onSelectionChanged, onValidate));
@@ -206,15 +215,21 @@ void main() {
             Pension(
                 pensionId: pensionId1,
                 name: pensionName1,
-                maturityDate: DateTime.now()),
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now()),
             Pension(
                 pensionId: pensionId2,
                 name: pensionName2,
-                maturityDate: DateTime.now()),
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now()),
             Pension(
                 pensionId: pensionId3,
                 name: pensionName3,
-                maturityDate: DateTime.now())
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
           ]));
       await tester.pumpWidget(createDropdown(
           databaseService, selectedPensionId, onSelectionChanged, onValidate));
