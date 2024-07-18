@@ -29,6 +29,7 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
   static const double barWidth = 30;
   Map<int, Legend> legendList = {};
   final String _currencySymbol = CurrencyHelper.getCurrencySymbol();
+  static const int pensionLabelNameLimit = 3;
 
   @override
   void initState() {
@@ -129,7 +130,9 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
       );
 
   Widget getBottomTitles(double value, TitleMeta meta) {
-    String text = widget.pensionData![value.toInt()].pension.name;
+    String text = widget.pensionData!.length > pensionLabelNameLimit
+        ? '${widget.pensionData![value.toInt()].pension.name.substring(0, 3)}...'
+        : widget.pensionData![value.toInt()].pension.name;
 
     return SideTitleWidget(
       axisSide: meta.axisSide,

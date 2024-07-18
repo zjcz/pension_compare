@@ -233,6 +233,12 @@ class DatabaseService extends _$DatabaseService {
     return statePension;
   }
 
+  // List all the other incomes in the database
+  Stream<List<OtherIncome>> getAllOtherIncomes() {
+    return (select(otherIncomes)..orderBy([(o) => OrderingTerm.asc(o.name)]))
+        .watch();
+  }
+
   // Get the secure settings record.
   Stream<SecureSettings> getSecureSettings() {
     return (select(secureSetting)

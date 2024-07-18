@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:pension_compare/app/home/controllers/pension_with_latest_statement_controller.dart';
 import 'package:pension_compare/app/home/controllers/yearly_pension_statement_controller.dart';
 import 'package:pension_compare/app/home/models/pension_with_statement_model.dart';
+import 'package:pension_compare/app/otherIncome/controllers/other_income_controller.dart';
+import 'package:pension_compare/app/otherIncome/models/other_income_model.dart';
 import 'package:pension_compare/app/pension/models/pension_model.dart';
 import 'package:pension_compare/app/pension/views/widgets/pension_data_table.dart';
 import 'package:pension_compare/app/pension/views/widgets/pension_summary_chart.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pension_compare/app/settings/controllers/secure_settings_controller.dart';
 import 'package:pension_compare/app/settings/models/secure_settings_model.dart';
+import 'package:pension_compare/app/statement/models/statement_model.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
+import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 import 'package:pension_compare/route_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,6 +34,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final yearlyPensionSummaryData =
         ref.watch(yearlyPensionStatementControllerProvider);
     final settingsData = ref.watch(secureSettingsControllerProvider);
+    final otherIncomeData = ref.watch(otherIncomeControllerProvider);
 
     return Scaffold(
         appBar: AppBar(title: const Text('Pension Compare'), actions: [
@@ -99,55 +104,69 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: settingsData.when(
-                      data: (settings) => yearlyPensionSummaryData.when(
-                        data: (yearlySummary) => pensionsSummaryData.when(
-                          data: (List<PensionWithStatementModel> pensions) {
-                            if (pensions.isEmpty && yearlySummary.isEmpty) {
-                              return const Center(
-                                  child: Text(
-                                      'No pensions found.  Click + to add one'));
-                            } else {
-                              return SingleChildScrollView(
-                                child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      DashboardTile(
-                                          title: 'Monthly Income',
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              context
-                                                  .push(
-                                                      RouteDefs.pensionProgress)
-                                                  .then(
-                                                      (_) => {setState(() {})});
-                                            },
-                                            child: buildTargetVsActual(
-                                                pensions, settings),
-                                          )),
-                                      CustomStyles.spacerBox,
-                                      DashboardTile(
-                                          title: 'Pensions',
-                                          child: PensionDataTable(
-                                            pensionDataList: pensions,
-                                            onTap: (PensionModel pension) {
-                                              context
-                                                  .push(
-                                                      '${RouteDefs.pensionOverview}/${pension.pensionId}')
-                                                  .then(
-                                                      (_) => {setState(() {})});
-                                            },
-                                          )),
-                                      CustomStyles.spacerBox,
-                                      DashboardTile(
-                                          title: "Pension Summary",
-                                          child: PensionSummaryChart(
-                                              pensionData: pensions)),
-                                      // TODO - Add Other Income list, Warnings / Missing statements
-                                    ]),
-                              );
-                            }
-                          },
+                      data: (settings) => otherIncomeData.when(
+                        data: (otherIncomes) => yearlyPensionSummaryData.when(
+                          data: (yearlySummary) => pensionsSummaryData.when(
+                            data: (List<PensionWithStatementModel> pensions) {
+                              if (pensions.isEmpty && yearlySummary.isEmpty) {
+                                return const Center(
+                                    child: Text(
+                                        'No pensions found.  Click + to add one'));
+                              } else {
+                                return SingleChildScrollView(
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        DashboardTile(
+                                            title: 'Monthly Income',
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                context
+                                                    .push(RouteDefs
+                                                        .pensionProgress)
+                                                    .then((_) =>
+                                                        {setState(() {})});
+                                              },
+                                              child: buildTargetVsActual(
+                                                  pensions,
+                                                  otherIncomes,
+                                                  settings),
+                                            )),
+                                        CustomStyles.spacerBox,
+                                        DashboardTile(
+                                            title: 'Pensions',
+                                            child: PensionDataTable(
+                                              pensionDataList: pensions,
+                                              otherIncomeDataList: otherIncomes,
+                                              onPensionTap:
+                                                  (PensionModel pension) {
+                                                context.push(
+                                                    '${RouteDefs.pensionOverview}/${pension.pensionId}');
+                                              },
+                                              onOtherItemTap: (OtherIncomeModel
+                                                  otherIncome) {
+                                                context.push(
+                                                    RouteDefs.editStatePension);
+                                              },
+                                            )),
+                                        CustomStyles.spacerBox,
+                                        DashboardTile(
+                                            title: "Pension Summary",
+                                            child: PensionSummaryChart(
+                                                pensionData:
+                                                    addStatePensionToPensionList(
+                                                        pensions,
+                                                        otherIncomes
+                                                            .firstOrNull))),
+                                        // TODO - Add Other Income list, Warnings / Missing statements
+                                      ]),
+                                );
+                              }
+                            },
+                            loading: () => buildLoadingWidget(),
+                            error: (error, _) => buildErrorWidget(error),
+                          ),
                           loading: () => buildLoadingWidget(),
                           error: (error, _) => buildErrorWidget(error),
                         ),
@@ -173,6 +192,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   TargetVsActual buildTargetVsActual(
       List<PensionWithStatementModel> pensionData,
+      List<OtherIncomeModel> otherIncomeData,
       SecureSettingsModel? settings) {
     double projectedMonthlyValue = 0;
 
@@ -183,10 +203,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       }
     }
 
+    for (var otherIncomeRecord in otherIncomeData) {
+      projectedMonthlyValue += otherIncomeRecord.annualAmount / 12;
+    }
+
     return TargetVsActual(
       targetValue: settings?.targetIncome,
       actualValue: projectedMonthlyValue,
       retirementDate: settings?.retirementDate,
     );
+  }
+
+  List<PensionWithStatementModel> addStatePensionToPensionList(
+      List<PensionWithStatementModel> pensionData,
+      OtherIncomeModel? statePension) {
+    if (statePension == null) {
+      return pensionData;
+    }
+    
+    List<PensionWithStatementModel> combinedData = List.from(pensionData);
+    combinedData.add(PensionWithStatementModel(
+        pension: PensionModel(
+          pensionId: -statePension.otherIncomeId!,
+          name: statePension.name,
+          status: PensionStatus.active,
+          statusDate: DateTime.now(),
+        ),
+        statement: StatementModel(
+            pension: -statePension.otherIncomeId!,
+            statementDate: DateTime.now(),
+            planValue: 0,
+            projectedAnnualAmount: statePension.annualAmount)));
+
+    return combinedData;
   }
 }

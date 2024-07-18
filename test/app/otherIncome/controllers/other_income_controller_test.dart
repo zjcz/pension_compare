@@ -13,7 +13,59 @@ import 'other_income_controller_test.mocks.dart';
 @GenerateMocks([DatabaseService])
 void main() {
   group('Test other income controller', () {
-    testWidgets('get state pension records', (tester) async {
+    testWidgets('get the records', (tester) async {
+      int otherIncomeId = 1;
+      String name = 'state pension';
+      double amount = 123.45;
+      final databaseService = MockDatabaseService();
+      when(databaseService.getAllOtherIncomes()).thenAnswer((_) => Stream.value(
+          [OtherIncome(
+              otherIncomeId: otherIncomeId, name: name, annualAmount: amount)]));
+
+      final container = createContainer(overrides: [
+        DatabaseService.provider.overrideWithValue(databaseService)
+      ]);
+
+      final otherIncomeList =
+          await container.read(otherIncomeControllerProvider.future);
+
+      expect(otherIncomeList, isNotNull);
+      expect(otherIncomeList.length, 1);
+      expect(otherIncomeList[0].otherIncomeId, otherIncomeId);
+      expect(otherIncomeList[0].name, name);
+      expect(otherIncomeList[0].annualAmount, amount);
+      verify(databaseService.getAllOtherIncomes()).called(1);
+
+      // Workaround to avoid the FakeTimer error
+      // https://github.com/rrousselGit/riverpod/issues/1941
+      await tester.pumpWidget(Container());
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('get the records, handle empty dataset', (tester) async {
+      // unlikely to happen as there will always be one record for state pension, but just in case
+      final databaseService = MockDatabaseService();
+      when(databaseService.getAllOtherIncomes())
+          .thenAnswer((_) => Stream.value([]));
+
+      final container = createContainer(overrides: [
+        DatabaseService.provider.overrideWithValue(databaseService)
+      ]);
+
+      final otherIncomeList =
+          await container.read(otherIncomeControllerProvider.future);
+
+      expect(otherIncomeList, isNotNull);
+      expect(otherIncomeList.length, 0);
+      verify(databaseService.getAllOtherIncomes()).called(1);
+
+      // Workaround to avoid the FakeTimer error
+      // https://github.com/rrousselGit/riverpod/issues/1941
+      await tester.pumpWidget(Container());
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('get state pension record', (tester) async {
       int otherIncomeId = 1;
       String name = 'state pension';
       double amount = 123.45;

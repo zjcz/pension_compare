@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pension_compare/app/home/models/pension_with_statement_model.dart';
+import 'package:pension_compare/app/otherIncome/models/other_income_model.dart';
 import 'package:pension_compare/app/pension/models/pension_model.dart';
 import 'package:pension_compare/app/statement/models/statement_model.dart';
 import 'package:pension_compare/constants/chart_color_constants.dart';
@@ -12,11 +13,18 @@ import 'package:pension_compare/service_locator.dart';
 const String key = 'pension_data_table';
 
 Widget createDataTable(
-    List<PensionWithStatementModel> pensionData, Function(PensionModel) onTap) {
+    List<PensionWithStatementModel> pensionData,
+    List<OtherIncomeModel> otherIncomeData,
+    Function(PensionModel) onPensionTap,
+    Function(OtherIncomeModel) onOtherIncomeTap) {
   getIt.registerSingleton<ChartColorConstants>(ChartColorConstants());
 
   PensionDataTable dataTable = PensionDataTable(
-      key: const Key(key), pensionDataList: pensionData, onTap: onTap);
+      key: const Key(key),
+      pensionDataList: pensionData,
+      otherIncomeDataList: otherIncomeData,
+      onPensionTap: onPensionTap,
+      onOtherItemTap: onOtherIncomeTap);
 
   return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
     return MaterialApp(
@@ -33,7 +41,7 @@ void main() {
   });
   group('Test building datatable', () {
     testWidgets('show the widget with no pension record', (tester) async {
-      await tester.pumpWidget(createDataTable([], (_) {}));
+      await tester.pumpWidget(createDataTable([], [], (_) {}, (_) {}));
       await tester.pumpAndSettle();
 
       expect(
@@ -56,10 +64,55 @@ void main() {
             statement: null)
       ];
 
-      await tester.pumpWidget(createDataTable(pensionData, (_) {}));
+      await tester.pumpWidget(createDataTable(pensionData, [], (_) {}, (_) {}));
       await tester.pumpAndSettle();
 
       expect(find.text(pensionName), findsOneWidget);
+      expect(find.byType(DataTable), findsOneWidget);
+    });
+
+    testWidgets('show no data when other income data but no pension data',
+        (tester) async {
+      String otherIncomeName = 'new other income';
+
+      final otherIncomeData = [
+        OtherIncomeModel(
+            otherIncomeId: 1, name: otherIncomeName, annualAmount: 1000)
+      ];
+
+      await tester
+          .pumpWidget(createDataTable([], otherIncomeData, (_) {}, (_) {}));
+      await tester.pumpAndSettle();
+
+      expect(
+          find.text("No pensions found.  Click + to add one"), findsOneWidget);
+      expect(find.byType(DataTable), findsNothing);
+    });
+
+    testWidgets('show the data table with other income record', (tester) async {
+      String pensionName = 'new pension';
+      String otherIncomeName = 'new other income';
+
+      final pensionData = [
+        PensionWithStatementModel(
+            pension: PensionModel(
+                pensionId: 1,
+                name: pensionName,
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active,
+                statusDate: DateTime.now()),
+            statement: null)
+      ];
+      final otherIncomeData = [
+        OtherIncomeModel(
+            otherIncomeId: 1, name: otherIncomeName, annualAmount: 1000)
+      ];
+
+      await tester.pumpWidget(
+          createDataTable(pensionData, otherIncomeData, (_) {}, (_) {}));
+      await tester.pumpAndSettle();
+
+      expect(find.text(otherIncomeName), findsOneWidget);
       expect(find.byType(DataTable), findsOneWidget);
     });
 
@@ -89,7 +142,7 @@ void main() {
                 transferValue: transferValue))
       ];
 
-      await tester.pumpWidget(createDataTable(pensionData, (_) {}));
+      await tester.pumpWidget(createDataTable(pensionData, [], (_) {}, (_) {}));
       await tester.pumpAndSettle();
 
       expect(find.text(pensionName), findsOneWidget);
@@ -114,7 +167,7 @@ void main() {
       PensionModel? onTapValue;
       bool onTapCalled = false;
 
-      onTap(PensionModel value) {
+      onPensionTap(PensionModel value) {
         onTapValue = value;
         onTapCalled = true;
       }
@@ -146,7 +199,8 @@ void main() {
             statement: null)
       ];
 
-      await tester.pumpWidget(createDataTable(pensionData, onTap));
+      await tester
+          .pumpWidget(createDataTable(pensionData, [], onPensionTap, (_) {}));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text(pensionName2));
@@ -154,6 +208,72 @@ void main() {
 
       expect(onTapValue, isNotNull);
       expect(onTapValue!.pensionId, equals(pensionId2));
+      expect(onTapCalled, isTrue);
+    });
+
+    testWidgets('is the other income record tappable', (tester) async {
+      int pensionId1 = 1;
+      int pensionId2 = 2;
+      int pensionId3 = 3;
+      int otherIncomeId1 = 4;
+      int otherIncomeId2 = 5;
+      int otherIncomeId3 = 6;
+      String pensionName1 = 'new pension one';
+      String pensionName2 = 'new pension two';
+      String pensionName3 = 'new pension three';
+      String otherIncomeName1 = 'other income one';
+      String otherIncomeName2 = 'other income two';
+      String otherIncomeName3 = 'other income three';
+      OtherIncomeModel? onTapValue;
+      bool onTapCalled = false;
+
+      onOtherIncomeTap(OtherIncomeModel value) {
+        onTapValue = value;
+        onTapCalled = true;
+      }
+
+      final pensionData = [
+        PensionWithStatementModel(
+            pension: PensionModel(
+                pensionId: pensionId1,
+                name: pensionName1,
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active,
+                statusDate: DateTime.now()),
+            statement: null),
+        PensionWithStatementModel(
+            pension: PensionModel(
+                pensionId: pensionId2,
+                name: pensionName2,
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active,
+                statusDate: DateTime.now()),
+            statement: null),
+        PensionWithStatementModel(
+            pension: PensionModel(
+                pensionId: pensionId3,
+                name: pensionName3,
+                maturityDate: DateTime.now(),
+                status: PensionStatus.active,
+                statusDate: DateTime.now()),
+            statement: null)
+      ];
+
+      final otherIncome = [
+        OtherIncomeModel(otherIncomeId: otherIncomeId1, name: otherIncomeName1, annualAmount: 1),
+        OtherIncomeModel(otherIncomeId: otherIncomeId2, name: otherIncomeName2, annualAmount: 2),
+        OtherIncomeModel(otherIncomeId: otherIncomeId3, name: otherIncomeName3, annualAmount: 3),
+      ];
+
+      await tester
+          .pumpWidget(createDataTable(pensionData, otherIncome, (_) {}, onOtherIncomeTap));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text(otherIncomeName2));
+      await tester.pump();
+
+      expect(onTapValue, isNotNull);
+      expect(onTapValue!.otherIncomeId, equals(otherIncomeId2));
       expect(onTapCalled, isTrue);
     });
 
@@ -168,7 +288,7 @@ void main() {
       PensionModel? onTapValue;
       int onTapCalled = 0;
 
-      onTap(PensionModel value) {
+      onPensionTap(PensionModel value) {
         onTapValue = value;
         onTapCalled++;
       }
@@ -200,7 +320,8 @@ void main() {
             statement: null)
       ];
 
-      await tester.pumpWidget(createDataTable(pensionData, onTap));
+      await tester
+          .pumpWidget(createDataTable(pensionData, [], onPensionTap, (_) {}));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text(pensionName2));
