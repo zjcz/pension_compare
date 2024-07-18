@@ -88,7 +88,7 @@ class _TargetVsActualChartState extends State<TargetVsActualChart> {
             return BarTooltipItem(
               '${_reportData[groupIndex].pensionWithStatement[rodIndex].pension.name}\n'
               '${_reportData[groupIndex].year}\n'
-              '${CurrencyHelper.formatCurrency(rod.toY, _currencySymbol)}',
+              '${CurrencyHelper.formatCurrency(rod.toY - rod.fromY, _currencySymbol)}',
               const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,

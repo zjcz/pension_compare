@@ -827,6 +827,15 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
       ) as _i6.Future<_i4.OtherIncome?>);
 
   @override
+  _i6.Stream<List<_i4.OtherIncome>> getAllOtherIncomes() => (super.noSuchMethod(
+        Invocation.method(
+          #getAllOtherIncomes,
+          [],
+        ),
+        returnValue: _i6.Stream<List<_i4.OtherIncome>>.empty(),
+      ) as _i6.Stream<List<_i4.OtherIncome>>);
+
+  @override
   _i6.Stream<_i4.SecureSettings> getSecureSettings() => (super.noSuchMethod(
         Invocation.method(
           #getSecureSettings,

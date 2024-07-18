@@ -68,6 +68,9 @@ void main() {
                 targetIncome: null,
                 retirementDate: null,
               )));
+      when(databaseService.getAllOtherIncomes())
+          .thenAnswer((_) => Stream.value([]));
+
       await tester
           .pumpWidget(createHomeScreen(databaseService, mockSettingsService));
       await tester.pumpAndSettle();
@@ -102,6 +105,9 @@ void main() {
                 targetIncome: null,
                 retirementDate: null,
               )));
+      when(databaseService.getAllOtherIncomes())
+          .thenAnswer((_) => Stream.value([]));
+
       await tester
           .pumpWidget(createHomeScreen(databaseService, mockSettingsService));
       await tester.pumpAndSettle();
@@ -126,6 +132,115 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(EditPensionScreen), findsOneWidget);
+    });
+  });
+
+  group('Test displaying target vs actual widget with data', () {
+    testWidgets('show the home screen with a pension record', (tester) async {
+      int pensionId = 1;
+      String pensionName = 'new pension';
+      double planValue = 1000;
+      double projectedAnnualAmount = 1200;
+      double yearlyCharges = 100;
+      double transferValue = 500;
+
+      // Arrange
+      final databaseService = MockDatabaseService();
+      when(databaseService.getAllPensionsWithLatestStatement())
+          .thenAnswer((_) => Stream.value([
+                PensionWithStatement(
+                    Pension(
+                        pensionId: pensionId,
+                        name: pensionName,
+                        maturityDate: DateTime.now(),
+                        status: PensionStatus.active.dataValue,
+                        statusDate: DateTime.now()),
+                    Statement(
+                        statementId: 1,
+                        pension: pensionId,
+                        statementDate: DateTime.now(),
+                        planValue: planValue,
+                        projectedAnnualAmount: projectedAnnualAmount,
+                        yearlyCharges: yearlyCharges,
+                        transferValue: transferValue))
+              ]));
+      when(databaseService.getYearlyPensionSummary())
+          .thenAnswer((_) => Stream.value([]));
+      when(databaseService.getSecureSettings())
+          .thenAnswer((_) => Stream.value(const SecureSettings(
+                secureSettingsId: defaultSecureSettingsId,
+                targetIncome: 1000,
+                retirementDate: null,
+              )));
+      when(databaseService.getAllOtherIncomes())
+          .thenAnswer((_) => Stream.value([]));
+
+      // Act
+      await tester
+          .pumpWidget(createHomeScreen(databaseService, mockSettingsService));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Pension Compare"), findsOneWidget);
+
+      // Assert
+      expect(find.text('\$100'), findsOneWidget);
+      expect(find.text('Target: \$1,000'), findsOneWidget);
+    });
+
+    testWidgets(
+        'show the home screen with a pension record and state pension record',
+        (tester) async {
+      int pensionId = 1;
+      String pensionName = 'new pension';
+      double planValue = 1000;
+      double projectedAnnualAmount = 1200;
+      double yearlyCharges = 100;
+      double transferValue = 500;
+
+      // Arrange
+      final databaseService = MockDatabaseService();
+      when(databaseService.getAllPensionsWithLatestStatement())
+          .thenAnswer((_) => Stream.value([
+                PensionWithStatement(
+                    Pension(
+                        pensionId: pensionId,
+                        name: pensionName,
+                        maturityDate: DateTime.now(),
+                        status: PensionStatus.active.dataValue,
+                        statusDate: DateTime.now()),
+                    Statement(
+                        statementId: 1,
+                        pension: pensionId,
+                        statementDate: DateTime.now(),
+                        planValue: planValue,
+                        projectedAnnualAmount: projectedAnnualAmount,
+                        yearlyCharges: yearlyCharges,
+                        transferValue: transferValue))
+              ]));
+      when(databaseService.getYearlyPensionSummary())
+          .thenAnswer((_) => Stream.value([]));
+      when(databaseService.getSecureSettings())
+          .thenAnswer((_) => Stream.value(const SecureSettings(
+                secureSettingsId: defaultSecureSettingsId,
+                targetIncome: 1000,
+                retirementDate: null,
+              )));
+      when(databaseService.getAllOtherIncomes()).thenAnswer((_) =>
+          Stream.value([
+            const OtherIncome(
+                otherIncomeId: 1, name: 'State Pension', annualAmount: 1200)
+          ]));
+
+      // Act
+      await tester
+          .pumpWidget(createHomeScreen(databaseService, mockSettingsService));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Pension Compare"), findsOneWidget);
+
+      // Assert
+      expect(find.text('\$200'), findsOneWidget);
+      expect(find.text('Target: \$1,000'), findsOneWidget);
     });
   });
 }

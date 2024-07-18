@@ -11,9 +11,10 @@ class OtherIncomeController extends _$OtherIncomeController {
       ref.read(DatabaseService.provider);
 
   @override
-  Future<List<OtherIncome>> build() {
-    // nothing to do right now
-    return Future.value([]);
+  Stream<List<OtherIncomeModel>> build() {
+    return _databaseService
+        .getAllOtherIncomes()
+        .map((p) => OtherIncomeMapper.mapToModelList(p));
   }
 
   Future<OtherIncomeModel?> getStatePension() async {
