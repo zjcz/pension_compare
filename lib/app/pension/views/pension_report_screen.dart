@@ -41,84 +41,78 @@ class _PensionReportScreenState extends ConsumerState<PensionReportScreen> {
         appBar: AppBar(title: const Text('Pension Performance')),
         body: SafeArea(
             minimum: const EdgeInsets.all(10.0),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: settingsData.when(
-                  data: (settings) => yearlyPensionSummaryData.when(
-                    data: (yearlySummary) => otherIncomeData.when(
-                      data: (otherIncomes) {
-                        return SingleChildScrollView(
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                DashboardTile(
-                                    title: 'Projected Monthly Income',
-                                    child: TargetVsActualChart(
-                                        pensionData:
-                                            addStatePensionToPensionList(
-                                                yearlySummary,
-                                                otherIncomes.firstOrNull),
-                                        retirementDate: showRetirementDate
-                                            ? settings.retirementDate
-                                            : null,
-                                        targetValue: showTargetLine
-                                            ? settings.targetIncome
-                                            : null,
-                                        hideTitle: true)),
-                                CustomStyles.spacerBox,
-                                if (settings.targetIncome != null)
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text('Show Target Line'),
-                                      Switch.adaptive(
-                                        value: showTargetLine,
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            showTargetLine = newValue;
-                                          });
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                CustomStyles.spacerBox,
-                                if (settings.retirementDate != null)
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text('Show Retirement Date'),
-                                      Switch.adaptive(
-                                        value: showRetirementDate,
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            showRetirementDate = newValue;
-                                          });
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                              ]),
-                        );
-                      },
-                      loading: () => buildLoadingWidget(),
-                      error: (error, _) => buildErrorWidget(error),
-                    ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: settingsData.when(
+                data: (settings) => yearlyPensionSummaryData.when(
+                  data: (yearlySummary) => otherIncomeData.when(
+                    data: (otherIncomes) {
+                      return SingleChildScrollView(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              DashboardTile(
+                                  title: 'Projected Monthly Income',
+                                  child: TargetVsActualChart(
+                                      pensionData: addStatePensionToPensionList(
+                                          yearlySummary,
+                                          otherIncomes.firstOrNull),
+                                      retirementDate: showRetirementDate
+                                          ? settings.retirementDate
+                                          : null,
+                                      targetValue: showTargetLine
+                                          ? settings.targetIncome
+                                          : null,
+                                      hideTitle: true)),
+                              CustomStyles.spacerBox,
+                              if (settings.targetIncome != null)
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('Show Target Line'),
+                                    Switch.adaptive(
+                                      value: showTargetLine,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          showTargetLine = newValue;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              CustomStyles.spacerBox,
+                              if (settings.retirementDate != null)
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('Show Retirement Date'),
+                                    Switch.adaptive(
+                                      value: showRetirementDate,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          showRetirementDate = newValue;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                            ]),
+                      );
+                    },
                     loading: () => buildLoadingWidget(),
                     error: (error, _) => buildErrorWidget(error),
                   ),
                   loading: () => buildLoadingWidget(),
                   error: (error, _) => buildErrorWidget(error),
                 ),
+                loading: () => buildLoadingWidget(),
+                error: (error, _) => buildErrorWidget(error),
               ),
-            ])));
+            )));
   }
 
   Widget buildLoadingWidget() {

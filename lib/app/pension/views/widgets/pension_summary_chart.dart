@@ -86,7 +86,8 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
         ]),
       AspectRatio(
           aspectRatio: 1,
-          child: BarChart(
+          child: 
+          BarChart(
             swapAnimationDuration: const Duration(milliseconds: 300),
             swapAnimationCurve: Curves.bounceIn,
             getChartData(_selectedStyle),
