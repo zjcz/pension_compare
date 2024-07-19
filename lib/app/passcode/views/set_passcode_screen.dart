@@ -42,28 +42,49 @@ class _SetPasscodeScreenState extends State<SetPasscodeScreen> {
       ),
       body: SafeArea(
         minimum: const EdgeInsets.all(10.0),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (_isPasscodeInvalid)
-                  const Text('Passcode incorrect. Please try again.',
-                      style: TextStyle(color: Colors.red)),
-                const Text(
-                  'Enter your 4 to 10 digit passcode:',
-                  style: TextStyle(fontSize: 18),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (_isPasscodeInvalid)
+                    const Text('Passcode incorrect. Please try again.',
+                        style: TextStyle(color: Colors.red)),
+                  const Text(
+                    'Enter your 4 to 10 digit passcode:',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                      width: 200,
+                      child: PasscodeField(
+                        key: SetPasscodeScreen.passcodeTextField,
+                        passcodeController: passcodeController,
+                        autoFocus: true,
+                        passcodeInvalidMessage: 'Passcode is invalid',
+                        onChanged: (_) {
+                          if (_isPasscodeInvalid) {
+                            setState(() {
+                              _isPasscodeInvalid = false;
+                            });
+                          }
+                        },
+                      )),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Repeat your passcode:',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
                     width: 200,
                     child: PasscodeField(
-                      key: SetPasscodeScreen.passcodeTextField,
-                      passcodeController: passcodeController,
-                      autoFocus: true,
-                      passcodeInvalidMessage: 'Passcode is invalid',
+                      key: SetPasscodeScreen.repeatPasscodeTextField,
+                      passcodeController: repeatPasscodeController,
+                      passcodeInvalidMessage: 'Repeat passcode is invalid',
                       onChanged: (_) {
                         if (_isPasscodeInvalid) {
                           setState(() {
@@ -71,42 +92,23 @@ class _SetPasscodeScreenState extends State<SetPasscodeScreen> {
                           });
                         }
                       },
-                    )),
-                const SizedBox(height: 16),
-                const Text(
-                  'Repeat your passcode:',
-                  style: TextStyle(fontSize: 18),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: 200,
-                  child: PasscodeField(
-                    key: SetPasscodeScreen.repeatPasscodeTextField,
-                    passcodeController: repeatPasscodeController,
-                    passcodeInvalidMessage: 'Repeat passcode is invalid',
-                    onChanged: (_) {
-                      if (_isPasscodeInvalid) {
-                        setState(() {
-                          _isPasscodeInvalid = false;
-                        });
-                      }
-                    },
-                    validator: (value) => value != passcodeController.text
-                        ? 'Passcodes do not match'
-                        : null,
+                      validator: (value) => value != passcodeController.text
+                          ? 'Passcodes do not match'
+                          : null,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                    width: double.infinity,
-                    child: TextButton(
-                        onPressed: _submitPasscode,
-                        style: TextButton.styleFrom(
-                            side: BorderSide(color: context.primary),
-                            shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.zero)),
-                        child: const Text('Continue'))),
-              ],
+                  const SizedBox(height: 16),
+                  SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                          onPressed: _submitPasscode,
+                          style: TextButton.styleFrom(
+                              side: BorderSide(color: context.primary),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.zero)),
+                          child: const Text('Continue'))),
+                ],
+              ),
             ),
           ),
         ),
