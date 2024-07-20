@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pension_compare/app/passcode/controller/passcode_service.dart';
 import 'package:pension_compare/app/passcode/views/widgets/passcode_field.dart';
+import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/extensions/material_colors.dart';
 import 'package:pension_compare/route_config.dart';
 import 'package:pension_compare/service_locator.dart';
@@ -38,7 +39,7 @@ class _SetPasscodeScreenState extends State<SetPasscodeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Enter Passcode'),
+        title: const Text('Set a Passcode'),
       ),
       body: SafeArea(
         minimum: const EdgeInsets.all(10.0),
@@ -54,10 +55,16 @@ class _SetPasscodeScreenState extends State<SetPasscodeScreen> {
                     const Text('Passcode incorrect. Please try again.',
                         style: TextStyle(color: Colors.red)),
                   const Text(
-                    'Enter your 4 to 10 digit passcode:',
+                      'To help keep your data safe, please set a passcode now.  You will need to enter this every time you start the app.'),
+                  CustomStyles.spacerBox,
+                  const Text(
+                      'You can change it at any time in the settings menu.'),
+                  CustomStyles.spacerBox,
+                  const Text(
+                    'Enter a 4 to 10 digit passcode:',
                     style: TextStyle(fontSize: 18),
                   ),
-                  const SizedBox(height: 16),
+                  CustomStyles.spacerBox,
                   SizedBox(
                       width: 200,
                       child: PasscodeField(
@@ -75,7 +82,7 @@ class _SetPasscodeScreenState extends State<SetPasscodeScreen> {
                       )),
                   const SizedBox(height: 16),
                   const Text(
-                    'Repeat your passcode:',
+                    'Repeat passcode:',
                     style: TextStyle(fontSize: 18),
                   ),
                   const SizedBox(height: 16),

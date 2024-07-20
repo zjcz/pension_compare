@@ -58,9 +58,9 @@ void main() {
 
       // Verify that the SetPasscode widget renders correctly
       expect(find.byType(SetPasscodeScreen), findsOneWidget);
-      expect(find.text('Enter Passcode'), findsOneWidget);
-      expect(find.text('Enter your 4 to 10 digit passcode:'), findsOneWidget);
-      expect(find.text('Repeat your passcode:'), findsOneWidget);
+      expect(find.text('Set a Passcode'), findsOneWidget);
+      expect(find.text('Enter a 4 to 10 digit passcode:'), findsOneWidget);
+      expect(find.text('Repeat passcode:'), findsOneWidget);
       expect(find.byType(TextField), findsExactly(2));
       expect(find.byKey(SetPasscodeScreen.passcodeTextField), findsOneWidget);
       expect(find.byKey(SetPasscodeScreen.repeatPasscodeTextField),
