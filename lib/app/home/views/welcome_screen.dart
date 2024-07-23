@@ -152,8 +152,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       getIt<AnalyticsHelper>().enableAnalytics(true);
     }
 
-    // redirect the user to the home screen
-    //context.go(RouteDefs.home);
     context.go(RouteDefs.passcodeSet);
 
     return true;

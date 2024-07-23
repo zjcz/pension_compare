@@ -28,7 +28,7 @@ class RouteDefs {
   static const String editSettings = '/home/edit_settings';
   static const String loading = '/';
   static const String policyViewer = '/policy_view';
-  static const String passcodeSet = '/setpasscode';
+  static const String passcodeSet = '/welcome/setpasscode';
   static const String passcodeEnter = '/enterpasscode';
   static const String passcodeChange = '/home/changepasscode';
 
@@ -142,13 +142,6 @@ GoRouter setupRouter(
           },
           routes: <RouteBase>[
             GoRoute(
-              path: RouteDefs.getPageName(RouteDefs.welcome),
-              name: 'welcome',
-              builder: (BuildContext context, GoRouterState state) {
-                return const WelcomeScreen();
-              },
-            ),
-            GoRoute(
               path: RouteDefs.getPageName(RouteDefs.policyViewer),
               name: 'policyViewer',
               builder: (BuildContext context, GoRouterState state) {
@@ -160,13 +153,6 @@ GoRouter setupRouter(
                     policyType: policyType ?? PolicyType.termsAndConditions);
               },
             ),
-            GoRoute(
-              path: RouteDefs.getPageName(RouteDefs.passcodeSet),
-              name: 'setPasscode',
-              builder: (BuildContext context, GoRouterState state) {
-                return const SetPasscodeScreen();
-              },
-            ),
           ]),
       GoRoute(
         path: RouteDefs.passcodeEnter,
@@ -175,6 +161,22 @@ GoRouter setupRouter(
           return const EnterPasscodeScreen();
         },
       ),
+      GoRoute(
+          path: RouteDefs.welcome,
+          name: 'welcome',
+          builder: (BuildContext context, GoRouterState state) {
+            return const WelcomeScreen();
+          },
+          routes: <RouteBase>[
+            GoRoute(
+              path: RouteDefs.getPageName(RouteDefs.passcodeSet,
+                  parentPage: RouteDefs.welcome),
+              name: 'setPasscode',
+              builder: (BuildContext context, GoRouterState state) {
+                return const SetPasscodeScreen();
+              },
+            ),
+          ]),
     ],
   );
 }
