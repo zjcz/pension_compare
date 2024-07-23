@@ -275,4 +275,11 @@ class _EditPensionScreenState extends ConsumerState<EditPensionScreen> {
       }
     }
   }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+
+    super.dispose();
+  }
 }

@@ -133,4 +133,13 @@ class _ChangePasscodeScreenState extends State<ChangePasscodeScreen> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    existingPasscodeController.dispose();
+    newPasscodeController.dispose();
+    repeatPasscodeController.dispose();
+
+    super.dispose();
+  }
 }

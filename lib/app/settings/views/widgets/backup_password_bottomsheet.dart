@@ -92,4 +92,12 @@ class _BackupPasswordBottomsheetState extends State<BackupPasswordBottomsheet> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+
+    super.dispose();
+  }
 }

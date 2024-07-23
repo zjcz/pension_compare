@@ -88,4 +88,11 @@ class _EnterPasscodeScreenState extends State<EnterPasscodeScreen> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    passcodeController.dispose();
+
+    super.dispose();
+  }
 }

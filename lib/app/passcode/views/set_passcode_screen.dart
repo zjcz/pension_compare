@@ -122,4 +122,12 @@ class _SetPasscodeScreenState extends State<SetPasscodeScreen> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    passcodeController.dispose();
+    repeatPasscodeController.dispose();
+
+    super.dispose();
+  }
 }
