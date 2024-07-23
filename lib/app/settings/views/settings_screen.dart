@@ -100,17 +100,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
                       return secureSettingsData.when(
                         data: (secureSettings) {
-                          _userSettings = EditSettingsData(
-                              retirementDate: secureSettings.retirementDate,
-                              targetIncome: secureSettings.targetIncome,
-                              optIntoAnalyticsWarning:
-                                  settings.optIntoAnalyticsWarning);
-
+                          _userSettings ??= EditSettingsData(
+                                retirementDate: secureSettings.retirementDate,
+                                targetIncome: secureSettings.targetIncome,
+                                optIntoAnalyticsWarning:
+                                settings.optIntoAnalyticsWarning);
                           return EditSettingsWidget(
                               userSettings: _userSettings!,
                               onChanged: (EditSettingsData updated) {
-                                _userSettings = updated;
-                                _unsavedChanges = true;
+                                setState(() {
+                                  _userSettings = updated;
+                                  _unsavedChanges = true;
+                                });
                               });
                         },
                         loading: () => buildLoadingWidget(),
@@ -337,11 +338,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             }
 
             if (response.success) {
-              // force the screen to refresh with the new setting data
-              setState(() => {});
-
+              // Pop twice.  Once to close the restore page, once to close the settings screen
               if (!context.mounted) return;
-              Navigator.pop(context);
+              _unsavedChanges = false;
+              context.pop();
+              if (context.canPop()) {
+                context.pop();
+              }
             }
           }
         });

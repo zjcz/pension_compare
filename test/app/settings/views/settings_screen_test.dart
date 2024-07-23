@@ -48,6 +48,9 @@ Widget createSettingsScreen(SettingsService settingsService,
 
 @GenerateMocks([SettingsService, DatabaseService, AnalyticsHelper])
 void main() {
+
+  test('description', (){});
+
   setUp(() async {
     // reset before each test to prevent errors with duplicate DatabaseService
     await getIt.reset();
@@ -231,6 +234,7 @@ void main() {
       await tester.enterText(
           find.byKey(EditSettingsWidget.editSettingTargetIncomeKey),
           targetValue.toString());
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(Switch));
       await tester.pumpAndSettle();
