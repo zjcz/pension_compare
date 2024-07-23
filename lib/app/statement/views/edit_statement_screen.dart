@@ -415,4 +415,15 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
       }
     }
   }
+
+  @override
+  void dispose() {
+    planValueController.dispose();
+    projectedAnnualAmountController.dispose();
+    yearlyChargesController.dispose();
+    transferValueController.dispose();
+    paidInValueController.dispose();
+
+    super.dispose();
+  }
 }

@@ -186,4 +186,11 @@ class _EditStatePensionScreenState
       ));
     }
   }
+
+  @override
+  void dispose() {
+    yearlyValueController.dispose();
+
+    super.dispose();
+  }
 }

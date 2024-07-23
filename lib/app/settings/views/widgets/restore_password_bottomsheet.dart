@@ -69,4 +69,11 @@ class _RestorePasswordBottomsheetState
       ),
     );
   }
+
+  @override
+  void dispose() {
+    passwordController.dispose();
+
+    super.dispose();
+  }
 }

@@ -96,6 +96,13 @@ class _EditSettingsWidgetState extends ConsumerState<EditSettingsWidget> {
         targetIncome: CurrencyHelper.parseCurrency(targetIncomeController.text),
         optIntoAnalyticsWarning: _optIntoAnalyticsWarning));
   }
+
+  @override
+  void dispose() {
+    targetIncomeController.dispose();
+
+    super.dispose();
+  }
 }
 
 class EditSettingsData {
