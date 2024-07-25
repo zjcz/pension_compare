@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pension_compare/app/passcode/controller/passcode_service.dart';
 import 'package:pension_compare/app/passcode/views/widgets/passcode_field.dart';
+import 'package:pension_compare/app/settings/controllers/settings_service.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/extensions/material_colors.dart';
 import 'package:pension_compare/route_config.dart';
@@ -26,6 +27,7 @@ class _SetPasscodeScreenState extends State<SetPasscodeScreen> {
   void _submitPasscode() {
     if (_formKey.currentState!.validate()) {
       if (getIt<PasscodeService>().setPasscode(passcodeController.text)) {
+        getIt<SettingsService>().saveWelcomeScreenDismissed(true);
         context.go(RouteDefs.home);
       } else {
         setState(() {

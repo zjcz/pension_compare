@@ -73,6 +73,23 @@ class MockSettingsService extends _i1.Mock implements _i3.SettingsService {
       ) as _i4.Future<void>);
 
   @override
+  _i4.Future<void> saveWelcomeScreenDismissed(
+    bool? welcomeScreenDismissed, [
+    _i5.SharedPreferences? sharedPreferences,
+  ]) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveWelcomeScreenDismissed,
+          [
+            welcomeScreenDismissed,
+            sharedPreferences,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
   _i4.Future<void> saveAnalyticsSettings(
     bool? optIntoAnalyticsWarning, [
     _i5.SharedPreferences? sharedPreferences,

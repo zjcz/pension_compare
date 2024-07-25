@@ -93,6 +93,33 @@ void main() {
       expect(settings.optIntoAnalyticsWarning, newOptIntoAnalyticsWarning);
     });
 
+
+    test('save the welcome screen dismissed settings does lose welcome settings', () async {
+      bool acceptTermsAndConditions = true;
+      bool acceptFinancialAdviceWarning = true;
+      bool welcomeScreenDismissed = false;
+      bool optIntoAnalyticsWarning = true;
+      bool newWelcomeScreenDismissed = true;
+
+      SharedPreferences.setMockInitialValues({
+        'acceptTermsAndConditions': acceptTermsAndConditions,
+        'acceptFinancialAdviceWarning': acceptFinancialAdviceWarning,
+        'welcomeScreenDismissed': welcomeScreenDismissed,
+        'optIntoAnalyticsWarning': optIntoAnalyticsWarning
+      });
+
+      SettingsService settingsService = SettingsService();
+      await settingsService.saveWelcomeScreenDismissed(newWelcomeScreenDismissed);
+
+      final settings = await settingsService.getAllSettings();
+      expect(settings, match.isNotNull);
+      expect(settings.acceptTermsAndConditions, acceptTermsAndConditions);
+      expect(
+          settings.acceptFinancialAdviceWarning, acceptFinancialAdviceWarning);
+      expect(settings.welcomeScreenDismissed, newWelcomeScreenDismissed);
+      expect(settings.optIntoAnalyticsWarning, optIntoAnalyticsWarning);
+    });
+
     test('save the null settings', () async {
       bool initialAcceptTermsAndConditions = true;
       bool initialAcceptFinancialAdviceWarning = true;
