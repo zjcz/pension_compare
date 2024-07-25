@@ -38,14 +38,19 @@ class SettingsService {
       await prefs.remove(_keyAcceptFinancialAdviceWarning);
     }
 
-    if (settings.welcomeScreenDismissed != null) {
-      await prefs.setBool(
-          _keyWelcomeScreenDismissed, settings.welcomeScreenDismissed ?? false);
+    await saveWelcomeScreenDismissed(settings.welcomeScreenDismissed, prefs);
+    await saveAnalyticsSettings(settings.optIntoAnalyticsWarning, prefs);
+  }
+
+  Future<void> saveWelcomeScreenDismissed(bool? welcomeScreenDismissed,
+      [SharedPreferences? sharedPreferences]) async {
+    final prefs = sharedPreferences ?? await SharedPreferences.getInstance();
+
+    if (welcomeScreenDismissed != null) {
+      await prefs.setBool(_keyWelcomeScreenDismissed, welcomeScreenDismissed);
     } else {
       await prefs.remove(_keyWelcomeScreenDismissed);
     }
-
-    await saveAnalyticsSettings(settings.optIntoAnalyticsWarning, prefs);
   }
 
   Future<void> saveAnalyticsSettings(bool optIntoAnalyticsWarning,

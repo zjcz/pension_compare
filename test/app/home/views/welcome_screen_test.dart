@@ -166,11 +166,13 @@ void main() {
       const saveSettings = Settings(
         acceptTermsAndConditions: true,
         acceptFinancialAdviceWarning: true,
-        welcomeScreenDismissed: true,
+        welcomeScreenDismissed: false,
         optIntoAnalyticsWarning: false,
       );
       when(mockSettingsService.saveAllSettings(saveSettings))
           .thenAnswer((_) async => true);
+      when(mockSettingsService.saveWelcomeScreenDismissed(true))
+          .thenAnswer((_) async => Future<void>.value(null));          
       when(mockAnalyticsHelper.enableAnalytics(true))
           .thenAnswer((_) async => {});
 
@@ -208,11 +210,13 @@ void main() {
       const saveSettings = Settings(
         acceptTermsAndConditions: true,
         acceptFinancialAdviceWarning: true,
-        welcomeScreenDismissed: true,
+        welcomeScreenDismissed: false,
         optIntoAnalyticsWarning: true,
       );
       when(mockSettingsService.saveAllSettings(saveSettings))
           .thenAnswer((_) async => true);
+      when(mockSettingsService.saveWelcomeScreenDismissed(true))
+          .thenAnswer((_) async => Future<void>.value(null));          
       when(mockAnalyticsHelper.enableAnalytics(true))
           .thenAnswer((_) async => {});
 

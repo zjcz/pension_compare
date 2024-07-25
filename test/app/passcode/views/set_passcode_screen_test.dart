@@ -75,6 +75,8 @@ void main() {
       when(mockPasscodeService.validatePasscode(validPasscode))
           .thenAnswer((_) => true);
       when(mockPasscodeService.setPasscode(validPasscode)).thenReturn(true);
+      when(mockSettingsService.saveWelcomeScreenDismissed(true))
+          .thenAnswer((_) async => Future<void>.value(null));
 
       // Build the SetPasscode widget
       await tester.pumpWidget(
@@ -93,6 +95,7 @@ void main() {
       // Verify that the passcode is set correctly
       verify(mockPasscodeService.setPasscode(validPasscode)).called(1);
       verify(mockPasscodeService.validatePasscode(validPasscode));
+      verify(mockSettingsService.saveWelcomeScreenDismissed(true));
       expect(find.byType(SetPasscodeScreen), findsNothing);
       expect(find.byType(HomeScreen), findsOneWidget);
     });
