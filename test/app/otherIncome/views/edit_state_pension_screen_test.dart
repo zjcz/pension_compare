@@ -144,6 +144,39 @@ void main() {
 
       verifyNever(databaseService.saveStatePension(0, null));
     });
+
+    testWidgets('do not save state pension record with negative values',
+        (tester) async {
+      double initialValue = 123.45;
+      double negativeValue = -42;
+      final databaseService = MockDatabaseService();
+      when(databaseService.getStatePension()).thenAnswer((_) async =>
+          OtherIncome(
+              otherIncomeId: defaults.defaultStatePensionId,
+              name: defaults.defaultStatePensionName,
+              annualAmount: initialValue));
+      when(databaseService.saveStatePension(0, null)).thenAnswer((_) async =>
+          const OtherIncome(
+              otherIncomeId: defaults.defaultStatePensionId,
+              name: defaults.defaultStatePensionName,
+              annualAmount: 0));
+
+      await tester.pumpWidget(createEditScreen(databaseService));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(EditStatePensionScreen.yearlyValueKey), negativeValue.toString());
+
+      // Tap the save button
+      await tester.tap(find.byType(TextButton));
+      await tester.pumpAndSettle();
+
+      expect(find.text(negativeValue.toString()), findsOneWidget);
+      expect(
+          find.text("Please enter a value, or 0 if unknown"), findsOneWidget);
+
+      verifyNever(databaseService.saveStatePension(0, null));
+    });
   });
 
   group('Test url launcher to state pension site', () {

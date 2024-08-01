@@ -606,6 +606,94 @@ void main() {
           null));
     });
 
+    testWidgets('validation should prevent negative values', (tester) async {
+      String name = "Test Pension";
+      DateTime maturityDate = DateHelper.getToday();
+      int pensionId = 1;
+      DateTime statementDate = DateHelper.getToday();
+      double planValue = 12345.0;
+      double projectedAnnualAmount = 1234;
+      double yearlyCharges = 100;
+      double transferValue = 12345;
+      double paidInValue = 123456;
+      double negNumber = -42;
+
+      final databaseService = createMockDatabaseService();
+      when(databaseService.getAllPensions()).thenAnswer((_) => Stream.value([
+            Pension(
+                pensionId: pensionId,
+                name: name,
+                maturityDate: maturityDate,
+                status: PensionStatus.active.dataValue,
+                statusDate: DateTime.now())
+          ]));
+      when(databaseService.createStatement(
+              pensionId,
+              statementDate,
+              planValue,
+              projectedAnnualAmount,
+              yearlyCharges,
+              transferValue,
+              paidInValue,
+              null))
+          .thenAnswer((_) async => Statement(
+              statementId: 1,
+              pension: pensionId,
+              statementDate: statementDate,
+              planValue: planValue,
+              projectedAnnualAmount: projectedAnnualAmount,
+              yearlyCharges: yearlyCharges,
+              transferValue: transferValue,
+              amountPaidIn: paidInValue));
+      when(databaseService.doesStatementDateExist(
+              null, pensionId, statementDate))
+          .thenAnswer((_) async => false);
+
+      await tester.pumpWidget(createEditScreen(null, databaseService));
+      await tester.pumpAndSettle();
+
+      // select the pension from the DropDownButtonFormField
+      await tester.tap(find.byKey(EditStatementScreen.pensionKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(DropdownMenuItem<int>, name).last);
+      await tester.pumpAndSettle();
+
+      // Set the date of the date picker
+      await tester.tap(find.byKey(EditStatementScreen.statementDateKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(statementDate.day.toString()));
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(EditStatementScreen.planValueKey), negNumber.toString());
+      await tester.enterText(
+          find.byKey(EditStatementScreen.projectedAnnualAmountKey),
+          negNumber.toString());
+      await tester.enterText(find.byKey(EditStatementScreen.yearlyChargesKey),
+          negNumber.toString());
+      await tester.enterText(find.byKey(EditStatementScreen.transferValueKey),
+          negNumber.toString());
+      await tester.enterText(
+          find.byKey(EditStatementScreen.paidInValueKey), negNumber.toString());
+      // Tap the save button
+      await tester.tap(find.widgetWithText(TextButton, 'Save'));
+
+      expect(
+          find.text("Please enter a value, or 0 if unknown"), findsNWidgets(2));
+
+      verify(databaseService.getAllPensions()).called(1);
+      verifyNever(databaseService.createStatement(
+          pensionId,
+          statementDate,
+          planValue,
+          projectedAnnualAmount,
+          yearlyCharges,
+          transferValue,
+          paidInValue,
+          null));
+    });
+
     testWidgets('validation should warn of duplicate statement date',
         (tester) async {
       String name = "Test Pension";

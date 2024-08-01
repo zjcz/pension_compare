@@ -97,6 +97,7 @@ class _EditStatePensionScreenState
                                     statePension.annualAmount);
                             return TextFormField(
                               key: EditStatePensionScreen.yearlyValueKey,
+                              autofocus: true,
                               controller: yearlyValueController,
                               keyboardType:
                                   const TextInputType.numberWithOptions(
@@ -104,10 +105,8 @@ class _EditStatePensionScreenState
                               decoration: const InputDecoration(
                                   labelText: "Yearly Value"),
                               validator: (value) {
-                                if (value == null ||
-                                    value.isEmpty ||
-                                    CurrencyHelper.parseCurrency(value) ==
-                                        null) {
+                                if (!CurrencyHelper.validateCurrencyValue(
+                                    value)) {
                                   return "Please enter a value, or 0 if unknown";
                                 }
                                 return null;

@@ -61,10 +61,9 @@ class _EditSettingsWidgetState extends ConsumerState<EditSettingsWidget> {
             decoration:
                 const InputDecoration(labelText: "Target Monthly Income"),
             validator: (value) {
-              if (value != null && value.isNotEmpty) {
-                if (CurrencyHelper.parseCurrency(value) == null) {
-                  return "Please enter a valid number";
-                }
+              if (!CurrencyHelper.validateCurrencyValue(value,
+                  allowNull: true)) {
+                return "Please enter a valid number";
               }
               return null;
             },

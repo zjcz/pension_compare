@@ -172,9 +172,7 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
                       decoration:
                           const InputDecoration(labelText: "Plan Value"),
                       validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            CurrencyHelper.parseCurrency(value) == null) {
+                        if (!CurrencyHelper.validateCurrencyValue(value)) {
                           return "Please enter a value, or 0 if unknown";
                         }
                         return null;
@@ -192,9 +190,7 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
                       decoration: const InputDecoration(
                           labelText: "Projected Yearly Amount"),
                       validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            CurrencyHelper.parseCurrency(value) == null) {
+                        if (!CurrencyHelper.validateCurrencyValue(value)) {
                           return "Please enter a value, or 0 if unknown";
                         }
                         return null;
@@ -212,10 +208,9 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
                       decoration:
                           const InputDecoration(labelText: "Yearly Charges"),
                       validator: (value) {
-                        if (value != null && value.isNotEmpty) {
-                          if (CurrencyHelper.parseCurrency(value) == null) {
-                            return "Please enter a valid number";
-                          }
+                        if (!CurrencyHelper.validateCurrencyValue(value,
+                            allowNull: true)) {
+                          return "Please enter a valid number";
                         }
                         return null;
                       },
@@ -232,10 +227,9 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
                       decoration:
                           const InputDecoration(labelText: "Transfer Value"),
                       validator: (value) {
-                        if (value != null && value.isNotEmpty) {
-                          if (CurrencyHelper.parseCurrency(value) == null) {
-                            return "Please enter a valid number";
-                          }
+                        if (!CurrencyHelper.validateCurrencyValue(value,
+                            allowNull: true)) {
+                          return "Please enter a valid number";
                         }
                         return null;
                       },
@@ -247,15 +241,14 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
                     TextFormField(
                       key: EditStatementScreen.paidInValueKey,
                       controller: paidInValueController,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true, signed: false),
                       decoration:
                           const InputDecoration(labelText: "Amount Paid In"),
                       validator: (value) {
-                        if (value != null && value.isNotEmpty) {
-                          if (CurrencyHelper.parseCurrency(value) == null) {
-                            return "Please enter a valid number";
-                          }
+                        if (!CurrencyHelper.validateCurrencyValue(value,
+                            allowNull: true)) {
+                          return "Please enter a valid number";
                         }
                         return null;
                       },

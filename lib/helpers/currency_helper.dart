@@ -22,4 +22,22 @@ class CurrencyHelper {
   static String getCurrencySymbol() {
     return NumberFormat.simpleCurrency().currencySymbol;
   }
+
+  static bool validateCurrencyValue(String? value,
+      {bool allowNegative = false, bool allowNull = false}) {
+    bool result = false;
+
+    if (value != null && value.isNotEmpty) {
+      double? parsedValue = double.tryParse(value);
+      result = parsedValue != null;
+
+      if (result && !allowNegative) {
+        result = parsedValue >= 0;
+      }
+    } else if (allowNull) {
+      result = true;
+    }
+
+    return result;
+  }
 }
