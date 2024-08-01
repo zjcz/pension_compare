@@ -102,5 +102,21 @@ void main() {
       expect(exportDataModel, isNotNull);
       expect(exportDataModel.length, isZero);
     });
+
+    testWidgets('can open valid zip file with one missing json file',
+        (tester) async {
+      String filename =
+          p.join('test', 'res', 'zips', 'backup_no_password_missing_file.zip');
+      String? password;
+
+      ZipFileHandler zipFileHandler =
+          ZipFileHandler(filename: filename, password: password);
+
+      List<ExportDataModel> exportDataModel =
+          zipFileHandler.loadFileSync('json');
+
+      expect(exportDataModel, isNotNull);
+      expect(exportDataModel.length, isNonZero);
+    });
   });
 }
