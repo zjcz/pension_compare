@@ -95,6 +95,7 @@ class _EditPensionScreenState extends ConsumerState<EditPensionScreen> {
                   children: [
                     TextFormField(
                       key: EditPensionScreen.pensionNameKey,
+                      autofocus: true,
                       controller: nameController,
                       decoration: InputDecoration(
                           labelText: "Name",
