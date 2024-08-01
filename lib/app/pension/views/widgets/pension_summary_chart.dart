@@ -42,8 +42,12 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.pensionData == null) {
-      return const Center(child: Text('No data'));
+    if (widget.pensionData == null || widget.pensionData!.isEmpty) {
+      return const Center(child: Text('No pension data found'));
+    } else if (widget.pensionData!
+        .where((e) => (e.statement?.projectedAnnualAmount ?? 0) > 0)
+        .isEmpty) {
+      return const Center(child: Text('No statement data found'));
     }
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -86,8 +90,7 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
         ]),
       AspectRatio(
           aspectRatio: 1,
-          child: 
-          BarChart(
+          child: BarChart(
             swapAnimationDuration: const Duration(milliseconds: 300),
             swapAnimationCurve: Curves.bounceIn,
             getChartData(_selectedStyle),
