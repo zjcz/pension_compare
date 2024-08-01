@@ -66,7 +66,7 @@ void main() {
       expect(encryptedPasscode, const match.TypeMatcher<String>());
       expect(encryptedPasscode, isNot(passcode));
       expect(encryptedPasscode,
-          Crypt.sha256(passcode, rounds: 1000, salt: passcode).hash);
+          Crypt.sha256(passcode, rounds: 1000, salt: PasscodeService.passcodeSalt).hash);
     });
 
     test(
