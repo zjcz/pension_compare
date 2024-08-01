@@ -4,6 +4,8 @@ import 'package:pension_compare/data/database/database_service.dart';
 class PasscodeService {
   static const minPasscodeLength = 4;
   static const maxPasscodeLength = 10;
+  static const passcodeSalt =
+      'C^kWkXoS53Jnc%rlbQl77d5t5Rym7Y5DQ0h@nYC@rlVbaRyvSVw9x7peLbfW4bBehUkpoO*E&xepRUt8aM42jVdk4Mf7KzkquPMi!nJsQ1jIN3#sTPUOI#L#Da4vWlOx';
 
   String? _passcode;
   bool isPasscodeSet() {
@@ -64,6 +66,6 @@ class PasscodeService {
   }
 
   String encryptPasscode(String passcode) {
-    return Crypt.sha256(passcode, rounds: 1000, salt: passcode).hash;
+    return Crypt.sha256(passcode, rounds: 1000, salt: passcodeSalt).hash;
   }
 }
