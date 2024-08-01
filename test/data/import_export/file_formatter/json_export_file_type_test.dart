@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:pension_compare/constants/pension_status.dart';
 import 'package:pension_compare/data/import_export/exporter.dart';
 import 'package:pension_compare/data/import_export/file_formatter/json_export_file_type.dart';
+import 'package:pension_compare/data/import_export/file_handler/zip_file_handler.dart';
 import 'package:pension_compare/data/import_export/models/backup_config_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_other_income_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,6 +10,7 @@ import 'package:pension_compare/data/import_export/models/transfer_pension_model
 import 'package:pension_compare/data/import_export/models/transfer_secure_settings_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_settings_model.dart';
 import 'package:pension_compare/data/import_export/models/transfer_statement_model.dart';
+import 'package:path/path.dart' as p;
 
 void main() {
   group('Test export to json and back', () {
@@ -225,6 +227,72 @@ void main() {
       // Now reimport the data
       final result = (() => jsonExportFileType.import(exportDataModel));
 
+      expect(result, throwsException);
+    });
+  });
+
+  group('Test imports with real file', () {
+    testWidgets('import data from empty zip file', (tester) async {
+      String filename = p.join('test', 'res', 'zips', 'empty_export.zip');
+      String? password;
+
+      // act
+      // import the zip file
+      ZipFileHandler zipFileHandler =
+          ZipFileHandler(filename: filename, password: password);
+      List<ExportDataModel> exportDataModel =
+          zipFileHandler.loadFileSync('json');
+
+      // parse the imported data
+      JsonExportFileType jsonExportFileType = JsonExportFileType();
+      final result = (() => jsonExportFileType.import(exportDataModel));
+      // assert
+      expect(result, throwsException);
+    });
+
+    testWidgets('import data from valid zip file', (tester) async {
+      String filename = p.join('test', 'res', 'zips', 'backup_no_password.zip');
+      String? password;
+
+      // act
+      // import the zip file
+      ZipFileHandler zipFileHandler =
+          ZipFileHandler(filename: filename, password: password);
+      List<ExportDataModel> exportDataModel =
+          zipFileHandler.loadFileSync('json');
+
+      // parse the imported data
+      JsonExportFileType jsonExportFileType = JsonExportFileType();
+      TransferDataModel importedDataModel =
+          jsonExportFileType.import(exportDataModel);
+
+      // assert
+      expect(importedDataModel.backupConfigModel, isNotNull);
+      expect(importedDataModel.transferOtherIncomeModelList, isNotNull);
+      expect(importedDataModel.transferPensionModelList, isNotNull);
+      expect(importedDataModel.transferSecureSettingsModel, isNotNull);
+      expect(importedDataModel.transferSettingsModel, isNotNull);
+
+      expect(importedDataModel.transferOtherIncomeModelList.length, 1);
+      expect(importedDataModel.transferPensionModelList.length, 4);
+    });
+
+    testWidgets('import data from zip file with missing file', (tester) async {
+      String filename =
+          p.join('test', 'res', 'zips', 'backup_no_password_missing_file.zip');
+      String? password;
+
+      // act
+      // import the zip file
+      ZipFileHandler zipFileHandler =
+          ZipFileHandler(filename: filename, password: password);
+      List<ExportDataModel> exportDataModel =
+          zipFileHandler.loadFileSync('json');
+
+      // parse the imported data
+      JsonExportFileType jsonExportFileType = JsonExportFileType();
+      final result = (() => jsonExportFileType.import(exportDataModel));
+      // assert
       expect(result, throwsException);
     });
   });

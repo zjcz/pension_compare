@@ -15,15 +15,17 @@ void main() {
           zipFileHandler.loadFileSync('json');
 
       expect(exportDataModel, isNotNull);
-      expect(exportDataModel.length, 4);
+      expect(exportDataModel.length, 5);
       expect(exportDataModel[0].filename, 'pension_data.json');
       expect(exportDataModel[0].fileContents, isNotEmpty);
       expect(exportDataModel[1].filename, 'other_income_data.json');
       expect(exportDataModel[1].fileContents, isNotEmpty);
       expect(exportDataModel[2].filename, 'settings_data.json');
       expect(exportDataModel[2].fileContents, isNotEmpty);
-      expect(exportDataModel[3].filename, 'backup_config.json');
+      expect(exportDataModel[3].filename, 'sec_settings_data.json');
       expect(exportDataModel[3].fileContents, isNotEmpty);
+      expect(exportDataModel[4].filename, 'backup_config.json');
+      expect(exportDataModel[4].fileContents, isNotEmpty);
     });
 
     testWidgets('can open password protected zip file', (tester) async {
@@ -37,15 +39,17 @@ void main() {
           zipFileHandler.loadFileSync('json');
 
       expect(exportDataModel, isNotNull);
-      expect(exportDataModel.length, 4);
+      expect(exportDataModel.length, 5);
       expect(exportDataModel[0].filename, 'pension_data.json');
       expect(exportDataModel[0].fileContents, isNotEmpty);
       expect(exportDataModel[1].filename, 'other_income_data.json');
       expect(exportDataModel[1].fileContents, isNotEmpty);
       expect(exportDataModel[2].filename, 'settings_data.json');
       expect(exportDataModel[2].fileContents, isNotEmpty);
-      expect(exportDataModel[3].filename, 'backup_config.json');
+      expect(exportDataModel[3].filename, 'sec_settings_data.json');
       expect(exportDataModel[3].fileContents, isNotEmpty);
+      expect(exportDataModel[4].filename, 'backup_config.json');
+      expect(exportDataModel[4].fileContents, isNotEmpty);
     });
 
     testWidgets('cannot open password protected zip file with invalid password',
@@ -97,6 +101,22 @@ void main() {
 
       expect(exportDataModel, isNotNull);
       expect(exportDataModel.length, isZero);
+    });
+
+    testWidgets('can open valid zip file with one missing json file',
+        (tester) async {
+      String filename =
+          p.join('test', 'res', 'zips', 'backup_no_password_missing_file.zip');
+      String? password;
+
+      ZipFileHandler zipFileHandler =
+          ZipFileHandler(filename: filename, password: password);
+
+      List<ExportDataModel> exportDataModel =
+          zipFileHandler.loadFileSync('json');
+
+      expect(exportDataModel, isNotNull);
+      expect(exportDataModel.length, isNonZero);
     });
   });
 }
