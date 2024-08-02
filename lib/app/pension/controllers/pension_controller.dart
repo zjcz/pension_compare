@@ -8,6 +8,7 @@ part 'pension_controller.g.dart';
 @riverpod
 class PensionController extends _$PensionController {
   late final DatabaseService _databaseService =
+      // ignore: avoid_manual_providers_as_generated_provider_dependency
       ref.read(DatabaseService.provider);
 
   @override

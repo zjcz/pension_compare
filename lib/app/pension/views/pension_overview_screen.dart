@@ -40,9 +40,8 @@ class _PensionOverviewScreenState extends ConsumerState<PensionOverviewScreen> {
               IconButton(
                   icon: const Icon(Icons.add),
                   onPressed: () async {
-                    context
-                        .push(RouteDefs.editStatement, extra: pensionData)
-                        .then((_) => {setState(() {})});
+                    await context.push(RouteDefs.editStatement,
+                        extra: pensionData);
                   }),
               PopupMenuButton(
                 icon: const Icon(Icons.more_vert),
@@ -56,9 +55,8 @@ class _PensionOverviewScreenState extends ConsumerState<PensionOverviewScreen> {
                 },
                 onSelected: (value) async {
                   if (value == 'pension') {
-                    context
-                        .push(RouteDefs.editPension, extra: pensionData)
-                        .then((_) => {setState(() {})});
+                    await context.push(RouteDefs.editPension,
+                        extra: pensionData);
                   }
                 },
               ),
@@ -91,12 +89,11 @@ class _PensionOverviewScreenState extends ConsumerState<PensionOverviewScreen> {
                                           statementData: statements),
                                       StatementDataTable(
                                         statementDataList: statements,
-                                        onTap: (StatementModel statement) {
-                                          context.push(RouteDefs.editStatement,
-                                              extra: (
-                                                pensionData,
-                                                statement
-                                              )).then((_) => {setState(() {})});
+                                        onTap:
+                                            (StatementModel statement) async {
+                                          await context.push(
+                                              RouteDefs.editStatement,
+                                              extra: (pensionData, statement));
                                         },
                                       )
                                     ]),

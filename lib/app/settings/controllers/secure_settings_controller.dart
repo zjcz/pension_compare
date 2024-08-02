@@ -8,6 +8,7 @@ part 'secure_settings_controller.g.dart';
 @riverpod
 class SecureSettingsController extends _$SecureSettingsController {
   late final DatabaseService _databaseService =
+      // ignore: avoid_manual_providers_as_generated_provider_dependency
       ref.read(DatabaseService.provider);
 
   @override

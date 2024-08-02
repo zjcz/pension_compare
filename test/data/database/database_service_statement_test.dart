@@ -69,7 +69,7 @@ void main() {
           amountPaidIn,
           notes);
 
-      expectLater(entry, throwsA(isException));
+      await expectLater(entry, throwsA(isException));
     });
 
     test('read a new statement object', () async {

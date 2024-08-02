@@ -11,7 +11,7 @@ class OverviewTab extends StatelessWidget {
     this.growthPercentage,
     this.isPositiveGrowth = true,
     this.icon,
-    this.iconBgColor = AppColors.secondaryBabyBlue,
+    this.iconBgColor = AppColors.secondaryLightSkyBlue,
   });
   final String title, description;
   final String? growthPercentage;

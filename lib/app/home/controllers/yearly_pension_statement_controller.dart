@@ -6,8 +6,10 @@ import 'package:pension_compare/data/database/database_service.dart';
 part 'yearly_pension_statement_controller.g.dart';
 
 @riverpod
-class YearlyPensionStatementController extends _$YearlyPensionStatementController {
+class YearlyPensionStatementController
+    extends _$YearlyPensionStatementController {
   late final DatabaseService _databaseService =
+      // ignore: avoid_manual_providers_as_generated_provider_dependency
       ref.read(DatabaseService.provider);
 
   @override

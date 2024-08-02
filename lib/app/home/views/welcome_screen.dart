@@ -141,7 +141,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     if (!acceptTermsAndConditions || !acceptFinancialAdviceWarning) {
       return false;
     }
-    getIt<SettingsService>().saveAllSettings(Settings(
+
+    await getIt<SettingsService>().saveAllSettings(Settings(
       acceptTermsAndConditions: acceptTermsAndConditions,
       acceptFinancialAdviceWarning: acceptFinancialAdviceWarning,
       welcomeScreenDismissed: false,
@@ -152,6 +153,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       getIt<AnalyticsHelper>().enableAnalytics(true);
     }
 
+    if (!mounted) return true;
     context.go(RouteDefs.passcodeSet);
 
     return true;

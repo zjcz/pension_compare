@@ -60,7 +60,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               if (_formKey.currentState!.validate() && _userSettings != null) {
                 if (!await _saveData()) {
                   // an error occurred and we cannot save?
-                  // TODO Log and report error
                   return;
                 }
 
@@ -101,10 +100,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       return secureSettingsData.when(
                         data: (secureSettings) {
                           _userSettings ??= EditSettingsData(
-                                retirementDate: secureSettings.retirementDate,
-                                targetIncome: secureSettings.targetIncome,
-                                optIntoAnalyticsWarning:
-                                settings.optIntoAnalyticsWarning);
+                              retirementDate: secureSettings.retirementDate,
+                              targetIncome: secureSettings.targetIncome,
+                              optIntoAnalyticsWarning:
+                                  settings.optIntoAnalyticsWarning);
                           return EditSettingsWidget(
                               userSettings: _userSettings!,
                               onChanged: (EditSettingsData updated) {
@@ -142,7 +141,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     child: TextButton(
                         key: SettingsScreen.settingChangePasscodeKey,
                         onPressed: () async {
-                          context.push(RouteDefs.passcodeChange,
+                          await context.push(RouteDefs.passcodeChange,
                               extra: ref.read(DatabaseService.provider));
                         },
                         style: TextButton.styleFrom(
@@ -197,10 +196,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<bool> _saveData() async {
     if (_userSettings == null) return false;
 
-    ref.read(secureSettingsControllerProvider.notifier).saveSecureSettings(
-        _userSettings!.targetIncome, _userSettings!.retirementDate);
+    await ref
+        .read(secureSettingsControllerProvider.notifier)
+        .saveSecureSettings(
+            _userSettings!.targetIncome, _userSettings!.retirementDate);
 
-    getIt<SettingsService>()
+    await getIt<SettingsService>()
         .saveAnalyticsSettings(_userSettings!.optIntoAnalyticsWarning);
 
     // enable / disable analytics
@@ -286,7 +287,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> exportData() async {
     final databaseService = ref.read(DatabaseService.provider);
 
-    showModalBottomSheet<void>(
+    await showModalBottomSheet<void>(
       isScrollControlled: true,
       context: context,
       builder: (BuildContext context) {
@@ -318,7 +319,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> restoreData() async {
     final databaseService = ref.read(DatabaseService.provider);
 
-    showModalBottomSheet<void>(
+    await showModalBottomSheet<void>(
       isScrollControlled: true,
       context: context,
       builder: (BuildContext context) {
