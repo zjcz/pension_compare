@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pension_compare/app/home/controllers/pension_with_latest_statement_controller.dart';
 import 'package:pension_compare/app/home/controllers/yearly_pension_statement_controller.dart';
@@ -66,6 +67,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   value: 'settings',
                   child: Text("Settings"),
                 ),
+                if(kDebugMode)
                 PopupMenuItem(
                   value: 'reset_test_data',
                   child: Text("Reset Test Data"),
@@ -89,7 +91,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 context
                     .push(RouteDefs.editSettings)
                     .then((_) => {setState(() {})});
-              } else if (value == 'reset_test_data') {
+              } else if (value == 'reset_test_data' && kDebugMode) {
                 await ref.read(DatabaseService.provider).populateTestData();
               }
             },
