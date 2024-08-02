@@ -8,6 +8,7 @@ part 'statement_controller.g.dart';
 @riverpod
 class StatementController extends _$StatementController {
   late final DatabaseService _databaseService =
+      // ignore: avoid_manual_providers_as_generated_provider_dependency
       ref.read(DatabaseService.provider);
 
   @override
@@ -32,7 +33,8 @@ class StatementController extends _$StatementController {
         projectedAnnualAmount,
         yearlyCharges,
         transferValue,
-        amountPaidIn, null);
+        amountPaidIn,
+        null);
     return newStatement == null
         ? null
         : StatementMapper.mapToModel(newStatement);

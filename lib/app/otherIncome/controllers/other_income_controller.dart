@@ -8,6 +8,7 @@ part 'other_income_controller.g.dart';
 @riverpod
 class OtherIncomeController extends _$OtherIncomeController {
   late final DatabaseService _databaseService =
+      // ignore: avoid_manual_providers_as_generated_provider_dependency
       ref.read(DatabaseService.provider);
 
   @override

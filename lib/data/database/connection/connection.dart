@@ -15,7 +15,7 @@ abstract class Connection {
       {bool createInIsolate = true}) {
     // the LazyDatabase util lets us find the right location for the file async.
     return LazyDatabase(() async {
-      setupSqlCipher();
+      await setupSqlCipher();
 
       // put the database file, called db.sqlite here, into the documents folder
       // for your app.

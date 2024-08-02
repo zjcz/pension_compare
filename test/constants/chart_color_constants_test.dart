@@ -13,8 +13,7 @@ void main() {
         'When the method is called, '
         'Then it should return a color', () {
       // Arrange
-      final id = 1;
-      
+      const id = 1;      
 
       // Act
       final color = chartColorConstants.getColorForPension(id);

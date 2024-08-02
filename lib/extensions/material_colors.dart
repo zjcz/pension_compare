@@ -26,7 +26,7 @@ extension MaterialColors on BuildContext {
     final TonalPalette neutralPalette = TonalPalette.fromHct(
         Hct.fromInt(Theme.of(this).colorScheme.surface.value));
     final TonalPalette neutralVariantPalette = TonalPalette.fromHct(
-        Hct.fromInt(Theme.of(this).colorScheme.surfaceVariant.value));
+        Hct.fromInt(Theme.of(this).colorScheme.surfaceContainerHighest.value));
 
     return DynamicScheme(
         sourceColorArgb: Theme.of(this).colorScheme.primary.value,

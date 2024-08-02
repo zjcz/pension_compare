@@ -6,8 +6,10 @@ import 'package:pension_compare/data/database/database_service.dart';
 part 'pension_with_latest_statement_controller.g.dart';
 
 @riverpod
-class PensionWithLatestStatementController extends _$PensionWithLatestStatementController {
+class PensionWithLatestStatementController
+    extends _$PensionWithLatestStatementController {
   late final DatabaseService _databaseService =
+      // ignore: avoid_manual_providers_as_generated_provider_dependency
       ref.read(DatabaseService.provider);
 
   @override

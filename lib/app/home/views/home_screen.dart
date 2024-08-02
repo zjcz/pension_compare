@@ -42,9 +42,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () async {
-              context
-                  .push(RouteDefs.editPension)
-                  .then((_) => {setState(() {})});
+              await context.push(RouteDefs.editPension);
             },
           ),
           PopupMenuButton(
@@ -67,30 +65,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   value: 'settings',
                   child: Text("Settings"),
                 ),
-                if(kDebugMode)
-                PopupMenuItem(
-                  value: 'reset_test_data',
-                  child: Text("Reset Test Data"),
-                )
+                if (kDebugMode)
+                  PopupMenuItem(
+                    value: 'reset_test_data',
+                    child: Text("Reset Test Data"),
+                  )
               ];
             },
             onSelected: (value) async {
               if (value == 'pension') {
-                context
-                    .push(RouteDefs.editPension)
-                    .then((_) => {setState(() {})});
+                await context.push(RouteDefs.editPension);
               } else if (value == 'statement') {
-                context
-                    .push(RouteDefs.editStatement)
-                    .then((_) => {setState(() {})});
+                await context.push(RouteDefs.editStatement);
               } else if (value == 'state_pension') {
-                context
-                    .push(RouteDefs.editStatePension)
-                    .then((_) => {setState(() {})});
+                await context.push(RouteDefs.editStatePension);
               } else if (value == 'settings') {
-                context
-                    .push(RouteDefs.editSettings)
-                    .then((_) => {setState(() {})});
+                await context.push(RouteDefs.editSettings);
               } else if (value == 'reset_test_data' && kDebugMode) {
                 await ref.read(DatabaseService.provider).populateTestData();
               }
@@ -151,7 +141,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                 pensions,
                                                 otherIncomes.firstOrNull)),
                                   ),
-                                  // TODO - Add Other Income list, Warnings / Missing statements
                                 ]),
                           );
                         }

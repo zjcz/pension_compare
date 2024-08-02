@@ -61,7 +61,7 @@ void main() {
       ZipFileHandler zipFileHandler =
           ZipFileHandler(filename: filename, password: password);
 
-      expectLater(() => zipFileHandler.loadFileSync('json'), throwsException);
+      await expectLater(() => zipFileHandler.loadFileSync('json'), throwsException);
     });
 
     testWidgets('cannot open invalid zip file', (tester) async {
@@ -71,7 +71,7 @@ void main() {
       ZipFileHandler zipFileHandler =
           ZipFileHandler(filename: filename, password: password);
 
-      expectLater(() => zipFileHandler.loadFileSync('json'), throwsException);
+      await expectLater(() => zipFileHandler.loadFileSync('json'), throwsException);
     });
 
     testWidgets('can open empty but valid zip file', (tester) async {

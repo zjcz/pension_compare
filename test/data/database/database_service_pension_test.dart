@@ -462,7 +462,7 @@ void main() {
 
       Pension? p1 = await database.createPension(name, maturityDate, notes);
       await database.deletePension(p1!.pensionId);
-      expectLater(database.createPension(name, maturityDate, notes), completes);
+      await expectLater(database.createPension(name, maturityDate, notes), completes);
     });
 
     // Sqlite UNIQUE(<column> COLLATE NOCASE) is not supported by Drift

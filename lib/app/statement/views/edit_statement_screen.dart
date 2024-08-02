@@ -92,7 +92,6 @@ class _EditStatmentScreenState extends ConsumerState<EditStatementScreen> {
                     if (_formKey.currentState!.validate()) {
                       if (!await _saveData()) {
                         // an error occurred and we cannot save?
-                        // TODO Log and report error
                         return;
                       }
 
