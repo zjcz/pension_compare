@@ -50,6 +50,7 @@ class PensionCompareApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Pension Compare',
+      color: Colors.white,
       theme: ThemeData(
         brightness: Brightness.light,
         useMaterial3: true,
