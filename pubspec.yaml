@@ -58,6 +58,7 @@ dependencies:
   firebase_analytics: ^10.10.5
   get_it: ^7.7.0
   crypt: ^4.3.1
+  flutter_native_splash: ^2.4.1
 
 dev_dependencies:
   flutter_test:
