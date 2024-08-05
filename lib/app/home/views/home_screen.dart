@@ -65,6 +65,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   value: 'settings',
                   child: Text("Settings"),
                 ),
+                PopupMenuItem(
+                  value: 'about',
+                  child: Text("About..."),
+                ),
                 if (kDebugMode)
                   PopupMenuItem(
                     value: 'reset_test_data',
@@ -81,6 +85,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 await context.push(RouteDefs.editStatePension);
               } else if (value == 'settings') {
                 await context.push(RouteDefs.editSettings);
+              } else if (value == 'about') {
+                await context.push(RouteDefs.aboutScreen);
               } else if (value == 'reset_test_data' && kDebugMode) {
                 await ref.read(DatabaseService.provider).populateTestData();
               }
