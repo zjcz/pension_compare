@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pension_compare/app/home/views/about_screen.dart';
 import 'package:pension_compare/app/home/views/loading_screen.dart';
 import 'package:pension_compare/app/passcode/views/change_passcode_screen.dart';
 import 'package:pension_compare/app/passcode/views/enter_passcode_screen.dart';
@@ -26,6 +27,7 @@ class RouteDefs {
   static const String editStatement = '/home/edit_statement';
   static const String editStatePension = '/home/edit_state_pension';
   static const String editSettings = '/home/edit_settings';
+  static const String aboutScreen = '/home/about_screen';
   static const String loading = '/';
   static const String policyViewer = '/policy_view';
   static const String passcodeSet = '/welcome/setpasscode';
@@ -111,6 +113,14 @@ GoRouter setupRouter(
               name: 'editSettings',
               builder: (BuildContext context, GoRouterState state) {
                 return const SettingsScreen();
+              },
+            ),
+            GoRoute(
+              path: RouteDefs.getPageName(RouteDefs.aboutScreen,
+                  parentPage: RouteDefs.home),
+              name: 'aboutScreen',
+              builder: (BuildContext context, GoRouterState state) {
+                return const AboutScreen();
               },
             ),
             GoRoute(
