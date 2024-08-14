@@ -1,12 +1,18 @@
 import 'package:intl/intl.dart';
+import 'dart:io';
 
 class CurrencyHelper {
+  static String getLocale() {
+    return Platform.localeName;
+  }
+
   static String formatCurrency(double? value, [String currencySymbol = '']) {
     if (value == null) {
       return '';
     }
 
-    return NumberFormat.currency(locale: 'en_GB', symbol: currencySymbol)
+    return NumberFormat.currency(
+            locale: CurrencyHelper.getLocale(), symbol: currencySymbol)
         .format(value);
   }
 
@@ -20,7 +26,8 @@ class CurrencyHelper {
   }
 
   static String getCurrencySymbol() {
-    return NumberFormat.simpleCurrency().currencySymbol;
+    return NumberFormat.simpleCurrency(locale: CurrencyHelper.getLocale())
+        .currencySymbol;
   }
 
   static bool validateCurrencyValue(String? value,
