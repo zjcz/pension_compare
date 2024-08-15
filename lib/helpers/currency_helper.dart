@@ -35,7 +35,7 @@ class CurrencyHelper {
     bool result = false;
 
     if (value != null && value.isNotEmpty) {
-      double? parsedValue = double.tryParse(value);
+      double? parsedValue = parseCurrency(value);
       result = parsedValue != null;
 
       if (result && !allowNegative) {

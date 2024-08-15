@@ -99,4 +99,106 @@ void main() {
       expect(parsedValue, null);
     });
   });
+
+  group('Test validating currency values', () {
+    test('validate currency with decimal point', () {
+      String value = "1234.56";
+
+      bool result = CurrencyHelper.validateCurrencyValue(value);
+
+      expect(result, true);
+    });
+
+    test('validate currency with no decimal point', () {
+      String value = "1234";
+
+      bool result = CurrencyHelper.validateCurrencyValue(value);
+
+      expect(result, true);
+    });
+
+    test('validate currency with no value', () {
+      String value = "";
+
+      bool result = CurrencyHelper.validateCurrencyValue(value);
+
+      expect(result, false);
+    });
+
+    test('validate currency with null value', () {
+      String? value;
+
+      bool result = CurrencyHelper.validateCurrencyValue(value);
+
+      expect(result, false);
+    });
+
+    test('validate currency with no value when nulls are allowed', () {
+      String value = "";
+
+      bool result =
+          CurrencyHelper.validateCurrencyValue(value, allowNull: true);
+
+      expect(result, true);
+    });
+
+    test('validate currency with null value when nulls are allowed', () {
+      String? value;
+
+      bool result =
+          CurrencyHelper.validateCurrencyValue(value, allowNull: true);
+
+      expect(result, true);
+    });
+
+    test('validate currency with zero value', () {
+      String value = "0";
+
+      bool result = CurrencyHelper.validateCurrencyValue(value);
+
+      expect(result, true);
+    });
+
+    test('validate currency with zero value with decimal point', () {
+      String value = "0.00";
+
+      bool result = CurrencyHelper.validateCurrencyValue(value);
+
+      expect(result, true);
+    });
+
+    test('validate currency with negative value', () {
+      String value = "-1234";
+
+      bool result = CurrencyHelper.validateCurrencyValue(value);
+
+      expect(result, false);
+    });
+
+    test('validate currency with negative value when negatives are allowed',
+        () {
+      String value = "-1234";
+
+      bool result =
+          CurrencyHelper.validateCurrencyValue(value, allowNegative: true);
+
+      expect(result, true);
+    });
+
+    test('validate currency with invalid value', () {
+      String value = "invalid";
+
+      bool result = CurrencyHelper.validateCurrencyValue(value);
+
+      expect(result, false);
+    });
+
+    test('validate currency with decimal point and comma', () {
+      String value = "1,234.56";
+
+      bool result = CurrencyHelper.validateCurrencyValue(value);
+
+      expect(result, true);
+    });
+  });
 }
