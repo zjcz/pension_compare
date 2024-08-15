@@ -90,13 +90,6 @@ class Exporter {
 
   /// Clear the database and import the data model
   Future<void> _importData(TransferDataModel dataModel) async {
-    // if (dataModel.transferPensionModelList.isEmpty) {
-    //   throw Exception('No pensions to import');
-    // }
-    // if (dataModel.transferOtherIncomeModelList.isEmpty) {
-    //   throw Exception('No other income to import');
-    // }
-
     await databaseService.clearAllData();
 
     for (TransferPensionModel pension in dataModel.transferPensionModelList) {
