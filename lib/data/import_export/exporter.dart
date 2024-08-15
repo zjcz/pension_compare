@@ -59,7 +59,8 @@ class Exporter {
     OtherIncome? otherIncome = await databaseService.getStatePension();
     List<Pension> pensions = await databaseService.getAllPensions().first;
     Settings settings = await settingsService.getAllSettings();
-    SecureSettings secureSettings = await databaseService.getSecureSettings().first;
+    SecureSettings secureSettings =
+        await databaseService.getSecureSettings().first;
 
     List<TransferPensionModel> transferPensions = [];
     for (Pension pension in pensions) {
@@ -77,7 +78,8 @@ class Exporter {
           : [OtherIncomeMapper.toTransfer(otherIncome)],
       transferPensionModelList: transferPensions,
       transferSettingsModel: SettingsMapper.toTransfer(settings),
-      transferSecureSettingsModel: SecureSettingsMapper.toTransfer(secureSettings),
+      transferSecureSettingsModel:
+          SecureSettingsMapper.toTransfer(secureSettings),
       backupConfigModel: BackupConfigModel(
         backupDate: DateTime.now(),
         backupVersion: backupVersionNumber,
@@ -88,13 +90,6 @@ class Exporter {
 
   /// Clear the database and import the data model
   Future<void> _importData(TransferDataModel dataModel) async {
-    if (dataModel.transferPensionModelList.isEmpty) {
-      throw Exception('No pensions to import');
-    }
-    if (dataModel.transferOtherIncomeModelList.isEmpty) {
-      throw Exception('No other income to import');
-    }
-
     await databaseService.clearAllData();
 
     for (TransferPensionModel pension in dataModel.transferPensionModelList) {
