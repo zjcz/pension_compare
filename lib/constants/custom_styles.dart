@@ -43,5 +43,5 @@ class CustomStyles {
   static const gapW16 = SizedBox(width: 16);
 //  static const gapW24 = SizedBox(width: 24);
 
+  static const appIconGreenColor = Color(0xff4CAF50);
 }
-

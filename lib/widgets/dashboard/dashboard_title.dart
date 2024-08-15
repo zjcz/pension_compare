@@ -1,8 +1,6 @@
 import 'package:pension_compare/helpers/responsive.dart';
 import 'package:flutter/material.dart';
-import 'package:pension_compare/constants/defaults.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
-import 'package:pension_compare/extensions/material_colors.dart';
 
 class DashboardTitle extends StatelessWidget {
   const DashboardTitle({
@@ -22,9 +20,8 @@ class DashboardTitle extends StatelessWidget {
           width: 12,
           height: 24,
           decoration: BoxDecoration(
-            color: color ?? context.primary,
-            borderRadius: const BorderRadius.all(
-                Radius.circular(AppDefaults.borderRadius / 3)),
+            color: color ?? CustomStyles.appIconGreenColor,
+            shape: BoxShape.circle,
           ),
         ),
         CustomStyles.gapW8,
