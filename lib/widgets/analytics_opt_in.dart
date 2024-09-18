@@ -16,7 +16,7 @@ class AnalyticsOptIn extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Text(
-              'I agree to analytics and crash data to be sent to Google to help improve this application'),
+              'I agree for analytics and crash data to be sent to Google to help improve this application'),
           CustomStyles.spacerBox,
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
