@@ -4,7 +4,6 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pension_compare/helpers/analytics_helper.dart';
 import 'package:pension_compare/route_config.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:pension_compare/service_locator.dart';
@@ -19,10 +18,6 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  // Force disable of the analytics collection at earliest possible time,
-  // then re enable later depending on user preferences
-  getIt<AnalyticsHelper>().enableAnalytics(false);
 
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);

@@ -53,9 +53,9 @@ dependencies:
   archive: ^3.5.0
   material_color_utilities: ^0.8.0
   flutter_markdown: ^0.7.1
-  firebase_core: ^2.31.0
-  firebase_crashlytics: ^3.5.5
-  firebase_analytics: ^10.10.5
+  firebase_core: ^3.5.0
+  firebase_crashlytics: ^4.1.2
+  firebase_analytics: ^11.3.2
   get_it: ^7.7.0
   crypt: ^4.3.1
   flutter_native_splash: ^2.4.1
