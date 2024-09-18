@@ -248,9 +248,8 @@ class _FakeJoinedSelectStatement_19<FirstT extends _i2.HasResultSet, FirstD>
         );
 }
 
-class _FakeDeleteStatement_20<T1 extends _i2.Table, D1> extends _i1.SmartFake
-    implements _i2.DeleteStatement<T1, D1> {
-  _FakeDeleteStatement_20(
+class _FakeSelectable_20<T> extends _i1.SmartFake implements _i2.Selectable<T> {
+  _FakeSelectable_20(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -259,8 +258,9 @@ class _FakeDeleteStatement_20<T1 extends _i2.Table, D1> extends _i1.SmartFake
         );
 }
 
-class _FakeSelectable_21<T> extends _i1.SmartFake implements _i2.Selectable<T> {
-  _FakeSelectable_21(
+class _FakeDeleteStatement_21<T1 extends _i2.Table, D1> extends _i1.SmartFake
+    implements _i2.DeleteStatement<T1, D1> {
+  _FakeDeleteStatement_21(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -808,15 +808,15 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
       ) as _i5.Future<void>);
 
   @override
-  _i5.Stream<List<Map<String, Object?>>> createStream(
-          _i4.QueryStreamFetcher? stmt) =>
+  _i5.Stream<T> createStream<T extends Object>(
+          _i4.QueryStreamFetcher<T>? stmt) =>
       (super.noSuchMethod(
         Invocation.method(
           #createStream,
           [stmt],
         ),
-        returnValue: _i5.Stream<List<Map<String, Object?>>>.empty(),
-      ) as _i5.Stream<List<Map<String, Object?>>>);
+        returnValue: _i5.Stream<T>.empty(),
+      ) as _i5.Stream<T>);
 
   @override
   T alias<T, D>(
@@ -977,6 +977,23 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
       ) as _i2.JoinedSelectStatement<T, R>);
 
   @override
+  _i2.Selectable<_i2.TypedResult> selectExpressions(
+          Iterable<_i2.Expression<Object>>? columns) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #selectExpressions,
+          [columns],
+        ),
+        returnValue: _FakeSelectable_20<_i2.TypedResult>(
+          this,
+          Invocation.method(
+            #selectExpressions,
+            [columns],
+          ),
+        ),
+      ) as _i2.Selectable<_i2.TypedResult>);
+
+  @override
   _i2.DeleteStatement<T, D> delete<T extends _i2.Table, D>(
           _i2.TableInfo<T, D>? table) =>
       (super.noSuchMethod(
@@ -984,7 +1001,7 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
           #delete,
           [table],
         ),
-        returnValue: _FakeDeleteStatement_20<T, D>(
+        returnValue: _FakeDeleteStatement_21<T, D>(
           this,
           Invocation.method(
             #delete,
@@ -997,7 +1014,7 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
   _i5.Future<int> customUpdate(
     String? query, {
     List<_i2.Variable<Object>>? variables = const [],
-    Set<_i2.TableInfo<_i2.Table, dynamic>>? updates,
+    Set<_i2.ResultSetImplementation<dynamic, dynamic>>? updates,
     _i2.UpdateKind? updateKind,
   }) =>
       (super.noSuchMethod(
@@ -1017,7 +1034,7 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
   _i5.Future<int> customInsert(
     String? query, {
     List<_i2.Variable<Object>>? variables = const [],
-    Set<_i2.TableInfo<_i2.Table, dynamic>>? updates,
+    Set<_i2.ResultSetImplementation<dynamic, dynamic>>? updates,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1035,7 +1052,7 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
   _i5.Future<List<_i2.QueryRow>> customWriteReturning(
     String? query, {
     List<_i2.Variable<Object>>? variables = const [],
-    Set<_i2.TableInfo<_i2.Table, dynamic>>? updates,
+    Set<_i2.ResultSetImplementation<dynamic, dynamic>>? updates,
     _i2.UpdateKind? updateKind,
   }) =>
       (super.noSuchMethod(
@@ -1066,7 +1083,7 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
             #readsFrom: readsFrom,
           },
         ),
-        returnValue: _FakeSelectable_21<_i2.QueryRow>(
+        returnValue: _FakeSelectable_20<_i2.QueryRow>(
           this,
           Invocation.method(
             #customSelect,
@@ -1094,7 +1111,7 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
             #readsFrom: readsFrom,
           },
         ),
-        returnValue: _FakeSelectable_21<_i2.QueryRow>(
+        returnValue: _FakeSelectable_20<_i2.QueryRow>(
           this,
           Invocation.method(
             #customSelectQuery,
@@ -1152,6 +1169,32 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
                 #transaction,
                 [action],
                 {#requireNew: requireNew},
+              ),
+            ),
+      ) as _i5.Future<T>);
+
+  @override
+  _i5.Future<T> exclusively<T>(_i5.Future<T> Function()? action) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #exclusively,
+          [action],
+        ),
+        returnValue: _i7.ifNotNull(
+              _i7.dummyValueOrNull<T>(
+                this,
+                Invocation.method(
+                  #exclusively,
+                  [action],
+                ),
+              ),
+              (T v) => _i5.Future<T>.value(v),
+            ) ??
+            _FakeFuture_15<T>(
+              this,
+              Invocation.method(
+                #exclusively,
+                [action],
               ),
             ),
       ) as _i5.Future<T>);
