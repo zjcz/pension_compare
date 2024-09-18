@@ -207,6 +207,20 @@ class Pension extends DataClass implements Insertable<Pension> {
         status: status ?? this.status,
         statusDate: statusDate ?? this.statusDate,
       );
+  Pension copyWithCompanion(PensionsCompanion data) {
+    return Pension(
+      pensionId: data.pensionId.present ? data.pensionId.value : this.pensionId,
+      name: data.name.present ? data.name.value : this.name,
+      maturityDate: data.maturityDate.present
+          ? data.maturityDate.value
+          : this.maturityDate,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      status: data.status.present ? data.status.value : this.status,
+      statusDate:
+          data.statusDate.present ? data.statusDate.value : this.statusDate,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('Pension(')
@@ -643,6 +657,33 @@ class Statement extends DataClass implements Insertable<Statement> {
         statementNotes:
             statementNotes.present ? statementNotes.value : this.statementNotes,
       );
+  Statement copyWithCompanion(StatementsCompanion data) {
+    return Statement(
+      statementId:
+          data.statementId.present ? data.statementId.value : this.statementId,
+      pension: data.pension.present ? data.pension.value : this.pension,
+      statementDate: data.statementDate.present
+          ? data.statementDate.value
+          : this.statementDate,
+      planValue: data.planValue.present ? data.planValue.value : this.planValue,
+      projectedAnnualAmount: data.projectedAnnualAmount.present
+          ? data.projectedAnnualAmount.value
+          : this.projectedAnnualAmount,
+      yearlyCharges: data.yearlyCharges.present
+          ? data.yearlyCharges.value
+          : this.yearlyCharges,
+      transferValue: data.transferValue.present
+          ? data.transferValue.value
+          : this.transferValue,
+      amountPaidIn: data.amountPaidIn.present
+          ? data.amountPaidIn.value
+          : this.amountPaidIn,
+      statementNotes: data.statementNotes.present
+          ? data.statementNotes.value
+          : this.statementNotes,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('Statement(')
@@ -975,6 +1016,19 @@ class OtherIncome extends DataClass implements Insertable<OtherIncome> {
         annualAmount: annualAmount ?? this.annualAmount,
         notes: notes.present ? notes.value : this.notes,
       );
+  OtherIncome copyWithCompanion(OtherIncomesCompanion data) {
+    return OtherIncome(
+      otherIncomeId: data.otherIncomeId.present
+          ? data.otherIncomeId.value
+          : this.otherIncomeId,
+      name: data.name.present ? data.name.value : this.name,
+      annualAmount: data.annualAmount.present
+          ? data.annualAmount.value
+          : this.annualAmount,
+      notes: data.notes.present ? data.notes.value : this.notes,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('OtherIncome(')
@@ -1217,6 +1271,20 @@ class SecureSettings extends DataClass implements Insertable<SecureSettings> {
         retirementDate:
             retirementDate.present ? retirementDate.value : this.retirementDate,
       );
+  SecureSettings copyWithCompanion(SecureSettingCompanion data) {
+    return SecureSettings(
+      secureSettingsId: data.secureSettingsId.present
+          ? data.secureSettingsId.value
+          : this.secureSettingsId,
+      targetIncome: data.targetIncome.present
+          ? data.targetIncome.value
+          : this.targetIncome,
+      retirementDate: data.retirementDate.present
+          ? data.retirementDate.value
+          : this.retirementDate,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('SecureSettings(')
