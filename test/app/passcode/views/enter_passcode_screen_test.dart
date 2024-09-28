@@ -46,8 +46,8 @@ void main() {
       await tester.pumpWidget(createEnterPasscodeScreen(mockPasscodeService));
 
       // Verify that the EnterPasscode widget renders correctly
-      expect(find.text('Enter Passcode'), findsOneWidget);
-      expect(find.text('Enter your passcode:'), findsOneWidget);
+      expect(find.text('Enter Password'), findsOneWidget);
+      expect(find.text('Enter your password:'), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget);
       expect(find.widgetWithText(TextButton, "Submit"), findsOneWidget);
     });
@@ -55,7 +55,7 @@ void main() {
     testWidgets(
         'given passcode screen when entering valid passcode then load home screen',
         (WidgetTester tester) async {
-      String validPasscode = '1234';
+      String validPasscode = '123abcABC';
       when(mockPasscodeService.validatePasscode(validPasscode))
           .thenAnswer((_) => true);
       when(mockPasscodeService.testPasscode(validPasscode))
@@ -120,7 +120,7 @@ void main() {
       verify(mockPasscodeService.testPasscode(incorrectPasscode)).called(1);
       expect(find.byType(HomeScreen), findsNothing);
       expect(
-          find.text('Passcode incorrect. Please try again.'), findsOneWidget);
+          find.text('Password incorrect. Please try again.'), findsOneWidget);
     });
 
     testWidgets(
@@ -148,7 +148,7 @@ void main() {
       verifyNever(mockPasscodeService.setPasscode(incorrectPasscode));
       verifyNever(mockPasscodeService.testPasscode(incorrectPasscode));
       expect(find.byType(HomeScreen), findsNothing);
-      expect(find.text('Passcode is invalid'), findsOneWidget);
+      expect(find.text('Password is invalid'), findsOneWidget);
     });
   });
 }

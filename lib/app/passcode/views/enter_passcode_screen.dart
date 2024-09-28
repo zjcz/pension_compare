@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pension_compare/app/passcode/controller/passcode_service.dart';
 import 'package:pension_compare/app/passcode/views/widgets/passcode_field.dart';
@@ -22,6 +23,7 @@ class _EnterPasscodeScreenState extends State<EnterPasscodeScreen> {
     if (_formKey.currentState!.validate()) {
       final PasscodeService passcodeService = getIt<PasscodeService>();
       if (await passcodeService.testPasscode(passcodeController.text)) {
+        TextInput.finishAutofillContext();
         passcodeService.setPasscode(passcodeController.text);
         if (!mounted) return;
         context.go(RouteDefs.home);
@@ -37,7 +39,7 @@ class _EnterPasscodeScreenState extends State<EnterPasscodeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Enter Passcode'),
+        title: const Text('Enter Password'),
       ),
       body: SafeArea(
         minimum: const EdgeInsets.all(10.0),
@@ -45,43 +47,46 @@ class _EnterPasscodeScreenState extends State<EnterPasscodeScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Form(
             key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (_isPasscodeInvalid)
-                  const Text('Passcode incorrect. Please try again.',
-                      style: TextStyle(color: Colors.red)),
-                const Text(
-                  'Enter your passcode:',
-                  style: TextStyle(fontSize: 18),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: 200,
-                  child: PasscodeField(
-                    passcodeController: passcodeController,
-                    autoFocus: true,
-                    passcodeInvalidMessage: 'Passcode is invalid',
-                    onChanged: (_) {
-                      if (_isPasscodeInvalid) {
-                        setState(() {
-                          _isPasscodeInvalid = false;
-                        });
-                      }
-                    },
+            child: AutofillGroup(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (_isPasscodeInvalid)
+                    const Text('Password incorrect. Please try again.',
+                        style: TextStyle(color: Colors.red)),
+                  const Text(
+                    'Enter your password:',
+                    style: TextStyle(fontSize: 18),
                   ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                    width: double.infinity,
-                    child: TextButton(
-                        onPressed: _submitPasscode,
-                        style: TextButton.styleFrom(
-                            side: BorderSide(color: context.primary),
-                            shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.zero)),
-                        child: const Text('Submit'))),
-              ],
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: 200,
+                    child: PasscodeField(
+                      passcodeController: passcodeController,
+                      autoFocus: true,
+                      passcodeInvalidMessage: 'Password is invalid',
+                      autofillHint: AutofillHints.password,
+                      onChanged: (_) {
+                        if (_isPasscodeInvalid) {
+                          setState(() {
+                            _isPasscodeInvalid = false;
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                          onPressed: _submitPasscode,
+                          style: TextButton.styleFrom(
+                              side: BorderSide(color: context.primary),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.zero)),
+                          child: const Text('Submit'))),
+                ],
+              ),
             ),
           ),
         ),

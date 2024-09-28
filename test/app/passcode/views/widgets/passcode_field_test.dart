@@ -111,12 +111,12 @@ void main() {
       final passcodeController = TextEditingController();
       const passcodeInvalidMessage = 'Passcode is invalid';
       const autoFocus = true;
-      String invalidPasscode = '12345678901234567890';
+      String invalidPasscode = 'a' * (PasscodeService.maxPasscodeLength + 1);
 
       when(mockPasscodeService.validatePasscode(invalidPasscode))
           .thenAnswer((_) => false);
       when(mockPasscodeService
-              .validatePasscode(invalidPasscode.substring(0, 10)))
+              .validatePasscode(invalidPasscode.substring(0, PasscodeService.maxPasscodeLength)))
           .thenAnswer((_) => true); // passcode field restricts to 10 chars
       await tester.pumpWidget(createPasscodeField(mockPasscodeService,
           passcodeController, null, null, autoFocus, passcodeInvalidMessage));
@@ -128,7 +128,7 @@ void main() {
       expect(isValid, isTrue);
       verifyNever(mockPasscodeService.validatePasscode(invalidPasscode));
       verify(mockPasscodeService
-              .validatePasscode(invalidPasscode.substring(0, 10)))
+              .validatePasscode(invalidPasscode.substring(0, PasscodeService.maxPasscodeLength)))
           .called(1);
     });
 

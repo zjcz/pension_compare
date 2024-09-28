@@ -8,6 +8,7 @@ class PasscodeField extends StatelessWidget {
   final String passcodeInvalidMessage;
   final Function(String)? validator;
   final Function(String)? onChanged;
+  final String? autofillHint;
 
   const PasscodeField(
       {super.key,
@@ -15,15 +16,17 @@ class PasscodeField extends StatelessWidget {
       this.onChanged,
       required this.passcodeController,
       this.autoFocus = false,
+      this.autofillHint,
       this.passcodeInvalidMessage = 'Passcode is invalid'});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       autofocus: autoFocus,
+      autofillHints: [autofillHint ?? AutofillHints.password],
       controller: passcodeController,
-      keyboardType: TextInputType.number,
-      maxLength: 10,
+      keyboardType: TextInputType.visiblePassword,
+      maxLength: PasscodeService.maxPasscodeLength,
       obscureText: true,
       decoration: const InputDecoration(
         border: OutlineInputBorder(),

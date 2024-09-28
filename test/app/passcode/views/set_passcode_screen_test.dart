@@ -58,9 +58,9 @@ void main() {
 
       // Verify that the SetPasscode widget renders correctly
       expect(find.byType(SetPasscodeScreen), findsOneWidget);
-      expect(find.text('Set a Passcode'), findsOneWidget);
-      expect(find.text('Enter a 4 to 10 digit passcode:'), findsOneWidget);
-      expect(find.text('Repeat passcode:'), findsOneWidget);
+      expect(find.text('Set a Password'), findsOneWidget);
+      expect(find.text('Enter password:'), findsOneWidget);
+      expect(find.text('Repeat password:'), findsOneWidget);
       expect(find.byType(TextField), findsExactly(2));
       expect(find.byKey(SetPasscodeScreen.passcodeTextField), findsOneWidget);
       expect(find.byKey(SetPasscodeScreen.repeatPasscodeTextField),
@@ -71,7 +71,7 @@ void main() {
     testWidgets(
         'given passcode screen when setting valid passcode then load home screen',
         (WidgetTester tester) async {
-      String validPasscode = '1234';
+      String validPasscode = '123abcABC!';
       when(mockPasscodeService.validatePasscode(validPasscode))
           .thenAnswer((_) => true);
       when(mockPasscodeService.setPasscode(validPasscode)).thenReturn(true);
@@ -103,8 +103,8 @@ void main() {
     testWidgets(
         'given passcode screen when entering different passcodes then show warning',
         (WidgetTester tester) async {
-      String passcode = '1234';
-      String repeatPasscode = '5678';
+      String passcode = '12345678';
+      String repeatPasscode = '87654321';
       when(mockPasscodeService.validatePasscode(passcode))
           .thenAnswer((_) => true);
       when(mockPasscodeService.validatePasscode(repeatPasscode))
@@ -132,7 +132,7 @@ void main() {
       verify(mockPasscodeService.validatePasscode(repeatPasscode));
       expect(find.byType(SetPasscodeScreen), findsOneWidget);
       expect(find.byType(HomeScreen), findsNothing);
-      expect(find.text('Passcodes do not match'), findsOneWidget);
+      expect(find.text('Passwords do not match'), findsOneWidget);
     });
 
     testWidgets(
@@ -164,8 +164,8 @@ void main() {
       verifyNever(mockPasscodeService.setPasscode(invalidPasscode));
       expect(find.byType(SetPasscodeScreen), findsOneWidget);
       expect(find.byType(HomeScreen), findsNothing);
-      expect(find.text('Passcode is invalid'), findsOneWidget);
-      expect(find.text('Repeat passcode is invalid'), findsOneWidget);
+      expect(find.text('Password is invalid'), findsOneWidget);
+      expect(find.text('Repeat password is invalid'), findsOneWidget);
     });
   });
 }
