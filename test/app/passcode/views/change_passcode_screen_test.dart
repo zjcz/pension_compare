@@ -62,11 +62,11 @@ void main() {
 
       // Verify that the SetPasscode widget renders correctly
       expect(find.byType(ChangePasscodeScreen), findsOneWidget);
-      expect(find.text('Change Passcode'), findsOneWidget);
-      expect(find.text('Enter your existing passcode:'), findsOneWidget);
+      expect(find.text('Change Password'), findsOneWidget);
+      expect(find.text('Enter your existing password:'), findsOneWidget);
       expect(
-          find.text('Enter your new 4 to 10 digit passcode:'), findsOneWidget);
-      expect(find.text('Repeat your new passcode:'), findsOneWidget);
+          find.text('Enter your new password:'), findsOneWidget);
+      expect(find.text('Repeat your new password:'), findsOneWidget);
       expect(find.byType(TextField), findsExactly(3));
       expect(find.byKey(ChangePasscodeScreen.existingPasscodeTextField),
           findsOneWidget);
@@ -80,8 +80,8 @@ void main() {
     testWidgets(
         'given passcode screen when setting valid passcode then close screen',
         (WidgetTester tester) async {
-      String existingPasscode = '1234';
-      String newPasscode = '5678';
+      String existingPasscode = '1234ABCD';
+      String newPasscode = '5678abcd';
       when(mockPasscodeService.validatePasscode(existingPasscode))
           .thenAnswer((_) => true);
       when(mockPasscodeService.validatePasscode(newPasscode))
@@ -124,8 +124,8 @@ void main() {
     testWidgets(
         'given passcode screen when entering incorrect existing passcodes then show warning',
         (WidgetTester tester) async {
-      String existingPasscode = '1234';
-      String newPasscode = '5678';
+      String existingPasscode = '1234ABCD';
+      String newPasscode = '5678abcd';
       when(mockPasscodeService.validatePasscode(existingPasscode))
           .thenAnswer((_) => true);
       when(mockPasscodeService.validatePasscode(newPasscode))
@@ -163,16 +163,16 @@ void main() {
           mockPasscodeService.changePasscode(newPasscode, mockDatabaseService));
       expect(find.byType(ChangePasscodeScreen), findsOneWidget);
       expect(find.byType(HomeScreen), findsNothing);
-      expect(find.text('Existing passcode incorrect. Please try again.'),
+      expect(find.text('Existing password incorrect. Please try again.'),
           findsOneWidget);
     });
 
     testWidgets(
         'given passcode screen when entering different new passcodes then show warning',
         (WidgetTester tester) async {
-      String existingPasscode = '1234';
-      String newPasscode = '1111';
-      String repeatPasscode = '2222';
+      String existingPasscode = '1234ABCD';
+      String newPasscode = '1111AAAA';
+      String repeatPasscode = '2222BBBB';
       when(mockPasscodeService.validatePasscode(existingPasscode))
           .thenAnswer((_) => true);
       when(mockPasscodeService.validatePasscode(newPasscode))
@@ -212,14 +212,14 @@ void main() {
           mockDatabaseService));
       expect(find.byType(ChangePasscodeScreen), findsOneWidget);
       expect(find.byType(HomeScreen), findsNothing);
-      expect(find.text('New passcodes do not match'), findsOneWidget);
+      expect(find.text('New passwords do not match'), findsOneWidget);
     });
 
     testWidgets(
         'given passcode screen when setting invalid new passcode then show warning',
         (WidgetTester tester) async {
-      String existingPasscode = '1234';
-      String invalidPasscode = '1'; // min length is 4
+      String existingPasscode = '1234ABCD';
+      String invalidPasscode = '1'; // min length is 8
       when(mockPasscodeService.validatePasscode(existingPasscode))
           .thenAnswer((_) => true);
       when(mockPasscodeService.validatePasscode(invalidPasscode))
@@ -257,7 +257,7 @@ void main() {
           mockDatabaseService));
       expect(find.byType(ChangePasscodeScreen), findsOneWidget);
       expect(find.byType(HomeScreen), findsNothing);
-      expect(find.text('New passcode is invalid'), findsOneWidget);
+      expect(find.text('New password is invalid'), findsOneWidget);
     });
   });
 
@@ -265,9 +265,9 @@ void main() {
     testWidgets(
         'given change passcode screen when entering invalid characters in existing passcode field then expect warning message',
         (WidgetTester tester) async {
-      String existingPasscode = '123a';
-      String newPasscode = '1111';
-      String repeatPasscode = '1111';
+      String existingPasscode = '123abcABC';
+      String newPasscode = '1111AAAA';
+      String repeatPasscode = '1111AAAA';
       when(mockPasscodeService.validatePasscode(existingPasscode))
           .thenAnswer((_) => false);
       when(mockPasscodeService.validatePasscode(newPasscode))
@@ -301,15 +301,15 @@ void main() {
            mockDatabaseService));
       expect(find.byType(ChangePasscodeScreen), findsOneWidget);
       expect(find.byType(HomeScreen), findsNothing);
-      expect(find.text('Existing passcode is invalid'), findsOneWidget);
+      expect(find.text('Existing password is invalid'), findsOneWidget);
     });
 
     testWidgets(
         'given change passcode screen when entering invalid characters in new passcode field then expect warning message',
         (WidgetTester tester) async {
-      String existingPasscode = '1234';
-      String newPasscode = '111a';
-      String repeatPasscode = '1111';
+      String existingPasscode = '1234ABCD';
+      String newPasscode = '111abcABC';
+      String repeatPasscode = '1111abcABC';
       when(mockPasscodeService.validatePasscode(existingPasscode))
           .thenAnswer((_) => true);
       when(mockPasscodeService.validatePasscode(newPasscode))
@@ -349,16 +349,16 @@ void main() {
           mockDatabaseService));
       expect(find.byType(ChangePasscodeScreen), findsOneWidget);
       expect(find.byType(HomeScreen), findsNothing);
-      expect(find.text('New passcode is invalid'), findsOneWidget);
+      expect(find.text('New password is invalid'), findsOneWidget);
     });
 
     testWidgets(
         'given change passcode screen when entering invalid characters in repeat passcode field then expect warning message',
         (WidgetTester tester) async {
       // Note - verify on the repeat field is only triggered if it matches the new passcode field
-      String existingPasscode = '1234';
-      String newPasscode = '111a';
-      String repeatPasscode = '111a';
+      String existingPasscode = '1234ABCD';
+      String newPasscode = '111abcABC';
+      String repeatPasscode = '111abcABC';
       when(mockPasscodeService.validatePasscode(existingPasscode))
           .thenAnswer((_) => true);
       when(mockPasscodeService.validatePasscode(newPasscode))
@@ -397,7 +397,7 @@ void main() {
           mockDatabaseService));
       expect(find.byType(ChangePasscodeScreen), findsOneWidget);
       expect(find.byType(HomeScreen), findsNothing);
-      expect(find.text('Repeat passcode is invalid'), findsOneWidget);
+      expect(find.text('Repeat password is invalid'), findsOneWidget);
     });
   });
 }

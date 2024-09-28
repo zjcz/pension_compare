@@ -148,7 +148,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             side: BorderSide(color: context.primary),
                             shape: const RoundedRectangleBorder(
                                 borderRadius: BorderRadius.zero)),
-                        child: const Text('Change Passcode')),
+                        child: const Text('Change Password')),
                   ),
                   CustomStyles.spacerBox,
                   SizedBox(

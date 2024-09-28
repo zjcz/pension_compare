@@ -4,18 +4,20 @@ import 'package:test/test.dart';
 import 'package:matcher/matcher.dart' as match;
 
 void main() {
+  String tooLongPasscode = 'a' * 65;
+  String validPasscode = '12345678';
+
   group('Test read/write passcode', () {
     test('Given no passcode is set, when a passcode is set expect to read it',
         () async {
-      String passcode = '1234';
       // Given
       final passcodeService = PasscodeService();
       //final pass
       // When
-      final result = passcodeService.setPasscode(passcode);
+      final result = passcodeService.setPasscode(validPasscode);
       // Then
       expect(passcodeService.isPasscodeSet(), true);
-      expect(passcodeService.getPasscode(), passcode);
+      expect(passcodeService.getPasscode(), validPasscode);
       expect(result, isTrue);
     });
 
@@ -47,7 +49,7 @@ void main() {
       // Given
       final passcodeService = PasscodeService();
       // When
-      final result = passcodeService.setPasscode('12345678901');
+      final result = passcodeService.setPasscode(tooLongPasscode);
       // Then
       expect(passcodeService.isPasscodeSet(), false);
       expect(passcodeService.getPasscode(), isNull);
@@ -59,14 +61,17 @@ void main() {
     test('Given a passcode, when encrypting it expect to get a hash', () async {
       // Given
       final passcodeService = PasscodeService();
-      const passcode = '1234';
+
       // When
-      final encryptedPasscode = passcodeService.encryptPasscode(passcode);
+      final encryptedPasscode = passcodeService.encryptPasscode(validPasscode);
       // Then
       expect(encryptedPasscode, const match.TypeMatcher<String>());
-      expect(encryptedPasscode, isNot(passcode));
-      expect(encryptedPasscode,
-          Crypt.sha256(passcode, rounds: 1000, salt: PasscodeService.passcodeSalt).hash);
+      expect(encryptedPasscode, isNot(validPasscode));
+      expect(
+          encryptedPasscode,
+          Crypt.sha256(validPasscode,
+                  rounds: 1000, salt: PasscodeService.passcodeSalt)
+              .hash);
     });
 
     test(
@@ -74,8 +79,8 @@ void main() {
         () async {
       // Given
       final passcodeService = PasscodeService();
-      const passcode1 = '1234';
-      const passcode2 = '4321';
+      const passcode1 = '12345678';
+      const passcode2 = '87654321';
       // When
       final encryptedPasscode1 = passcodeService.encryptPasscode(passcode1);
       final encryptedPasscode2 = passcodeService.encryptPasscode(passcode2);
@@ -89,9 +94,9 @@ void main() {
         () async {
       // Given
       final passcodeService = PasscodeService();
-      const passcode = '1234';
+
       // When
-      final isValid = passcodeService.validatePasscode(passcode);
+      final isValid = passcodeService.validatePasscode(validPasscode);
       // Then
       expect(isValid, isTrue);
     });
@@ -109,56 +114,113 @@ void main() {
     test('Given a passcode, when too long then return false', () async {
       // Given
       final passcodeService = PasscodeService();
-      const passcode = '12345678901';
+
       // When
-      final isValid = passcodeService.validatePasscode(passcode);
+      final isValid = passcodeService.validatePasscode(tooLongPasscode);
       // Then
       expect(isValid, isFalse);
     });
 
-    test('Given a passcode, when it contains letters then return false',
+    test('Given a passcode, when it contains only numbers then return true',
         () async {
       // Given
       final passcodeService = PasscodeService();
-      const passcode = '1234a';
-      // When
-      final isValid = passcodeService.validatePasscode(passcode);
-      // Then
-      expect(isValid, isFalse);
-    });
-
-    test('Given a passcode, when it contains characters then return false',
-        () async {
-      // Given
-      final passcodeService = PasscodeService();
-      const passcode = '1234@';
-      // When
-      final isValid = passcodeService.validatePasscode(passcode);
-      // Then
-      expect(isValid, isFalse);
-    });
-
-    test('Given a passcode, when it contains decimal point then return false',
-        () async {
-      // Given
-      final passcodeService = PasscodeService();
-      const passcode = '1234.56';
-      // When
-      final isValid = passcodeService.validatePasscode(passcode);
-      // Then
-      expect(isValid, isFalse);
-    });
-
-    test(
-        'Given a passcode, when it contains large valid number then return true',
-        () async {
-      // Given
-      final passcodeService = PasscodeService();
-      const passcode = '9999999999';
+      const passcode = '1234567890';
       // When
       final isValid = passcodeService.validatePasscode(passcode);
       // Then
       expect(isValid, isTrue);
+    });
+
+    test(
+        'Given a passcode, when it contains only lowercase letters then return true',
+        () async {
+      // Given
+      final passcodeService = PasscodeService();
+      const passcode = 'abcdefghijklmnopqrstuvwxyz';
+      // When
+      final isValid = passcodeService.validatePasscode(passcode);
+      // Then
+      expect(isValid, isTrue);
+    });
+
+    test(
+        'Given a passcode, when it contains only uppercase letters then return true',
+        () async {
+      // Given
+      final passcodeService = PasscodeService();
+      const passcode = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      // When
+      final isValid = passcodeService.validatePasscode(passcode);
+      // Then
+      expect(isValid, isTrue);
+    });
+
+    test('Given a passcode, when it contains only symbols then return true',
+        () async {
+      // Given
+      final passcodeService = PasscodeService();
+      const passcode = '!@#%^&*(),.?":{}|<>';
+      // When
+      final isValid = passcodeService.validatePasscode(passcode);
+      // Then
+      expect(isValid, isTrue);
+    });
+
+    test('Given a passcode, when it contains mixed characters then return true',
+        () async {
+      // Given
+      final passcodeService = PasscodeService();
+      const passcode = 'abc1234567890ABC!@#%^&*(),.?":{}|<>';
+      // When
+      final isValid = passcodeService.validatePasscode(passcode);
+      // Then
+      expect(isValid, isTrue);
+    });
+  });
+
+  group('Validate passcode with message', () {
+    test('Given a valid passcode, when validating it then return null',
+        () async {
+      // Given
+      final passcodeService = PasscodeService();
+
+      // When
+      final result = passcodeService.validatePasscodeWithMessage(validPasscode);
+      // Then
+      expect(result, isNull);
+    });
+
+    test('Given a passcode, when too short then return false', () async {
+      // Given
+      final passcodeService = PasscodeService();
+      const passcode = '123';
+      // When
+      final result = passcodeService.validatePasscodeWithMessage(passcode);
+      // Then
+      expect(result, 'Password must be at least 8 characters long');
+    });
+
+    test('Given a passcode, when too long then return false', () async {
+      // Given
+      final passcodeService = PasscodeService();
+
+      // When
+      final result = passcodeService.validatePasscodeWithMessage(tooLongPasscode);
+      // Then
+      expect(result, 'Password must be at most 64 characters long');
+    });
+
+    test('Given a passcode, when it contains only numbers then return true',
+        () async {
+      // Given
+      final passcodeService = PasscodeService();
+      const passcode = '££££££££';
+      // When
+      final result = passcodeService.validatePasscodeWithMessage(passcode);
+      // Then
+      expect(result,
+          'Password must only contain letters, numbers, and special characters');
     });
   });
 }

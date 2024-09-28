@@ -2,8 +2,8 @@ import 'package:crypt/crypt.dart';
 import 'package:pension_compare/data/database/database_service.dart';
 
 class PasscodeService {
-  static const minPasscodeLength = 4;
-  static const maxPasscodeLength = 10;
+  static const minPasscodeLength = 8;
+  static const maxPasscodeLength = 64;
   static const passcodeSalt =
       'C^kWkXoS53Jnc%rlbQl77d5t5Rym7Y5DQ0h@nYC@rlVbaRyvSVw9x7peLbfW4bBehUkpoO*E&xepRUt8aM42jVdk4Mf7KzkquPMi!nJsQ1jIN3#sTPUOI#L#Da4vWlOx';
 
@@ -40,9 +40,25 @@ class PasscodeService {
   }
 
   bool validatePasscode(String passcode) {
-    return passcode.length >= minPasscodeLength &&
-        passcode.length <= maxPasscodeLength &&
-        (int.tryParse(passcode) != null);
+    return (validatePasscodeWithMessage(passcode) == null);
+  }
+
+  String? validatePasscodeWithMessage(String passcode) {
+    String? errorMessage;
+
+    if (passcode.length < minPasscodeLength) {
+      errorMessage =
+          'Password must be at least $minPasscodeLength characters long';
+    } else if (passcode.length > maxPasscodeLength) {
+      errorMessage =
+          'Password must be at most $maxPasscodeLength characters long';
+    } else if (!RegExp(r'^[a-zA-Z0-9!@#%^&*(),.?":{}|<>]+$')
+        .hasMatch(passcode)) {
+      errorMessage =
+          'Password must only contain letters, numbers, and special characters';
+    }
+
+    return errorMessage;
   }
 
   /// Test the passcode by opening a database connection
