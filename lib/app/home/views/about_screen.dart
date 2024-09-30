@@ -4,6 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pension_compare/app/home/views/policy_viewer_screen.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/route_config.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
@@ -18,6 +19,9 @@ class _AboutScreenState extends State<AboutScreen> {
       packageName: 'unknown',
       version: 'unknown',
       buildNumber: 'unknown');
+
+  final pensionCompareWebSiteUrl =
+      Uri(scheme: 'https', host: 'happybunnysoftware.co.uk', path: 'pension-compare');
 
   @override
   void initState() {
@@ -58,6 +62,12 @@ class _AboutScreenState extends State<AboutScreen> {
                         style: Theme.of(context).textTheme.bodyMedium),
                     CustomStyles.spacerBox,
                     ElevatedButton(
+                      child: const Text('Visit Website'),
+                      onPressed: () =>
+                          _launchInBrowser(pensionCompareWebSiteUrl),
+                    ),
+                    CustomStyles.spacerBox,
+                    ElevatedButton(
                       child: const Text('Terms and Conditions'),
                       onPressed: () {
                         context.push(RouteDefs.policyViewer,
@@ -75,5 +85,17 @@ class _AboutScreenState extends State<AboutScreen> {
                 ),
               ),
             )));
+  }
+
+  Future<void> _launchInBrowser(Uri url) async {
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Unable to launch website'),
+      ));
+    }
   }
 }
