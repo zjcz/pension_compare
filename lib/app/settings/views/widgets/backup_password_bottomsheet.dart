@@ -63,7 +63,7 @@ class _BackupPasswordBottomsheetState extends State<BackupPasswordBottomsheet> {
                 'You can secure your backup with a password. If you do, you will need to enter it when you restore your data.',
                 style: CustomStyles.infoTextStyle),
             const Text(
-                'This can be different to the passcode used to login to the app.',
+                'This can be different to the password used to login to the app.',
                 style: CustomStyles.infoTextStyle),                
             const Text(
                 'If you do not want to secure it, leave the fields blank.',
