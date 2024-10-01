@@ -110,7 +110,7 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
   BarTouchData get barTouchData => BarTouchData(
         enabled: true,
         touchTooltipData: BarTouchTooltipData(
-          tooltipBgColor: Colors.grey,
+          getTooltipColor: (BarChartGroupData group) => Colors.grey,
           tooltipPadding: const EdgeInsets.all(5),
           tooltipMargin: 8,
           fitInsideHorizontally: true,
