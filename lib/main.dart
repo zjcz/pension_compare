@@ -57,6 +57,8 @@ class PensionCompareApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       routerConfig: setupRouter(
           initialLocation: RouteDefs.loading, observers: [observer]),
+      // Use the following when generating screenshots to remove the debug banner
+      //debugShowCheckedModeBanner: false,
     );
   }
 }

@@ -334,11 +334,12 @@ class DatabaseService extends _$DatabaseService {
     await clearAllData();
 
     // create some test pensions
-    Pension? p1 = await createPension("Pension 1", DateTime(2030, 1, 1), null);
-    Pension? p2 = await createPension("Pension 2", DateTime(2030, 1, 1), null);
+    Pension? p1 =
+        await createPension("First Pension", DateTime(2030, 1, 1), null);
+    Pension? p2 = await createPension("Pension Co", DateTime(2030, 1, 1), null);
     await createPension(
-        "Pension 3", DateTime(2030, 1, 1), null); // no statements required
-    Pension? p4 = await createPension("Pension 4", DateTime(2030, 1, 1), null);
+        "Pension Ltd", DateTime(2030, 1, 1), null); // no statements required
+    Pension? p4 = await createPension("Current", DateTime(2030, 1, 1), null);
 
     // create some test statements
     await createStatement(
@@ -367,7 +368,9 @@ class DatabaseService extends _$DatabaseService {
         p4.pensionId, DateTime(2023, 1, 1), 4500, 450, 45, 4500, 4300, null);
 
     // create a state pension record
-    await saveStatePension(1000, null);
+    await saveStatePension(884.80, null);
+
+    await saveSecureSettings(2000.00, DateTime(2032, 1, 1));
   }
 
   // Clear all the data from the database

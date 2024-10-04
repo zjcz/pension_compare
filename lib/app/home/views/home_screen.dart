@@ -40,13 +40,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
         appBar: AppBar(title: const Text('Pension Compare'), actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: const Icon(
+              Icons.add,
+              semanticLabel: 'add',
+            ),
             onPressed: () async {
               await context.push(RouteDefs.editPension);
             },
           ),
           PopupMenuButton(
-            icon: const Icon(Icons.more_vert),
+            icon: const Icon(
+              Icons.more_vert,
+              semanticLabel: 'more',
+            ),
             itemBuilder: (BuildContext bc) {
               return const [
                 PopupMenuItem(

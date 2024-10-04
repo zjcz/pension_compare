@@ -41,7 +41,8 @@ class _StatementSummaryChartState extends State<StatementSummaryChart> {
         Text(getChartTitle(_selectedStyle),
             style: Theme.of(context).textTheme.titleMedium),
         PopupMenuButton(
-          icon: const Icon(Icons.arrow_drop_down_circle_outlined),
+          icon: const Icon(Icons.arrow_drop_down_circle_outlined,
+              semanticLabel: 'select chart type'),
           itemBuilder: (BuildContext bc) {
             return const [
               PopupMenuItem(

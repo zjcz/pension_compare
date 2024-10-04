@@ -1,0 +1,47 @@
+# Generate the screenshots for android
+# > MAESTRO_LANG=en-GB MAESTRO_SIZE=tablet10 maestro --device emulator-5556 test maestro_android_screenshots.yaml
+appId: uk.co.happybunnysoftware.pension_compare
+---
+#########################################
+# Reset the data on each run
+# - tapOn: more
+# - tapOn: Reset Test Data
+#########################################
+# 1) Home Screen
+#########################################
+- takeScreenshot:
+    path: maestro/${MAESTRO_LANG}/${MAESTRO_SIZE}/0_APP_Android
+#########################################
+# 2) Home Screen (bottom)
+#########################################
+- scroll
+- scroll
+- scroll
+- tapOn: "select chart type"
+- tapOn: "Projected Yearly Amount"
+- takeScreenshot:
+    path: maestro/${MAESTRO_LANG}/${MAESTRO_SIZE}/1_APP_Android
+#########################################
+# 3) Pension Performance Screen
+#########################################
+- scrollUntilVisible:
+    element: Monthly Income
+    direction: UP
+- tapOn: "Retire in 7 Years"
+- takeScreenshot:
+    path: maestro/${MAESTRO_LANG}/${MAESTRO_SIZE}/2_APP_Android
+#########################################
+# 4) Settings Screen
+#########################################
+- tapOn: "Back"
+- tapOn: more
+- tapOn: "Settings"
+- takeScreenshot:
+    path: maestro/${MAESTRO_LANG}/${MAESTRO_SIZE}/3_APP_Android
+#########################################
+# 5) Pension Details Screen
+#########################################
+- tapOn: "Back"
+- tapOn: "First Pension"
+- takeScreenshot:
+    path: maestro/${MAESTRO_LANG}/${MAESTRO_SIZE}/4_APP_Android
