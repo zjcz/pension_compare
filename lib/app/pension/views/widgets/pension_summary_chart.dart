@@ -58,7 +58,7 @@ class _PensionSummaryChartState extends State<PensionSummaryChart> {
           PopupMenuButton(
             icon: const Icon(
               Icons.arrow_drop_down_circle_outlined,
-              semanticLabel: 'select chart type',
+              semanticLabel: 'Select Chart Type',
             ),
             itemBuilder: (BuildContext bc) {
               return const [
