@@ -4,7 +4,7 @@ appId: uk.co.happybunnysoftware.pension_compare
 ---
 #########################################
 # Reset the data on each run
-# - tapOn: more
+# - tapOn: "More Options"
 # - tapOn: Reset Test Data
 #########################################
 # 1) Home Screen
@@ -17,7 +17,7 @@ appId: uk.co.happybunnysoftware.pension_compare
 - scroll
 - scroll
 - scroll
-- tapOn: "select chart type"
+- tapOn: "Select Chart Type"
 - tapOn: "Projected Yearly Amount"
 - takeScreenshot:
     path: maestro/${MAESTRO_LANG}/${MAESTRO_SIZE}/1_APP_Android
@@ -34,7 +34,7 @@ appId: uk.co.happybunnysoftware.pension_compare
 # 4) Settings Screen
 #########################################
 - tapOn: "Back"
-- tapOn: more
+- tapOn: "More Options"
 - tapOn: "Settings"
 - takeScreenshot:
     path: maestro/${MAESTRO_LANG}/${MAESTRO_SIZE}/3_APP_Android

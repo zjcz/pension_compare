@@ -42,7 +42,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           IconButton(
             icon: const Icon(
               Icons.add,
-              semanticLabel: 'add',
+              semanticLabel: 'Add New Pension',
+              
             ),
             onPressed: () async {
               await context.push(RouteDefs.editPension);
@@ -51,7 +52,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           PopupMenuButton(
             icon: const Icon(
               Icons.more_vert,
-              semanticLabel: 'more',
+              semanticLabel: 'More Options',
             ),
             itemBuilder: (BuildContext bc) {
               return const [

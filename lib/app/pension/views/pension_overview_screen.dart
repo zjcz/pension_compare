@@ -38,13 +38,13 @@ class _PensionOverviewScreenState extends ConsumerState<PensionOverviewScreen> {
         return Scaffold(
             appBar: AppBar(title: Text(pensionData.name), actions: [
               IconButton(
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(Icons.add, semanticLabel: 'Add New Statement',),
                   onPressed: () async {
                     await context.push(RouteDefs.editStatement,
                         extra: pensionData);
                   }),
               PopupMenuButton(
-                icon: const Icon(Icons.more_vert),
+                icon: const Icon(Icons.more_vert, semanticLabel: 'More Options',),
                 itemBuilder: (BuildContext bc) {
                   return const [
                     PopupMenuItem(

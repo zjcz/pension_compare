@@ -25,7 +25,9 @@ class DateField extends StatelessWidget {
     return TextFormField(
       controller: fieldController,
       decoration: InputDecoration(
-          icon: const Icon(Icons.calendar_today), //icon of text field
+          icon: const Icon(
+            Icons.calendar_today,
+          ), //icon of text field
           labelText: labelText,
           errorText: errorText),
       readOnly: true, // when true user cannot edit text
