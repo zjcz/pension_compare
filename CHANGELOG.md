@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.2](https://github.com/zjcz/pension_compare/releases/tag/1.0.2) - 2024-10-08
+
+- [148](https://github.com/zjcz/pension_compare/pull/148)
+  Remove AdId from Analytics reporting
+
 ## [1.0.1](https://github.com/zjcz/pension_compare/releases/tag/1.0.1) - 2024-10-07
 
 - [115](https://github.com/zjcz/pension_compare/issues/115)
