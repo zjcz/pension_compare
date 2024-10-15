@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pension_compare/route_config.dart';
 import 'package:pension_compare/service_locator.dart';
 import 'package:pension_compare/widgets/analytics_opt_in.dart';
+import 'package:pension_compare/widgets/custom_switch.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static const welcomeAcceptTermsAndConditionsKey =
@@ -68,42 +69,29 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           extra: PolicyType.privacyPolicy);
                     }),
                     CustomStyles.spacerBox,
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('I accept the terms and conditions'),
-                        Switch.adaptive(
-                            key: WelcomeScreen
-                                .welcomeAcceptTermsAndConditionsKey,
-                            value: acceptTermsAndConditions,
-                            onChanged: (newValue) {
-                              setState(() {
-                                acceptTermsAndConditions = newValue;
-                              });
-                            }),
-                      ],
-                    ),
+                    CustomSwitch(
+                        key: WelcomeScreen.welcomeAcceptTermsAndConditionsKey,
+                        labelText: 'I accept the terms and conditions',
+                        switchValue: acceptTermsAndConditions,
+                        onChanged: (newValue) {
+                          setState(() {
+                            acceptTermsAndConditions = newValue;
+                          });
+                        }),
                     CustomStyles.spacerBox,
                     const Text(
                         'The information provided is for illustrative purposes only and should not be considered financial advice. Please consult a financial advisor before making any financial decisions.'),
                     CustomStyles.spacerBox,
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('I agree'),
-                        Switch.adaptive(
-                            key: WelcomeScreen
-                                .welcomeAcceptFinanicalAdviceWarningKey,
-                            value: acceptFinancialAdviceWarning,
-                            onChanged: (newValue) {
-                              setState(() {
-                                acceptFinancialAdviceWarning = newValue;
-                              });
-                            }),
-                      ],
-                    ),
+                    CustomSwitch(
+                        key: WelcomeScreen
+                            .welcomeAcceptFinanicalAdviceWarningKey,
+                        labelText: 'I agree',
+                        switchValue: acceptFinancialAdviceWarning,
+                        onChanged: (newValue) {
+                          setState(() {
+                            acceptFinancialAdviceWarning = newValue;
+                          });
+                        }),
                     CustomStyles.spacerBox,
                     AnalyticsOptIn(
                       key: WelcomeScreen.welcomeOptIntoAnalyticsKey,

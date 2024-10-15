@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pension_compare/app/statement/models/statement_model.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
 import 'package:pension_compare/constants/pension_status.dart';
+import 'package:pension_compare/widgets/custom_switch.dart';
 import 'package:pension_compare/widgets/dashboard/dashboard_tile.dart';
 
 class PensionReportScreen extends ConsumerStatefulWidget {
@@ -66,39 +67,25 @@ class _PensionReportScreenState extends ConsumerState<PensionReportScreen> {
                                       hideTitle: true)),
                               CustomStyles.spacerBox,
                               if (settings.targetIncome != null)
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text('Show Target Line'),
-                                    Switch.adaptive(
-                                      value: showTargetLine,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          showTargetLine = newValue;
-                                        });
-                                      },
-                                    ),
-                                  ],
+                                CustomSwitch(
+                                  labelText: 'Show Target Line',
+                                  switchValue: showTargetLine,
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      showTargetLine = newValue;
+                                    });
+                                  },
                                 ),
                               CustomStyles.spacerBox,
                               if (settings.retirementDate != null)
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text('Show Retirement Date'),
-                                    Switch.adaptive(
-                                      value: showRetirementDate,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          showRetirementDate = newValue;
-                                        });
-                                      },
-                                    ),
-                                  ],
+                                CustomSwitch(
+                                  labelText: 'Show Retirement Date',
+                                  switchValue: showRetirementDate,
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      showRetirementDate = newValue;
+                                    });
+                                  },
                                 ),
                             ]),
                       );
