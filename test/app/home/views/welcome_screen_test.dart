@@ -181,11 +181,11 @@ void main() {
 
       // accept financial advice warning and terms and conditions
       await tester
-          .tap(find.byKey(WelcomeScreen.welcomeAcceptTermsAndConditionsKey));
+          .tap(find.byKey(Key('${WelcomeScreen.welcomeAcceptTermsAndConditionsKey.toString()}_switch')));
       await tester.pumpAndSettle();
 
       await tester.tap(
-          find.byKey(WelcomeScreen.welcomeAcceptFinanicalAdviceWarningKey));
+          find.byKey(Key('${WelcomeScreen.welcomeAcceptFinanicalAdviceWarningKey.toString()}_switch')));
       await tester.pumpAndSettle();
 
       // Tap the continue button without accepting terms
@@ -225,11 +225,11 @@ void main() {
 
       // accept financial advice warning and terms and conditions
       await tester
-          .tap(find.byKey(WelcomeScreen.welcomeAcceptTermsAndConditionsKey));
+          .tap(find.byKey(Key('${WelcomeScreen.welcomeAcceptTermsAndConditionsKey.toString()}_switch')));
       await tester.pumpAndSettle();
 
       await tester.tap(
-          find.byKey(WelcomeScreen.welcomeAcceptFinanicalAdviceWarningKey));
+          find.byKey(Key('${WelcomeScreen.welcomeAcceptFinanicalAdviceWarningKey.toString()}_switch')));
       await tester.pumpAndSettle();
 
       final optIntoAnalyticsFinder = find.byKey(

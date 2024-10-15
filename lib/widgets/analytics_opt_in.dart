@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pension_compare/constants/custom_styles.dart';
+import 'package:pension_compare/widgets/custom_switch.dart';
 
 class AnalyticsOptIn extends StatelessWidget {
   final bool optIntoAnalyticsValue;
@@ -18,18 +19,12 @@ class AnalyticsOptIn extends StatelessWidget {
           const Text(
               'I agree for analytics and crash data to be sent to Google to help improve this application'),
           CustomStyles.spacerBox,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('I agree'),
-              Switch.adaptive(
-                key: Key('${key.toString()}_switch'),
-                value: optIntoAnalyticsValue,
-                onChanged: onChanged,
-              ),
-            ],
-          ),
+          CustomSwitch(
+            key: key,
+            labelText: 'I agree',
+            onChanged: onChanged,
+            switchValue: optIntoAnalyticsValue,
+          )
         ]);
   }
 }
