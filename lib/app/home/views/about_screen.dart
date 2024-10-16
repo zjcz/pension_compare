@@ -20,8 +20,10 @@ class _AboutScreenState extends State<AboutScreen> {
       version: 'unknown',
       buildNumber: 'unknown');
 
-  final pensionCompareWebSiteUrl =
-      Uri(scheme: 'https', host: 'happybunnysoftware.co.uk', path: 'pension-compare');
+  final pensionCompareWebSiteUrl = Uri(
+      scheme: 'https',
+      host: 'happybunnysoftware.co.uk',
+      path: 'pension-compare');
 
   @override
   void initState() {
@@ -79,6 +81,12 @@ class _AboutScreenState extends State<AboutScreen> {
                       onPressed: () {
                         context.push(RouteDefs.policyViewer,
                             extra: PolicyType.privacyPolicy);
+                      },
+                    ),
+                    ElevatedButton(
+                      child: const Text('3rd Party Licenses'),
+                      onPressed: () {
+                        showLicensePage(context: context);
                       },
                     )
                   ],
