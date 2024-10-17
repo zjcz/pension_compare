@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.3](https://github.com/zjcz/pension_compare/releases/tag/1.0.3) - 2024-10-16
+
+- [151](https://github.com/zjcz/pension_compare/issues/151)
+  Add View Licence Screen
+- [152](https://github.com/zjcz/pension_compare/issues/152)
+  Allow tapping label next to switches to trigger switch change
+
 ## [1.0.2](https://github.com/zjcz/pension_compare/releases/tag/1.0.2) - 2024-10-08
 
 - [148](https://github.com/zjcz/pension_compare/pull/148)
