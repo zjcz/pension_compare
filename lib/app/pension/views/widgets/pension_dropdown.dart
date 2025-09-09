@@ -24,7 +24,7 @@ class PensionDropdown extends ConsumerWidget {
           }
           return DropdownButtonFormField<int>(
               decoration: const InputDecoration(labelText: "Pension"),
-              value: pensionId,
+              initialValue: pensionId,
               items: pensions.map((p) {
                 return DropdownMenuItem<int>(
                   value: p.pensionId,

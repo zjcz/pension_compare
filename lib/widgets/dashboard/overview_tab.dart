@@ -69,8 +69,8 @@ class OverviewTab extends StatelessWidget {
                       CustomStyles.smallestSpacerBox,
                       Chip(
                         backgroundColor: isPositiveGrowth
-                            ? AppColors.success.withOpacity(0.1)
-                            : AppColors.error.withOpacity(0.1),
+                            ? AppColors.success.withValues(alpha: 0.1)
+                            : AppColors.error.withValues(alpha: 0.1),
                         side: BorderSide.none,
                         padding: const EdgeInsets.symmetric(
                             horizontal: AppDefaults.padding * 0.25,
@@ -93,8 +93,8 @@ class OverviewTab extends StatelessWidget {
           if (!Responsive.isMobile(context) && growthPercentage != null)
             Chip(
               backgroundColor: isPositiveGrowth
-                  ? AppColors.success.withOpacity(0.1)
-                  : AppColors.error.withOpacity(0.1),
+                  ? AppColors.success.withValues(alpha: 0.1)
+                  : AppColors.error.withValues(alpha: 0.1),
               side: BorderSide.none,
               padding: const EdgeInsets.symmetric(
                   horizontal: AppDefaults.padding * 0.25,

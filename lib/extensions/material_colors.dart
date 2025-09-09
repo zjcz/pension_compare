@@ -18,18 +18,18 @@ extension MaterialColors on BuildContext {
 
   DynamicScheme _createDynamicScheme() {
     final TonalPalette primaryPalette = TonalPalette.fromHct(
-        Hct.fromInt(Theme.of(this).colorScheme.primary.value));
+        Hct.fromInt(Theme.of(this).colorScheme.primary.toARGB32()));
     final TonalPalette secondaryPalette = TonalPalette.fromHct(
-        Hct.fromInt(Theme.of(this).colorScheme.secondary.value));
+        Hct.fromInt(Theme.of(this).colorScheme.secondary.toARGB32()));
     final TonalPalette tertiaryPalette = TonalPalette.fromHct(
-        Hct.fromInt(Theme.of(this).colorScheme.tertiary.value));
+        Hct.fromInt(Theme.of(this).colorScheme.tertiary.toARGB32()));
     final TonalPalette neutralPalette = TonalPalette.fromHct(
-        Hct.fromInt(Theme.of(this).colorScheme.surface.value));
+        Hct.fromInt(Theme.of(this).colorScheme.surface.toARGB32()));
     final TonalPalette neutralVariantPalette = TonalPalette.fromHct(
-        Hct.fromInt(Theme.of(this).colorScheme.surfaceContainerHighest.value));
+        Hct.fromInt(Theme.of(this).colorScheme.surfaceContainerHighest.toARGB32()));
 
     return DynamicScheme(
-        sourceColorArgb: Theme.of(this).colorScheme.primary.value,
+        sourceColorArgb: Theme.of(this).colorScheme.primary.toARGB32(),
         variant: Variant.vibrant,
         isDark: isDarkTheme,
         primaryPalette: primaryPalette,

@@ -237,7 +237,7 @@ class _TargetVsActualChartState extends State<TargetVsActualChart> {
         show: true,
         checkToShowHorizontalLine: (value) => value % 10 == 0,
         getDrawingHorizontalLine: (value) => FlLine(
-          color: Colors.grey.withOpacity(0.3),
+          color: Colors.grey.withValues(alpha: 0.3),
           strokeWidth: 1,
         ),
         drawVerticalLine: false,
