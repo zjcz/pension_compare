@@ -15,12 +15,44 @@ A Flutter application to allow users to compare the performance of their pension
 
 ## 🖥️ Instructions
 
+The app is written in Flutter and uses Firebase for analytics.
+
+### Firebase Configuration
+
+To configure the [Firebase](https://firebase.google.com/?authuser=0) services used by this application, follow these steps:
+
+- Create a project in Firebase
+
+  - Go to the [Firebase console](https://console.firebase.google.com/).
+  - Click on "Create a Firebased project" and give your project a name (e.g., "pension-compare").
+  - Follow the on-screen instructions to create the project.  Make sure "Enable Google Analytics for this project" is enabled. 
+
+### Code
+
 To run the app you will need to install flutter. Follow this [Get Started](https://docs.flutter.dev/get-started/install) guide.
 
 - Clone the repository
 
 ```bash
 git clone https://github.com/zjcz/pension_compare.git
+```
+
+- Navigate to the project directory
+
+```bash
+cd pension_compare
+```
+
+- If you don't have the FlutterFire CLI installed, run this command to add it:
+
+```bash
+dart pub global activate flutterfire_cli
+```
+
+- Run the following command to configure Firebase for your Flutter app. This command will guide you through selecting your Firebase project and will automatically generate the firebase config files for you platforms:
+
+```bash
+flutterfire configure
 ```
 
 - Install the dependencies
