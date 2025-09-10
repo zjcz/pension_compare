@@ -48,7 +48,7 @@ flutter test
 
 ## Maestro
 
-The project uses [Maestro](https://maestro.mobile.dev/), a UI Testing framework for mobile to generate screenshots used in the app store. Uses the `maestro_android_screenshots.yaml` script to generate thew images. See [API Reference - Commands](https://maestro.mobile.dev/api-reference/commands) for a list of commands, or [Automated Screenshot Generation with Maestro - Code With Andrea](https://codewithandrea.com/tips/automated-screenshot-generation-maestro/) for more information.
+The project uses [Maestro](https://maestro.mobile.dev/), a UI Testing framework for mobile to generate screenshots used in the app store. Uses the `maestro_android_screenshots.yaml` script to generate the images. See [API Reference - Commands](https://maestro.mobile.dev/api-reference/commands) for a list of commands, or [Automated Screenshot Generation with Maestro - Code With Andrea](https://codewithandrea.com/tips/automated-screenshot-generation-maestro/) for more information.
 
 ## 📸 Screenshots
 
@@ -60,9 +60,9 @@ The project uses [Maestro](https://maestro.mobile.dev/), a UI Testing framework 
 
 ## Database Security
 
-The database is encrypted by Drift using the sqlcipher_flutter_libs packaged, as document [here](https://drift.simonbinder.eu/docs/platforms/encryption/#encrypted-version-of-a-nativedatabase).
+The database is encrypted by Drift using the sqlcipher_flutter_libs packaged, as documented [here](https://drift.simonbinder.eu/docs/platforms/encryption/#encrypted-version-of-a-nativedatabase).
 
-The password for the database is entered by the user in for form of a passcode, which is then encrypted using the [Crypt](https://pub.dev/packages/crypt) package. The hash of this is used as the password for the database. See also [SqlCipher Documentation](https://www.zetetic.net/sqlcipher/sqlcipher-api/#Changing_Key).
+The password for the database is entered by the user in the form of a passcode, which is then encrypted using the [Crypt](https://pub.dev/packages/crypt) package. The hash of this is used as the password for the database. See also [SqlCipher Documentation](https://www.zetetic.net/sqlcipher/sqlcipher-api/#Changing_Key).
 
 ## Dev Notes
 
@@ -81,7 +81,7 @@ This app was originally released on the Google Play Store. However, due to a cha
 
 ## 📄 Terms and Conditions, Privacy Policy
 
-The Terms and Conditions and the Privicy Policy was generated at [App Privacy Policy Generator](https://app-privacy-policy-generator.firebaseapp.com/)
+The Terms and Conditions and the Privacy Policy was generated at [App Privacy Policy Generator](https://app-privacy-policy-generator.firebaseapp.com/)
 
 ## 💼 License
 
