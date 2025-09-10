@@ -74,8 +74,8 @@ class TargetVsActual extends StatelessWidget {
                   CustomStyles.smallestSpacerBox,
                   Chip(
                     backgroundColor: difference > 0
-                        ? AppColors.success.withOpacity(0.1)
-                        : AppColors.error.withOpacity(0.1),
+                        ? AppColors.success.withValues(alpha: 0.1)
+                        : AppColors.error.withValues(alpha: 0.1),
                     side: BorderSide.none,
                     padding: const EdgeInsets.symmetric(
                         horizontal: AppDefaults.padding * 0.25,
